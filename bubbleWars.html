@@ -497,9 +497,9 @@
 	};
 
 	var mouseClicked = function(e) {
-		playSound("hiruevan.github.io/Music.mp3", 1, 2);
 		if (gameScreen === "instructions" && fullscreen.textContent === "Shrink") {
-			//window.setInterval(backgroundMusic, 4100);
+			playSound("/Music.mp3", 1, 2);
+			window.setInterval(backgroundMusic, 200000);
 			gameScreen = "game";
 		} else if (gameScreen === "gameOver") {
 			life = 10;
@@ -587,7 +587,7 @@
 	};
 
 	var backgroundMusic = function() {
-		playSound("hiruevan.github.io/Music.mp3", 1, 1);
+		playSound("/Music.mp3", 1, 1);
 	};
 
 	game.addEventListener("mousemove", mouseMoved);
