@@ -225,6 +225,7 @@
 
 	var popSound = false;
 	var cymbalSound = false;
+	var lose = false;
 	var gameScreen = "instructions";
 	var highScore = 0;
 	var life = 10;
@@ -468,6 +469,7 @@
 
 				if (life < 1) {
 					gameScreen = "gameOver";
+					lose = true;
 				}
 			} else if (gameScreen === "instructions") {
 				draw.font = "100px Arial";
@@ -506,7 +508,7 @@
 
 	var mouseClicked = function(e) {
 		if (gameScreen === "instructions" && fullscreen.textContent === "Shrink") {
-			playSound("/Music.wav", 1, 1);
+			playSound("/Music.wav", 0.75, 1);
 			window.setInterval(backgroundMusic, 136000);
 			window.setInterval(sounds, 1000/20);
 			gameScreen = "game";
@@ -596,7 +598,7 @@
 	};
 
 	var backgroundMusic = function() {
-		playSound("/Music.wav", 1, 1);
+		playSound("/Music.wav", 0.75, 1);
 	};
 	
 	var sounds = function() {
@@ -607,6 +609,10 @@
 		if (cymbalSound) {
 			playSound("/cymbal.wav", 1, 3);
 			cymbalSound = false;
+		}
+		if (lose) {
+			playSound("/Lose.mp3", 1, 4);
+			lose = false;
 		}
 	};
 
