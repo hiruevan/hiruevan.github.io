@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Hiruevan Studio | Snake</title>
+	<link rel="shortcut icon" type="image/x-icon" href="https://uploads.scratch.mit.edu/get_image/user/23198813_60x60.png">
+	<link rel="stylesheet" type="text/css" href="../styles.css">
+</head>
+<body>
+	<div class="top-bar">
+		<h1 class="page-title">Games</h1>
+        <div class="select-bar" style="left: 300px;">
+            <a href="https://hiruevan.github.io">
+                <img src="https://uploads.scratch.mit.edu/get_image/user/23198813_60x60.png" class="logo" alt="H Studio" height="100px">
+            </a>
+			<a href="../allgames" class="top-button">All Games</a>
+        </div>
+    </div>
+	<div class="content">
+        <div class="container">
+            <h2>Snake</h2>
+            <img src="../images/Screenshot 2023-06-13 162055.png" alt="Snake Game Screenshot" width="50%">
+        </div>
+        <div class="container">
+            <p>This is a game that I made in about a week. I got a lot of inspiration from the game google snake. But I want to take this snake game to the next level.<br>
+            Submit Ideas here for the new game "Snake Reimagined" that will be coming out later this year.</p>
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfIGfmoSxJQPBFs1l0UIynKSguE7dVzu9LUp8O4qMeVnHIegA/viewform?embedded=true" width="100%" height="520" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+            <p>Credits:<br>
+            Everything in this game was done by me (Even the snake drawings, though they were inspired by google snake) except for the sounds, which I found in a google snake clone on <a href="https://scratch.mit.edu">Scratch</a></p>
+        </div>
+        <div class="container">
+            <canvas id="game" width="1200" height="1200"></canvas>
+        </div>
+    </div>
+    <script>
+        function toRadians(degrees) {
+            return degrees*(Math.PI/180);
+        };
+
+        function fromRadians(radians) {
+            return radians*(180/Math.PI);
+        };
+
+        function randomNumber(min, max) {
+            return Math.round((Math.random() * (max - min)) + min);
+        };
+
+        let milisecondsBetweenFrames = 1;
+        let FPS = 60;
+        let DELTA = 0;
+        let start = Date.now();
+
+        function fpsSet() {
+            end = Date.now();
+            milisecondsBetweenFrames = end - start;
+            FPS = Math.round(1000/milisecondsBetweenFrames);
+            DELTA = 60/FPS;
+            start = Date.now();			
+        };
+
+
+        // Set audio ID 1
+        var audio1 = document.createElement("audio");
+        audio1.id = "audio1";
+        document.body.appendChild(audio1);
+        var audio1r = false;
+
+
+        // Set audio ID 2
+        var audio2 = document.createElement("audio");
+        audio2.id = "audio2";
+        document.body.appendChild(audio2);
+        var audio2r = false;
+
+
+        // Set audio ID 3
+        var audio3 = document.createElement("audio");
+        audio3.id = "audio3";
+        document.body.appendChild(audio3);
+        var audio3r = false;
+
+
+        // Set audio ID 4
+        var audio4 = document.createElement("audio");
+        audio4.id = "audio4";
+        document.body.appendChild(audio4);
+        var audio4r = false;
+
+        // Set audio ID 5
+        var audio5 = document.createElement("audio");
+        audio5.id = "audio5";
+        document.body.appendChild(audio5);
+        var audio5r = false;
+
+        // Plays a sound
+        function playSound(url, volume, id, repeat) {
+            var audioEl = document.getElementById("audio" + id);
+            audioEl.src = "./snakeassets/" + url;
+            audioEl.volume = volume;
+            if (id === 1) {
+                audio1r = repeat;
+            } else if (id === 2) {
+                audio2r = repeat;
+            } else if (id === 3) {
+                audio3r = repeat;
+            } else if (id === 4) {
+                audio4r = repeat;
+            } else if (id === 5) {
+                audio5r = repeat;
+            }
+            audioEl.play();
+        };
+
+        // Stops a sound
+        function stopSound(id) {
+            var audioEl = document.getElementById("audio" + id);
+            audioEl.src = "";
+            audioEl.volume = 0;
+            if (id === 1) {
+                audio1r = false;
+            } else if (id === 2) {
+                audio2r = false;
+            } else if (id === 3) {
+                audio3r = false;
+            } else if (id === 4) {
+                audio4r = false;
+            } else if (id === 5) {
+                audio5r = false;
+            }
+            audioEl.pause();
+        };
+
+        // The main control loop of all the sounds
+        window.setInterval(function() {
+            if (audio1r) {
+                audio1.play();
+            }
+            if (audio2r) {
+                audio2.play();
+            }
+            if (audio3r) {
+                audio3.play();
+            }
+            if (audio4r) {
+                audio4.play();
+            }
+            if (audio5r) {
+                audio5.play();
+            }
+        }, 10);
+
+
+        let tick = 0;
+
+        // Cvs is 20 x 20 cells
+        const MAPWIDTH = 20;
+        // 1 cell is 36 x 36 px
+        const CELLWIDTH = Math.floor(window.innerHeight*0.4/MAPWIDTH);
+        // Width of map in px
+        const WIDTH = MAPWIDTH*CELLWIDTH;
+
+        // Tickspeed
+        let TICKSPEED = 8;
+
+        // context and the map size
+        let cvs = document.getElementById("game");
+        const ctx = cvs.getContext("2d");
+        let PADDING = 0;
+        cvs.width = WIDTH + 4/CELLWIDTH + PADDING;
+        cvs.height = WIDTH + 4/CELLWIDTH + PADDING;
+
+        // Ctx circle functions
+        ctx.circle = function(x, y, r) {
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, 2 * Math.PI);
+        };
+        ctx.fillCircle = function(x, y, r) {
+            ctx.circle(x, y, r);
+            ctx.fill();
+        };
+        ctx.strokeCircle = function(x, y, r) {
+            ctx.circle(x, y, r);
+            ctx.stroke();
+        };
+
+        // Map
+        let map = [];
+        for (let x = 0; x < MAPWIDTH+2; x++) {
+            map.push([]);
+            for (let y = 0; y < MAPWIDTH+1; y++) {
+                map[x].push(0);
+            }
+        }
+
+        // Places walls
+        for (let i = 0; i < MAPWIDTH + 2; i++) {
+            setMapTile(2, i, 1);
+        }
+        for (let i = 0; i < MAPWIDTH + 1; i++) {
+            setMapTile(1, i, 1);
+        }
+        for (let i = 0; i < MAPWIDTH; i++) {
+            setMapTile(0, i, 1);
+        }
+        for (let i = 0; i < MAPWIDTH + 2; i++) {
+            setMapTile(i, 2, 1);
+        }
+        for (let i = 0; i < MAPWIDTH + 1; i++) {
+            setMapTile(i, 1, 1);
+        }
+        for (let i = 0; i < MAPWIDTH; i++) {
+            setMapTile(i, 0, 1);
+        }
+        for (let i = 0; i < MAPWIDTH + 2; i++) {
+            setMapTile(MAPWIDTH + 1, i, 1);
+        }
+        for (let i = 0; i < MAPWIDTH + 2; i++) {
+            setMapTile(i, MAPWIDTH + 1, 1);
+        }
+
+        // Places first apple and starting snake
+        setMapTile(15, 10, 2);
+        setMapTile(9, 10, 4);
+        setMapTile(8, 10, 3);
+        setMapTile(7, 10, 3);
+        setMapTile(6, 10, 3);
+
+        // Apple Info
+        let appleX = 15;
+        let appleY = 10;
+        let prevAppleX = 0;
+        let prevAppleY = 0;
+        let prevAppleSize = 0;
+
+        // Animation Info
+        let eyeSize = 0;
+        let bounce = 0;
+        let bounceSpeed = 10;
+        let nextBlick = randomNumber(90, 170);
+        let mouthSize = 0;
+        let toungeLength = 1;
+        let toungeInterval = 80;
+        let toungeDir = 0;
+
+        // Player
+        let prevDir = 0;
+        let headDir = 0;
+        let nextDir = 0;
+        let tailDir = 0;
+        let score = 0;
+        let eating = false;
+        let headX = 9;
+        let headY = 10;
+        let tailX = 6;
+        let tailY = 10;
+        let gameOver = false;
+        let turningBuffer = [];
+        let renderBuffer = [];
+
+        turningBuffer.push({
+            x: 6,
+            y: 10,
+            dir: headDir
+        });
+        turningBuffer.push({
+            x: 7,
+            y: 10,
+            dir: headDir
+        });
+        turningBuffer.push({
+            x: 8,
+            y: 10,
+            dir: headDir
+        });
+        turningBuffer.push({
+            x: 9,
+            y: 10,
+            dir: headDir
+        });
+
+        renderBuffer.push({
+            x: 5,
+            y: 10,
+            dir: headDir
+        });
+        renderBuffer.push({
+            x: 6,
+            y: 10,
+            dir: headDir
+        });
+        renderBuffer.push({
+            x: 7,
+            y: 10,
+            dir: headDir
+        });
+        renderBuffer.push({
+            x: 8,
+            y: 10,
+            dir: headDir
+        });
+
+        // Sets a tile in the map using a given x and y pos
+        function setMapTile(x, y, tile) {
+            map[x][y] = tile;
+        };
+
+        // Rendering System
+        function drawTiles() {
+            // background
+            ctx.fillStyle = "#70d651";
+            ctx.fillRect(0, 0, cvs.width, cvs.width);
+            ctx.fillStyle = "#59d149";
+            for (let x = 0; x < map.length; x += 2) {
+                for (let y = 0; y < map.length; y += 2) {
+                    ctx.fillRect((x*CELLWIDTH + PADDING) - CELLWIDTH*2, ((y+1)*CELLWIDTH + PADDING) - CELLWIDTH*2, CELLWIDTH - PADDING, CELLWIDTH - PADDING);
+                    ctx.fillRect(((x+1)*CELLWIDTH + PADDING) - CELLWIDTH*2, (y*CELLWIDTH + PADDING) - CELLWIDTH*2, CELLWIDTH - PADDING, CELLWIDTH - PADDING);
+                }
+            }
+            for (let x = 0; x < map.length; x++) {
+                for (let y = 0; y < map.length; y++) {
+                    const tile = map[x][y];
+                    if (tile === 1) {
+                        ctx.fillStyle = "#348a37";
+                        ctx.fillRect((x*CELLWIDTH + PADDING) - CELLWIDTH*2, (y*CELLWIDTH + PADDING) - CELLWIDTH*2, CELLWIDTH - PADDING, CELLWIDTH - PADDING);
+                    } /*else if (tile === 2) {
+                        ctx.fillStyle = "red";
+                    } else if (tile === 3) {
+                        ctx.fillStyle = "lightgreen";
+                    } else if (tile === 4) {
+                        ctx.fillStyle = "#6bfa66";
+                    } */
+                }
+            }
+        };
+
+        function render() {
+            // Snake
+            let offset = (tick % TICKSPEED)/TICKSPEED * CELLWIDTH;
+
+            ctx.strokeStyle = "#476feb";
+            ctx.lineWidth = CELLWIDTH*0.68;
+            ctx.fillStyle = "#476feb";
+
+            // Bonk Animation
+            if (gameOver && eyeSize	=== 0) {
+                eyeSize	= 6;
+            } else if (gameOver	&& eyeSize < 14) {
+                eyeSize	*= 1.2;
+            }
+
+            if (gameOver && bounceSpeed > 0) {
+                bounce += bounceSpeed/((TICKSPEED*0.1)*(CELLWIDTH/36));
+                bounceSpeed -= 1/((TICKSPEED*0.1)*(CELLWIDTH/36));
+            }
+
+            // Body
+
+            // Tail
+            for (let q = 0; q < CELLWIDTH-offset; q++) {
+                ctx.fillCircle((renderBuffer[0].x*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(renderBuffer[0].dir)*(offset+q), (renderBuffer[0].y*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(renderBuffer[0].dir)*(offset+q), ctx.lineWidth/2);
+            }
+
+            // Main Body
+            for (let i = 1; i < renderBuffer.length	- 2; i++) {
+                let q = 0
+                let off = i === renderBuffer.length	- 1 ? q/2 : q;
+                ctx.fillCircle((renderBuffer[i].x*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(renderBuffer[i].dir)*off, (renderBuffer[i].y*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(renderBuffer[i].dir)*off, ctx.lineWidth/2);
+                q = CELLWIDTH - 1;
+                off = i === renderBuffer.length	- 1 ? q/2 : q;
+                ctx.fillCircle((renderBuffer[i].x*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(renderBuffer[i].dir)*off, (renderBuffer[i].y*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(renderBuffer[i].dir)*off, ctx.lineWidth/2);
+                ctx.beginPath();
+                q = 0;
+                off = i === renderBuffer.length	- 1 ? q/2 : q;
+                ctx.beginPath();
+                ctx.moveTo((renderBuffer[i].x*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(renderBuffer[i].dir)*off, (renderBuffer[i].y*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(renderBuffer[i].dir)*off);
+                q = CELLWIDTH - 1;
+                off = i === renderBuffer.length	- 1 ? q/2 : q;
+                ctx.lineTo((renderBuffer[i].x*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(renderBuffer[i].dir)*off, (renderBuffer[i].y*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(renderBuffer[i].dir)*off);
+                ctx.stroke();
+            }
+
+            // Neck
+            if (!gameOver) {
+                for (let i = renderBuffer.length - 2; i < renderBuffer.length; i++) {
+                    for (let q = 0; q < CELLWIDTH; q++) {
+                        let off = i === renderBuffer.length	- 1 ? q/2 : q;
+                        ctx.fillCircle((renderBuffer[i].x*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(renderBuffer[i].dir)*off, (renderBuffer[i].y*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(renderBuffer[i].dir)*off, ctx.lineWidth/2);
+                    }
+                }
+            } else {
+                offset -= bounce*(CELLWIDTH/36);
+                if (offset < -55) {
+                    offset = -55;
+                }
+                ctx.beginPath();
+                ctx.moveTo((renderBuffer[renderBuffer.length - 1].x*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(renderBuffer[renderBuffer.length - 1].dir)*offset, (renderBuffer[renderBuffer.length - 1].y*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(renderBuffer[renderBuffer.length - 1].dir)*offset);
+                ctx.lineTo((renderBuffer[renderBuffer.length - 2].x*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2, (renderBuffer[renderBuffer.length - 2].y*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2);
+                ctx.stroke();
+                
+            }
+
+            // Eatan Apple
+            if (prevAppleSize > ctx.lineWidth/2) {
+                ctx.fillCircle((prevAppleX*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2, (prevAppleY*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2, prevAppleSize);
+                prevAppleSize -= 5/TICKSPEED;
+            }
+
+            // Snake Head
+
+            // Mouth animation
+            if (appleX > headX - 3 && appleX < headX + 3 && appleY > headY - 3 && appleY < headY + 3 || gameOver) {
+                mouthSize += 1/TICKSPEED * 4;
+            } else if (!(prevAppleSize > CELLWIDTH)) {
+                mouthSize *= 0.8;
+            }
+            if (mouthSize > CELLWIDTH/8 && !gameOver) {
+                mouthSize = CELLWIDTH/8;
+            } else if (mouthSize > CELLWIDTH/6) {
+                mouthSize = CELLWIDTH/6;
+            }
+            if (mouthSize < 0.1) {
+                mouthSize = 0;
+            }
+
+            // Tounge Animation
+            if (toungeInterval < 0 && mouthSize < 3 && !gameOver) {
+                toungeLength *= 1.2*(TICKSPEED/8);
+            } else if (toungeLength > 1) {
+                toungeLength *= 0.8;
+            }
+            if (toungeInterval < -50) {
+                toungeInterval = randomNumber(160, 240);
+            }
+            if (toungeLength > CELLWIDTH*2) {
+                toungeLength = CELLWIDTH*2;
+            }
+            toungeInterval--;
+
+            // Smooth tounge rotation
+            toungeDir += 0.4*(headDir-toungeDir);
+
+            // Tounge
+            let amt = 0;
+            ctx.fillStyle = "#de2b21";
+            for (let i = (CELLWIDTH/-3.6); i < (CELLWIDTH/-3.6) + toungeLength; i++) {
+                amt += 0.1;
+                ctx.fillCircle((headX*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(toungeDir)*(offset + i) + Math.cos(tick/(TICKSPEED/8))*amt, (headY*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(toungeDir)*(offset + i) + Math.sin(tick/(TICKSPEED/8))*amt, ctx.lineWidth*0.1);
+            }
+
+            // Mouth
+            ctx.fillStyle = "#476feb";
+            for (let i = (CELLWIDTH/-3.6) - mouthSize; i < (CELLWIDTH/-3.6) + mouthSize/1.5; i++) {
+                ctx.fillCircle((headX*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(headDir)*(offset + i), (headY*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(headDir)*(offset + i), ctx.lineWidth*(0.64 + mouthSize*0.03));
+            }
+
+            ctx.fillStyle = "#15449e";
+            for (let i = (CELLWIDTH/-3.6) - mouthSize; i < (CELLWIDTH/-3.6) + mouthSize/1.5; i++) {
+                ctx.fillCircle((headX*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(headDir)*(offset + i), (headY*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(headDir)*(offset + i), ctx.lineWidth*(0.64 + mouthSize*0.008));
+            }
+
+            drawApple();
+            ctx.lineWidth = CELLWIDTH*0.68;
+
+            // Teeth
+            ctx.fillStyle = "ghostwhite";
+            let teethX;
+            let teethY;
+            let old = offset;
+
+            // Broken tooth
+            offset = ((tick % TICKSPEED)/TICKSPEED * CELLWIDTH) - (bounce*(CELLWIDTH/18)/4);
+            for (let i = CELLWIDTH/3.6; i > CELLWIDTH/9; i--) {
+                teethX = (headX*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(headDir)*(offset - i + mouthSize);
+                teethY = (headY*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(headDir)*(offset - i + mouthSize);
+
+                
+                ctx.fillCircle((teethX + Math.cos(headDir)*CELLWIDTH/15)-(Math.sin(headDir)*((CELLWIDTH/3.6))), (teethY + Math.sin(headDir)*CELLWIDTH/15)-(Math.cos(headDir)*(CELLWIDTH/3.6)), CELLWIDTH*0.04);
+            }
+
+            // Other tooth
+            offset = old;
+            for (let i = CELLWIDTH/3.6; i > CELLWIDTH/9; i--) {
+                teethX = (headX*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(headDir)*(offset - i + mouthSize);
+                teethY = (headY*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(headDir)*(offset - i + mouthSize);
+
+                
+                ctx.fillCircle((teethX + Math.cos(headDir)*CELLWIDTH/15)+(Math.sin(headDir)*(CELLWIDTH/3.6)), (teethY + Math.sin(headDir)*CELLWIDTH/15)+(Math.cos(headDir)*(CELLWIDTH/3.6)), CELLWIDTH*0.04);
+            }
+
+            // Head shape (Nose kind of)
+            ctx.fillStyle = "#476feb";
+            for (let i = -1*CELLWIDTH; i < (CELLWIDTH/-3.6) - mouthSize; i++) {
+                ctx.fillCircle((headX*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(headDir)*(offset + i), (headY*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(headDir)*(offset + i), ctx.lineWidth*(0.64 + mouthSize*0.008));
+            }
+
+
+            
+            // Snake eyes
+
+            let eyesX = ((headX - Math.cos(headDir))*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(headDir)*offset;
+            let eyesY = ((headY - Math.sin(headDir))*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(headDir)*offset;
+
+            ctx.fillCircle(eyesX+(Math.sin(headDir)*(CELLWIDTH/3.6)), eyesY+(Math.cos(headDir)*(CELLWIDTH/3.6)), CELLWIDTH*(0.30 + 0.008*eyeSize));
+            ctx.fillCircle(eyesX-(Math.sin(headDir)*(CELLWIDTH/3.6)), eyesY-(Math.cos(headDir)*(CELLWIDTH/3.6)), CELLWIDTH*(0.30 - 0.002*eyeSize));
+
+            // Blink control, eye tracking and pupel drawings
+            if (tick % 450 !== nextBlick && tick % 450 !== nextBlick+1 && tick % 450 !== nextBlick+2 && tick % 450 !== nextBlick+3 && tick % 450 !== nextBlick+4 && tick % 450 !== nextBlick+5 && tick % 450 !== nextBlick+6 && tick % 450 !== nextBlick+7 && tick % 450 !== nextBlick+8) {
+                ctx.fillStyle = "white";
+                ctx.fillCircle(eyesX+(Math.sin(headDir)*(CELLWIDTH/3.6)), eyesY+(Math.cos(headDir)*(CELLWIDTH/3.6)), CELLWIDTH*(0.20 + 0.008*eyeSize));
+                ctx.fillCircle(eyesX-(Math.sin(headDir)*(CELLWIDTH/3.6)), eyesY-(Math.cos(headDir)*(CELLWIDTH/3.6)), CELLWIDTH*(0.20 - 0.002*eyeSize));
+
+                // Eye tracking animations
+                let xDiff = headX - appleX;
+                let yDiff = headY - appleY;
+
+                let slope = yDiff/xDiff;
+
+                let aTan = Math.atan(slope);
+                let divider = 8;
+                try {
+                    if ((map[headX + Math.cos(headDir)][headY + Math.sin(headDir)] === 1 || map[headX + Math.cos(headDir)][headY + Math.sin(headDir)] === 3) || (map[headX + Math.cos(headDir)*2][headY + Math.sin(headDir)*2] === 1 || map[headX + Math.cos(headDir)*2][headY + Math.sin(headDir)*2] === 3)) {
+                        aTan = headDir;
+                    } else {
+                        if (xDiff > -1) {
+                            divider	*= -1;
+                        }
+                    }
+                } catch	(e) {
+                    aTan = headDir;
+                }
+
+                ctx.fillStyle = "blue";
+                ctx.fillCircle(eyesX+(Math.sin(headDir)*(CELLWIDTH/3.6))+(Math.cos(aTan)*CELLWIDTH/divider), eyesY+(Math.cos(headDir)*(CELLWIDTH/3.6))+(Math.sin(aTan)*CELLWIDTH/divider), CELLWIDTH*(0.10 + eyeSize*0.008));
+                ctx.fillCircle(eyesX-(Math.sin(headDir)*(CELLWIDTH/3.6))+(Math.cos(aTan)*CELLWIDTH/divider), eyesY-(Math.cos(headDir)*(CELLWIDTH/3.6))+(Math.sin(aTan)*CELLWIDTH/divider), CELLWIDTH*(0.10 - 0.002*eyeSize));
+            } if (tick % 400 === nextBlick+8) {
+                nextBlick = randomNumber(80, 150);
+            }
+
+            ctx.fillStyle = "#3456de";
+
+            // Nose
+            let noseX;
+            let noseY;
+
+            for (let i = 10; i > 4; i--) {
+                noseX = (headX*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.cos(headDir)*(offset - i - mouthSize);
+                noseY = (headY*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2 + Math.sin(headDir)*(offset - i - mouthSize);
+
+                ctx.fillCircle((noseX + Math.cos(headDir)*CELLWIDTH/15)+(Math.sin(headDir)*(CELLWIDTH/3.6)), (noseY + Math.sin(headDir)*CELLWIDTH/15)+(Math.cos(headDir)*(CELLWIDTH/3.6)), CELLWIDTH*0.04);
+                ctx.fillCircle((noseX + Math.cos(headDir)*CELLWIDTH/15)-(Math.sin(headDir)*(CELLWIDTH/3.6)), (noseY + Math.sin(headDir)*CELLWIDTH/15)-(Math.cos(headDir)*(CELLWIDTH/3.6)), CELLWIDTH*0.04);
+            }
+
+        };
+
+        function drawApple() {
+            let x = (appleX*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2;
+            let y = (appleY*CELLWIDTH + PADDING + CELLWIDTH/2) - CELLWIDTH*2;
+
+            let w = CELLWIDTH + (((tick+(TICKSPEED*2))/4 % TICKSPEED)*1.2 > CELLWIDTH/6 ? CELLWIDTH/6 : ((tick+(TICKSPEED*2))/4 % TICKSPEED)*1.2);
+
+            ctx.strokeStyle = "#976e4c";
+            ctx.lineWidth = w/6;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x, y-w*0.5);
+            ctx.stroke();
+
+            ctx.fillStyle = "#e83e13";
+            ctx.fillCircle(x, y+w*0.08, w*0.4);
+
+            ctx.fillCircle(x-w/5, y-w*0.1, w*0.22);
+            ctx.fillCircle(x+w/5, y-w*0.1, w*0.22);
+
+            ctx.fillStyle = "#ee755c"
+            ctx.fillCircle(x-w*0.2+w*0.08, y-w*0.2+w*0.16, w/7);
+
+            ctx.fillStyle = "#2ab305";
+            ctx.beginPath();
+            ctx.moveTo(x, y-w*0.5);
+            ctx.lineTo(x+w*0.15, y-w*0.57);
+            ctx.lineTo(x+w*0.3, y-w*0.5);
+            ctx.lineTo(x+w*0.15, y-w*0.43);
+            ctx.fill();
+        };
+
+        // Show the score
+        function displayScore() {
+            ctx.fillStyle = "white";
+            ctx.font = CELLWIDTH + "px Arial";
+            ctx.textAlign = "left";
+            ctx.fillText("Score: " + score, 5, CELLWIDTH + 5);
+        };
+
+        // Render starting frame
+        ctx.fillStyle = "#034201";
+        ctx.fillRect(0, 0, cvs.width, cvs.width);
+        drawTiles();
+        render();
+        displayScore();
+        ctx.fillStyle = "white";
+        ctx.font = CELLWIDTH*1.4 + "px Arial";
+        ctx.textAlign = "left";
+        ctx.fillText("Right Arrow to Start", (MAPWIDTH/3)*CELLWIDTH, (MAPWIDTH/3)*CELLWIDTH);
+
+        // Places random apple
+        function placeApple() {
+            for (let i = 0; i < 60; i++) {
+                let x = randomNumber(0, MAPWIDTH - 1);
+                let y = randomNumber(0, MAPWIDTH - 1);
+                if (map[x][y] === 0) {
+                    setMapTile(x, y, 2);
+                    appleX = x;
+                    appleY = y;
+                    return;
+                }
+            }
+        };
+
+        // Logic loop
+        function logic() {
+            headDir = nextDir;
+            if (prevDir === headDir + toRadians(180) % toRadians(360)) {
+                headDir = prevDir;
+            }
+            renderBuffer.push({
+                x: headX,
+                y: headY,
+                dir: headDir
+            });
+            if (map[headX + Math.cos(headDir)][headY + Math.sin(headDir)] === 1 || map[headX + Math.cos(headDir)][headY + Math.sin(headDir)] === 3) {
+                gameOver = true;
+                playSound("bump.wav", 1, 5, false);
+                headX += Math.cos(headDir);
+                headY += Math.sin(headDir);
+                return;
+            }
+            setMapTile(headX, headY, 3);
+            headX += Math.cos(headDir);
+            headY += Math.sin(headDir);
+            if (map[headX][headY] === 2) {
+                score++;
+                eating = true;
+                prevAppleX = appleX - Math.cos(nextDir)//*CELLWIDTH/2;
+                prevAppleY = appleY - Math.sin(nextDir)//*CELLWIDTH/2;
+                prevAppleSize = CELLWIDTH*0.8;
+                playSound("eat.wav", 1, 5, false);
+                placeApple();
+            }
+            turningBuffer.push({
+                x: headX,
+                y: headY,
+                dir: headDir
+            });
+            setMapTile(headX, headY, 4);
+            tailX = turningBuffer[0].x;
+            tailY = turningBuffer[0].y;
+            tailDir = turningBuffer[0].dir;
+            if (!eating) {
+                setMapTile(tailX, tailY, 0);
+                tailX += Math.cos(tailDir);
+                tailY += Math.sin(tailDir);
+                turningBuffer.splice(0, 1);
+                renderBuffer.splice(0, 1);
+            }
+        };
+
+        // Forever loop
+        function forever() {
+            fpsSet();	
+            if (!gameOver) {
+                // Tick
+                tick += 1//Math.round(DELTA);
+
+                // Logic runs slower
+                if (tick % TICKSPEED === 0) {
+                    logic();
+                }
+
+                prevDir = headDir;
+                eating = false;
+            }
+
+            //Render game
+            drawTiles();
+            render();
+
+            if (gameOver) {
+                ctx.fillStyle = "white";
+                ctx.textAlign = "center";
+                ctx.font = CELLWIDTH*1.39 + "px Arial";
+                ctx.fillText("Game Over", WIDTH/2, WIDTH/2);
+                ctx.font = CELLWIDTH*0.7 + "px Arial";
+                ctx.fillText("Right Arrow to restart", WIDTH/2, WIDTH/2+WIDTH/4);
+                started = false;
+            }
+            
+            displayScore();
+
+            window.requestAnimationFrame(forever);
+        };
+
+        // Started
+        let started = false;
+
+        // Key inputs
+        window.addEventListener("keydown", function(e) {
+            if (!started && e.code === "ArrowRight" && !gameOver) {
+                started = true;
+                playSound("right.wav", 1, 1, false);
+                forever();
+            }
+            if (e.code === "ArrowRight") {
+                if (fromRadians(headDir) !== 180 && fromRadians(headDir) !== 0) {
+                    nextDir = 0;
+                    playSound("right.wav", 1, 1, false);
+                }
+            }
+            if (e.code === "ArrowLeft") {
+                if (fromRadians(headDir) !== 0 && fromRadians(headDir) !== 180) {
+                    nextDir = toRadians(180);
+                    playSound("left.wav", 1, 2, false);
+                }
+            }
+            if (e.code === "ArrowUp") {
+                if (fromRadians(headDir) !== 90 && fromRadians(headDir) !== 270 && started) {
+                    nextDir = toRadians(270);
+                    playSound("up.wav", 1, 3, false);
+                }
+            }
+            if (e.code === "ArrowDown") {
+                if (fromRadians(headDir) !== 270 && fromRadians(headDir) !== 90 && started) {
+                    nextDir = toRadians(90);
+                    playSound("down.wav", 1, 4, false);
+                }
+            }
+            if (e.code === "ArrowRight" && gameOver) {
+                started = true;
+                playSound("right.wav", 1, 1, false);
+                gameOver = false;
+
+                // Map
+                map = [];
+                for (let x = 0; x < MAPWIDTH+2; x++) {
+                    map.push([]);
+                    for (let y = 0; y < MAPWIDTH+1; y++) {
+                        map[x].push(0);
+                    }
+                }
+
+                // Places walls
+                for (let i = 0; i < MAPWIDTH + 2; i++) {
+                    setMapTile(2, i, 1);
+                }
+                for (let i = 0; i < MAPWIDTH + 1; i++) {
+                    setMapTile(1, i, 1);
+                }
+                for (let i = 0; i < MAPWIDTH; i++) {
+                    setMapTile(0, i, 1);
+                }
+                for (let i = 0; i < MAPWIDTH + 2; i++) {
+                    setMapTile(i, 2, 1);
+                }
+                for (let i = 0; i < MAPWIDTH + 1; i++) {
+                    setMapTile(i, 1, 1);
+                }
+                for (let i = 0; i < MAPWIDTH; i++) {
+                    setMapTile(i, 0, 1);
+                }
+                for (let i = 0; i < MAPWIDTH + 2; i++) {
+                    setMapTile(MAPWIDTH + 1, i, 1);
+                }
+                for (let i = 0; i < MAPWIDTH + 2; i++) {
+                    setMapTile(i, MAPWIDTH + 1, 1);
+                }
+
+                // Places first apple and starting snake
+                setMapTile(15, 10, 2);
+                setMapTile(9, 10, 4);
+                setMapTile(8, 10, 3);
+                setMapTile(7, 10, 3);
+                setMapTile(6, 10, 3);
+
+                // Apple Info
+                appleX = 15;
+                appleY = 10;
+                prevAppleX = 0;
+                prevAppleY = 0;
+                prevAppleSize = 0;
+
+                // Animation Info
+                eyeSize = 0;
+                bounce = 0;
+                bounceSpeed = 10;
+                nextBlick = randomNumber(90, 170);
+                mouthSize = 0;
+                toungeLength = 1;
+                toungeInterval = 80;
+                toungeDir = 0;
+
+                // Player
+                prevDir = 0;
+                headDir = 0;
+                nextDir = 0;
+                tailDir = 0;
+                score = 0;
+                eating = false;
+                headX = 9;
+                headY = 10;
+                tailX = 6;
+                tailY = 10;
+                gameOver = false;
+                turningBuffer = [];
+                renderBuffer = [];
+
+                turningBuffer.push({
+                    x: 6,
+                    y: 10,
+                    dir: headDir
+                });
+                turningBuffer.push({
+                    x: 7,
+                    y: 10,
+                    dir: headDir
+                });
+                turningBuffer.push({
+                    x: 8,
+                    y: 10,
+                    dir: headDir
+                });
+                turningBuffer.push({
+                    x: 9,
+                    y: 10,
+                    dir: headDir
+                });
+
+                renderBuffer.push({
+                    x: 5,
+                    y: 10,
+                    dir: headDir
+                });
+                renderBuffer.push({
+                    x: 6,
+                    y: 10,
+                    dir: headDir
+                });
+                renderBuffer.push({
+                    x: 7,
+                    y: 10,
+                    dir: headDir
+                });
+                renderBuffer.push({
+                    x: 8,
+                    y: 10,
+                    dir: headDir
+                });
+                
+            }
+        });
+
+        // Stops unwanted scrolling
+        window.addEventListener("keydown", function(e) {
+            if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+                e.preventDefault();
+            }
+        }, false);
+    </script>
+</body>
+</html>
