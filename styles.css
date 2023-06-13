@@ -1,0 +1,98 @@
+body {
+    font-family: cursive;
+    background: white;
+    color: black;
+    font-size: 30px;
+}
+a {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    color: black;
+    text-decoration: none;
+}
+p, ul {
+    font-family:'Courier New', Courier, monospace;
+}
+h1 {
+    font-size: 80px;
+}
+h2 {
+    font-size: 60px;
+
+}
+p, h1, h2, img {
+    padding-left: 25px;
+    padding-right: 25px;
+}
+div.container {
+    align-items:stretch;
+    display: flex;
+    flex-direction: column;
+    flex-wrap:nowrap;
+}
+img.logo, div.direct img {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+h1.page-title {
+    position: absolute;
+    top: -50px;
+}
+a.top-button {
+    position: absolute;
+    font-size: 80px;
+    padding-left: 25px;
+}
+div.select-bar {
+    width: 100%;
+    height: 100%;
+    background-color: grey;
+    outline-width: 8px;
+    outline-color: grey;
+    outline-style: double;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+div.top-bar {
+    width: 100%;
+    height: 100px;
+    background-color: white;
+    outline: none;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+}
+div.direct {
+    padding-left: 25px; 
+    padding-right: 25px; 
+    padding-top: 50px; 
+    padding-bottom: 25px; 
+    float: left; 
+    display: block; 
+    word-wrap: break-word; 
+    width: 400px;
+}
+div.direct img {
+    width: 400px;
+}
+.content {
+    position: absolute;
+    top: 120px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    height: calc(100% - 120px);
+    width: 100%;
+    overflow-y: scroll; 
+    overflow-x: hidden; 
+}
+#game {
+    width: 40%;
+    height: 40%;
+    position: relative;
+    padding-left: 25px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-right: 25px;
+}
