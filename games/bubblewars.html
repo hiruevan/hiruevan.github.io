@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Hiruevan Studio | Bubble Wars</title>
+	<link rel="shortcut icon" type="image/x-icon" href="https://uploads.scratch.mit.edu/get_image/user/23198813_60x60.png">
+	<link rel="stylesheet" type="text/css" href="../styles.css">
+</head>
+<body>
+	<div class="top-bar">
+		<h1 class="page-title">Games</h1>
+        <div class="select-bar" style="left: 300px;">
+            <a href="https://hiruevan.github.io">
+                <img src="https://uploads.scratch.mit.edu/get_image/user/23198813_60x60.png" class="logo" alt="H Studio" height="100px">
+            </a>
+			<a href="../allgames" class="top-button">All Games</a>
+        </div>
+    </div>
+	<div class="content">
+        <div class="container">
+            <h2>Bubble Wars</h2>
+            <img src="../images/Screenshot 2023-06-13 134627.png" alt="Bubble Wars Screenshot" width="50%">
+        </div>
+        <div class="container">
+            <p>This is the very first game I ever made. It works on the very simple concept of moving a "bubble" around with your mouse, avoiding bad "bubbles" and collecting good "bubbles." I hope you enjoy!<br>(Try to beat my highscore of 35440!)<br>
+            <br>Credits:<br>
+            Everything in this game was done by me except for the Cymbal, Pop and lose sounds. (The music was written by me 2021) The sounds that I did not provide I found in the <a href="https://scratch.mit.edu">Scratch</a> sounds library.</p>
+        </div>
+        <div class="container">
+            <canvas id="game" width="800" height="800"></canvas>
+        </div>
+    </div>
+    <script>
+        // Set audio ID 1
+        var audio1 = document.createElement("audio");
+        audio1.id = "audio1";
+        document.body.appendChild(audio1);
+        
+        // Set audio ID 2
+        var audio2 = document.createElement("audio");
+        audio2.id = "audio2";
+        document.body.appendChild(audio2);
+        
+        // Set audio ID 3
+        var audio3 = document.createElement("audio");
+        audio3.id = "audio3";
+        document.body.appendChild(audio3);
+        
+        // Set audio ID 4
+        var audio4 = document.createElement("audio");
+        audio4.id = "audio4";
+        document.body.appendChild(audio4);
+
+        var playSound = function(url, volume, id) {
+            var audioEl = document.getElementById("audio" + id);
+            audioEl.src = url;
+            audioEl.volume = volume;
+            audioEl.play();
+        };
+
+        // Setup canvas
+        let cvs = document.getElementById("game");
+        let ctx = cvs.getContext("2d");
+
+        // This function draws a circle
+        var circle = function(x, y, r) {
+            var beforeStroke = ctx.strokeStyle;
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.strokeStyle = ctx.fillStyle;
+            ctx.fill();
+            ctx.strokeStyle = beforeStroke;
+        };
+
+        // background
+        var grd = ctx.createLinearGradient(0, cvs.width/2, cvs.height, cvs.width);
+        grd.addColorStop(0, "#00d0ff");
+        grd.addColorStop(1, "#007bff");
+
+        // green grd
+        var ggrd = ctx.createLinearGradient(0, cvs.width/2, cvs.height, cvs.width);
+        ggrd.addColorStop(0, "#03fc07");
+        ggrd.addColorStop(1, "green");
+
+        // red grd
+        var rgrd = ctx.createLinearGradient(0, cvs.width/2, cvs.height, cvs.width);
+        rgrd.addColorStop(0, "#fc03a9");
+        rgrd.addColorStop(1, "red");
+
+        // yellow grd
+        var ygrd = ctx.createLinearGradient(0, cvs.width/2, cvs.height, cvs.width);
+        ygrd.addColorStop(0, "#f7f5b2");
+        ygrd.addColorStop(1, "yellow");
+
+        // Game
+        let highScore = 0;
+
+        let gameScreen = "instructions";
+        let mouse = {
+            x: 0,
+            y: 0
+        };
+        let life = 10;
+        let score = 0;
+
+        let freindX = 700;
+		let freindY = 450;
+        let freindDir = Math.random()*Math.PI*2;
+        let freinds = [];
+
+        let enemyX = 500;
+		let enemyY = 450;
+        let enemyDir = Math.random()*Math.PI*2;
+        let enemies = [];
+
+        let yellowX = 600;
+		let yellowY = 600;
+        let yellowDir = Math.random()*Math.PI*2;
+        let yellows = [];
+
+        let purpleX = 600;
+		let purpleY = 450;
+        let purpleDir = Math.random()*Math.PI*2;
+
+        //sounds
+        let popSound = false;
+        let cymbalSound = false;
+        let lose = false;
+
+        function forever() {
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, cvs.width, cvs.height);
+            if (gameScreen === "instructions") {
+                ctx.fillStyle = "black"
+                ctx.font = "100px Arial";
+				ctx.textAlign = "center";
+				ctx.fillText("Bubble Wars!", cvs.width/2, 120);
+				ctx.font = "30px Arial";
+				ctx.fillText("You are the blue bubble,", cvs.width/2, 220);
+				ctx.fillText("You can control yourself with the mouse", cvs.width/2, 260);
+				ctx.fillText("Try to survive as long as you can", cvs.width/2, 300);
+				ctx.fillText("You lose when your life reaches 0, it stars at 10", cvs.width/2, 340);
+				ctx.fillText("The pink and yellow bubbles will attack you, (-3)", cvs.width/2, 380);
+				ctx.fillText("The green bubbles will heal you, (+1)", cvs.width/2, 420);
+				ctx.fillText("And the purple bubble is a safe zone", cvs.width/2, 460);
+				ctx.fillText("Click anywhere to start!", cvs.width/2, 700);
+            } else if (gameScreen === "game") {
+                // freinds
+                for (var i = 0; i < freinds.length; i++) {
+					if (freinds[i].dead === false) {
+                        ctx.strokeStyle = ggrd;
+                        ctx.fillStyle = ggrd;
+						circle(freinds[i].x, freinds[i].y, 50, 50);
+						if (freinds[i].x < mouse.x) {
+							freinds[i].x += freinds[i].speed;
+						} else if (freinds[i].x > mouse.x) {
+							freinds[i].x -= freinds[i].speed;
+						} 
+						if (freinds[i].y < mouse.y) {
+							freinds[i].y += freinds[i].speed;
+						} else if (freinds[i].y > mouse.y) {
+							freinds[i].y -= freinds[i].speed;
+						}
+						freinds[i].time++;
+						if (freinds[i].time > 1000) {
+							freinds[i].dead = true;
+						}
+						if (freinds[i].x < (mouse.x + 100) && freinds[i].x > (mouse.x - 100) && freinds[i].y < (mouse.y + 100) &&freinds[i].y > (mouse.y - 100)) {
+							score += 100;
+							life++;
+							freinds[i].dead = true;
+                            popSound = true;
+						}
+						if (freinds[i].x < (purpleX + 130) && freinds[i].x > (purpleX - 130) && freinds[i].y < (purpleY + 130)&& freinds[i].y > (purpleY - 130)) {
+							freinds[i].dead = true;
+                            popSound = true;
+						}
+					}
+				}
+
+                // enemies
+                for (var i = 0; i < enemies.length; i++) {
+					if (enemies[i].dead === false) {
+						ctx.strokeStyle = rgrd;
+                        ctx.fillStyle = rgrd;
+						circle(enemies[i].x, enemies[i].y, 50, 50);
+						if (enemies[i].x < mouse.x) {
+							enemies[i].x += enemies[i].speed;
+						} else if (enemies[i].x > mouse.x) {
+							enemies[i].x -= enemies[i].speed;
+						} 
+						if (enemies[i].y < mouse.y) {
+							enemies[i].y += enemies[i].speed;
+						} else if (enemies[i].y > mouse.y) {
+							enemies[i].y -= enemies[i].speed;
+						}
+						enemies[i].time++;
+						if (enemies[i].time > (score/10 + 1)) {
+							enemies[i].dead = true;
+						}
+						if (enemies[i].x < (mouse.x + 100) && enemies[i].x > (mouse.x - 100) && enemies[i].y < (mouse.y + 100) &&enemies[i].y > (mouse.y - 100)) {
+							score -= 25;
+							life -= 3;
+							enemies[i].dead = true;
+                            cymbalSound = true;
+						}
+						if (enemies[i].x < (purpleX + 130) && enemies[i].x > (purpleX - 130) && enemies[i].y < (purpleY + 130) &&enemies[i].y > (purpleY - 130)) {
+							enemies[i].dead = true;
+                            popSound = true;
+						}
+					}
+				}
+
+                // yellows
+                if (score > 3000 || life > 25) {
+                    for (var i = 0; i < yellows.length; i++) {
+                        if (yellows[i].dead === false) {
+							ctx.fillStyle = ygrd;
+                            ctx.strokeStyle = ygrd;
+							circle(yellows[i].x, yellows[i].y, 60, 60);
+							if (yellows[i].x < mouse.x) {
+								yellows[i].x += yellows[i].speed;
+							} else if (yellows[i].x > mouse.x) {
+								yellows[i].x -= yellows[i].speed;
+							} 
+							if (yellows[i].y < mouse.y) {
+								yellows[i].y += yellows[i].speed * Math.random();
+							} else if (yellows[i].y > mouse.y) {
+								yellows[i].y -= yellows[i].speed * Math.random();
+							}
+							yellows[i].time++;
+							if (yellows[i].time > score/8) {
+								yellows[i].dead = true;
+							}
+							if (yellows[i].x < (mouse.x + 100) && yellows[i].x > (mouse.x - 100) && yellows[i].y < (mouse.y + 100) &&yellows[i].y > (mouse.y - 100)) {
+								score -= 25;
+								life -= 3;
+								yellows[i].dead = true;
+                                cymbalSound = true;
+							}
+							if (yellows[i].x < (purpleX + 130) && yellows[i].x > (purpleX - 130) && yellows[i].y < (purpleY + 130) &&yellows[i].y > (purpleY - 130)) {
+								yellows[i].dead = true;
+                                popSound = true;
+							}
+						}
+                    }
+                }
+
+                // freind
+                ctx.strokeStyle = "green";
+                ctx.fillStyle = "green";
+				circle(freindX, freindY, 50);
+
+				freindX += Math.cos(freindDir)*10;
+                freindY += Math.sin(freindDir)*10;
+
+                if (freindX > cvs.width - 50 || freindX < 50) {
+					freindDir = Math.PI - freindDir;
+                    freindX += Math.cos(freindDir)*20;
+				} else if (freindY > cvs.height - 50 || freindY < 50) {
+                    freindDir = Math.PI*2 - freindDir;
+                    freindY += Math.sin(freindDir)*20;
+				}
+
+                // enemy
+                ctx.strokeStyle = "red";
+                ctx.fillStyle = "red";
+				circle(enemyX, enemyY, 50);
+
+				enemyX += Math.cos(enemyDir)*10;
+                enemyY += Math.sin(enemyDir)*10;
+
+                if (enemyX > cvs.width - 50 || enemyX < 50) {
+					enemyDir = Math.PI - enemyDir;
+                    enemyX += Math.cos(enemyDir)*20;
+				} else if (enemyY > cvs.height - 50 || enemyY < 50) {
+                    enemyDir = Math.PI*2 - enemyDir;
+                    enemyY += Math.sin(enemyDir)*20;
+				}
+
+                // Yellow
+                if (score > 3000 || life > 25) {
+                    ctx.strokeStyle = "yellow";
+                    ctx.fillStyle = "yellow";
+                    circle(yellowX, yellowY, 60);
+
+                    yellowX += Math.cos(yellowDir)*14;
+                    yellowY += Math.sin(yellowDir)*14;
+
+                    if (yellowX > cvs.width - 60 || yellowX < 60) {
+                        yellowDir = Math.PI - yellowDir;
+                        yellowX += Math.cos(yellowDir)*28;
+                    } else if (yellowY > cvs.height - 60 || yellowY < 60) {
+                        yellowDir = Math.PI*2 - yellowDir;
+                        yellowY += Math.sin(yellowDir)*28;
+                    }
+                }
+
+                // Purple
+                ctx.strokeStyle = "purple";
+                ctx.fillStyle = "purple";
+                circle(purpleX, purpleY, 65);
+
+                purpleX += Math.cos(purpleDir)*5;
+                purpleY += Math.sin(purpleDir)*5;
+
+                if (purpleX > cvs.width - 65 || purpleX < 65) {
+                    purpleDir = Math.PI - purpleDir;
+                    purpleX += Math.cos(purpleDir)*10;
+                } else if (purpleY > cvs.height - 65 || purpleY < 65) {
+                    purpleDir = Math.PI*2 - purpleDir;
+                    purpleY += Math.sin(purpleDir)*10;
+                }
+
+                // Player
+                ctx.fillStyle = "blue";
+                ctx.strokeStyle = "blue";
+				circle(mouse.x, mouse.y, 50);
+				
+				ctx.font = "50px Arial";
+				ctx.textAlign = "left";
+				ctx.fillStyle = "black"
+				ctx.fillText("Life: " + life, 5, 50);
+				ctx.fillText("Score: " + score, 5, 100);
+
+				if (life < 1) {
+					gameScreen = "gameOver";
+                    lose = true;
+				}
+            } else if (gameScreen === "gameOver") {
+                ctx.fillStyle = "black"
+                ctx.font = "120px Arial";
+				ctx.textAlign = "center";
+				ctx.fillText("Game Over!", cvs.width/2, 300);
+				ctx.font = "50px Arial";
+				ctx.fillText("Score: " + score, cvs.width/2, 450);
+				if (score > highScore) {
+					highScore = score;
+				}
+				ctx.fillText("Highscore: " + highScore, cvs.width/2, 550);					
+				ctx.fillText("(Click anywhere to play again)", cvs.width/2, 700);
+            }
+
+            window.requestAnimationFrame(forever);
+        };
+
+        forever();
+
+        function mouseMoved(e) {
+            mouse.x = (e.clientX - 25)*800/window.innerWidth*2;
+            mouse.y = (e.clientY - (cvs.getBoundingClientRect().top - window.pageYOffset + 20))*800/window.innerWidth*2;
+        };
+
+        function touchMoved(e) {
+            mouse.x = (e.touches[0].pageX - 25)*800/window.innerWidth*2;
+            mouse.y = (e.touches[0].pageY - (cvs.getBoundingClientRect().top - window.pageYOffset + 20))*800/window.innerWidth*2;
+        };
+
+        function mouseClicked() {
+            if (gameScreen === "instructions") {
+                playSound("./bubblewarsassets/Music.wav", 0.75, 1);
+                window.setInterval(backgroundMusic, 136000);
+                window.setInterval(sounds, 1000/20);
+                gameScreen = "game";
+            } else if (gameScreen === "gameOver") {
+                // Reset
+                gameScreen = "game";
+                life = 10;
+                score = 0;
+                freindX = 700;
+                freindY = 450;
+                freindDir = Math.random()*Math.PI*2;
+                freinds = [];
+                enemyX = 500;
+                enemyY = 450;
+                enemyDir = Math.random()*Math.PI*2;
+                enemies = [];
+                yellowX = 600;
+                yellowY = 600;
+                yellowDir = Math.random()*Math.PI*2;
+                yellows = [];
+                purpleX = 600;
+                purpleY = 450;
+                purpleDir = Math.random()*Math.PI*2;
+            }
+        };
+
+        var scorePlus = function() {
+            if (gameScreen === "game") {
+                score++;
+            }
+        };
+
+        var changeDirectionGreen = function() {
+            freindDir = Math.random()*Math.PI*2;
+            freinds.push({
+                x: freindX,
+                y: freindY,
+                time: 0,
+                dead: false,
+                speed: Math.random() + 2
+            });
+        };
+
+        var changeDirectionRed = function() {
+            enemyDir = Math.random()*Math.PI*2;
+            enemies.push({
+                x: enemyX,
+                y: enemyY,
+                time: -80,
+                dead: false,
+                speed: Math.random() + 1
+            });
+        };
+
+        var changeDirectionYellow = function() {
+            if (score > 3000 || life > 25) {
+                yellowDir = Math.random()*Math.PI*2;
+                yellows.push({
+                    x: yellowX,
+                    y: yellowY,
+                    time: -50,
+                    dead: false,
+                    speed: Math.random() + 2
+                });
+            }
+        };
+
+        var backgroundMusic = function() {
+            playSound("./bubblewarsassets/Music.wav", 0.75, 1);
+        };
+
+        var sounds = function() {
+            if (popSound) {
+                playSound("./bubblewarsassets/bubble.wav", 1, 2);
+                popSound = false;
+            }
+            if (cymbalSound) {
+                playSound("./bubblewarsassets/cymbal.wav", 1, 3);
+                cymbalSound = false;
+            }
+            if (lose) {
+                playSound("./bubblewarsassets/Lose.mp3", 1, 4);
+                lose = false;
+            }
+        };
+
+        cvs.addEventListener("mousemove", mouseMoved);
+        cvs.addEventListener("touchmove", touchMoved);
+        cvs.addEventListener("click", mouseClicked);
+        window.setInterval(scorePlus, 50);
+        window.setInterval(changeDirectionRed, 1500)
+        window.setInterval(changeDirectionGreen, 2000)
+        window.setInterval(changeDirectionYellow, 1500);
+    </script>
+</body>
+</html>
