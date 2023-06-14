@@ -716,7 +716,7 @@
                 }
             }
             if (e.code === "ArrowLeft") {
-                if (fromRadians(headDir) !== 0 && fromRadians(headDir) !== 180) {
+                if (fromRadians(headDir) !== 0 && fromRadians(headDir) !== 180 && started) {
                     nextDir = toRadians(180);
                     playSound("left.wav", 1, 2, false);
                 }
