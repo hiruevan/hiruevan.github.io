@@ -348,13 +348,13 @@
         forever();
 
         function mouseMoved(e) {
-            mouse.x = (e.clientX - 25)*800/window.innerWidth*2;
-            mouse.y = (e.clientY - (cvs.getBoundingClientRect().top - window.pageYOffset + 20))*800/window.innerWidth*2;
+            mouse.x = (e.clientX - 25)*800/cvs.getBoundingClientRect().width;
+            mouse.y = (e.clientY - (cvs.getBoundingClientRect().top - window.pageYOffset))*800/cvs.getBoundingClientRect().width;
         };
 
         function touchMoved(e) {
-            mouse.x = (e.touches[0].pageX - 25)*800/window.innerWidth*2;
-            mouse.y = (e.touches[0].pageY - (cvs.getBoundingClientRect().top - window.pageYOffset + 20))*800/window.innerWidth*2;
+            mouse.x = (e.touches[0].pageX - 25)*800/cvs.getBoundingClientRect().width;
+            mouse.y = (e.touches[0].pageY - (cvs.getBoundingClientRect().top - window.pageYOffset))*800/cvs.getBoundingClientRect().width;
         };
 
         function mouseClicked() {
