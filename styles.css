@@ -88,8 +88,8 @@ div.direct img {
     overflow-x: hidden; 
 }
 #game {
-    width: 50%;
-    height: 50%;
+    height: calc(90vh - 120px);
+    width: calc(90vh - 120px);
     position: relative;
     padding-left: 25px;
     padding-top: 25px;
