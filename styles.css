@@ -33,14 +33,17 @@ img.logo, div.direct img {
     padding-left: 0px;
     padding-right: 0px;
 }
+img.home {
+    padding-right: 60px;
+}
 h1.page-title {
     position: absolute;
     top: -50px;
 }
 a.top-button {
-    position: absolute;
-    font-size: 80px;
-    padding-left: 25px;
+    position: relative;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 div.select-bar {
     width: 100%;
