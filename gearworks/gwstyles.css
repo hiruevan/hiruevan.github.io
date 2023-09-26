@@ -1,0 +1,130 @@
+body {
+    font-family: 'Luckiest Guy', cursive;
+}
+div.top-bar {
+    background-color: #787878;
+    position: fixed;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100px;
+    top: 0px;
+    left: 0px;
+    word-wrap: unset;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+div.top-bar img {
+    height: 100px;
+}
+div.top-bar span {
+    position: relative;
+    bottom: 39px;
+    height: inherit;
+    padding: none;
+}
+button {
+    font-family: 'Luckiest Guy', cursive;
+    height: 100px;
+    position: relative;
+    background-color: #787878;
+    border: none;
+    font-size: xx-large;
+    border-bottom: #979797;
+}
+button:active, button:hover {
+    background-color: #acacac;
+    cursor: pointer;
+}
+body {
+    background-color: #9d9d9d;
+}
+.content {
+    position: absolute;
+    top: 100px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    height: calc(100% - 100px);
+    width: 100%;
+    overflow-y: hidden; 
+    overflow-x: hidden; 
+    word-wrap: break-word;
+}
+.scroll {
+    overflow-y: scroll;
+}
+div.container {
+    margin-left: 2%;
+    margin-right: 2%;
+    align-items:stretch;
+    display: flex;
+    flex-direction: column;
+    flex-wrap:nowrap;
+}
+div.footer {
+    background-color: ghostwhite;
+    font-family: monospace;
+    font-size: 30px;
+    text-align: center;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    height: 40px;
+    position: relative;
+}
+div.side-bar {
+    bottom: 0px;
+    top: 0px;
+    background-color: beige;
+    position: inherit;
+    height: 100%;
+    width: 15%;
+}
+div.side-bar.side-bar-in {
+    left: calc(0px - 15%);
+    animation: hide-side-bar 0.25s ease 0s 1;
+}
+div.side-bar.side-bar-out {
+    left: 0px;
+    animation: show-side-bar 0.25s ease 0s 1;
+}
+div.side-bar p {
+    font-family: monospace;
+    font-size: 25px;
+}
+a.side-bar-control {
+    position: fixed;
+    font-size: 20px;
+    padding: 5px;
+    background-color: beige;
+}   
+a.side-bar-control:hover {
+    background-color: bisque;
+    cursor: pointer;
+}
+@keyframes hide-side-bar {
+    0% {
+        left: 0px;
+    }
+    100% {
+        left: calc(0px - 15%);
+    }
+}
+@keyframes show-side-bar {
+    0% {
+        left: calc(0px - 15%);
+    }
+    100% {
+        left: 0px;
+    }
+}
+h1 {
+    font-size: 70px;
+}
+h2 {
+    font-size: 40px;
+}
+p {
+    font-size: 30px;
+}
