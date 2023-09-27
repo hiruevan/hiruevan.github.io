@@ -3,14 +3,14 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Gear Works | Home</title>
+	<title>Gear Works | Editor</title>
 	<link rel="shortcut icon" type="image/x-icon" href="../images/Gw-Favicon.svg">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="./gwstyles.css">
 </head>
-<body>
+<body spellcheck="false">
 	<div class="top-bar">
 		<a href="https://hiruevan.github.io/gearworks"><img src="./Logo1.svg"></a>
 		<span><button onclick="">File ▼</button></span>
@@ -19,15 +19,38 @@
     </div>
 	<div class="content">
         
-		<div class="side-bar side-bar-out"><div class="container">
-            
-            <br>
-            <p>The (shortened) docs and console will go here!!!</p>
-        </div></div>
+        <!--Side Bar-->
+		<div class="side-bar side-bar-out">
+            <div class="container page">
+                <br>
+                <p>The (shortened) docs and console will go here!!!</p>
+            </div>
+        </div>
         <a class="side-bar-control" onclick="toggleSideBar();">◀</a>
-        <div></div>
+
+        <!--Code Space-->
+        <div class="code-space code-small">
+            <div class="editcontainer code-text norm">
+                <div class="nums">
+                    <div id="nums">
+                        <span>1</span>
+                    </div>
+                </div>
+                <div class="editwrapper">
+                    <div id="edit" contenteditable="true">
+                    // Welecome to the Gear Works Editor!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Canvas-->
     </div>
 
+    <!--JQuery-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!--Gear Works JS and Libraries-->
     <script src="./editor.js"></script>
 </body>
 </html>
