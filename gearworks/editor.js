@@ -17,6 +17,25 @@ function toggleSideBar() {
     }
 }
 
+function convertHtmlToStr(html) {
+    let ret = "";
+    for (let i = 0; i < html.length; i++) {
+        if (html[i] === "<") {
+            if (html[i+1] === "b" && html[i+2] === "r") {
+                ret += "\n";
+            }
+            while (!(html[i] === ">")) {
+                i++;
+            }
+        }
+         else {
+            ret += html[i];
+        }
+    }
+    return ret;
+}
+
+
 // Text Editor Zoom code
 // Coming soon (CSS is done)
 
