@@ -7,28 +7,29 @@ div.top-bar {
     z-index: 0;
     display: block;
     width: 100%;
-    height: 100px;
+    height: 5%;
     top: 0px;
     left: 0px;
     word-wrap: unset;
     overflow: hidden;
 }
 div.top-bar img {
-    height: 100px;
+    height: 100%;
 }
 div.top-bar span {
+    
     position: relative;
-    bottom: 38px;
+    bottom: 38%;
     height: inherit;
     padding: none;
 }
 button {
+    font-size: 20px;
     font-family: 'Luckiest Guy', cursive;
-    height: 100px;
+    height: 138%;
     position: relative;
     background-color: #787878;
     border: none;
-    font-size: xx-large;
     border-bottom: #979797;
 }
 button:active, button:hover {
@@ -40,11 +41,11 @@ body {
 }
 .content {
     position: absolute;
-    top: 100px;
+    top: 5%;
     bottom: 0px;
     left: 0px;
     right: 0px;
-    height: calc(100% - 100px);
+    height: calc(100% - 5%);
     width: 100%;
     overflow: hidden; 
     word-wrap: break-word;
