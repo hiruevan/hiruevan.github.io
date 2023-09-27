@@ -1,6 +1,12 @@
 body {
     font-family: 'Luckiest Guy', cursive;
 }
+h1 {
+    font-size: 70px;
+}
+h2 {
+    font-size: 40px;
+}
 div.top-bar {
     background-color: #787878;
     position: fixed;
@@ -17,7 +23,6 @@ div.top-bar img {
     height: 100%;
 }
 div.top-bar span {
-    
     position: relative;
     bottom: 38%;
     height: inherit;
@@ -59,7 +64,7 @@ div.container {
     align-items:stretch;
     display: flex;
     flex-direction: column;
-    flex-wrap:nowrap;
+    flex-wrap: nowrap;
 }
 div.page {
     margin-right: 0%;
@@ -87,6 +92,54 @@ div.footer {
     bottom: 0px;
     height: 180px;
     position: relative;
+}
+div.right-bar {
+    bottom: 15px;
+    top: 15px;
+    right: 35px;
+    position: inherit;
+    width: calc(25% - 35px);
+    font-family: monospace;
+    font-size: 15px;
+}
+div.canvas-div {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 105%;
+}
+div.controls-div {
+    position: inherit;
+    height: 0;
+    width: 100%;
+    padding-bottom: 5%;
+    top: 0px;
+}
+div.canvas-div canvas {
+    position: inherit;
+    height: 0;
+    width: 100%;
+    padding-bottom: 100%;
+    top: 5%;
+    background-color: white;
+}
+div.info-div {
+    position: inherit;
+    height: 55px;
+    width: 100%;
+    top: -15px;
+    margin-top: calc(105% + 15px);
+}
+div.cabneit {
+    position: absolute;
+    background-color: beige;
+    height: auto;
+    top: 0px;
+    margin-top: calc(105% + 70px);
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    font-size: 25px;
 }
 div.side-bar {
     bottom: 0px;
@@ -182,15 +235,6 @@ div.code-space.code-large {
     100% {
         left: calc(15% + 35px);
     }
-}
-h1 {
-    font-size: 70px;
-}
-h2 {
-    font-size: 40px;
-}
-p {
-    font-size: 30px;
 }
 
 
