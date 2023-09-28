@@ -117,9 +117,8 @@ div.controls-div {
 }
 div.canvas-div canvas {
     position: inherit;
-    height: 0;
+    height: auto;
     width: 100%;
-    padding-bottom: 100%;
     top: 5%;
     background-color: white;
 }
@@ -166,6 +165,7 @@ a.side-bar-control {
     font-size: 20px;
     padding: 5px;
     background-color: beige;
+    border-bottom-right-radius: 1rem;
 }   
 a.side-bar-control:hover {
     background-color: bisque;
@@ -180,6 +180,7 @@ div.code-space {
     font-family: monospace;
     overflow-x: hidden;
     word-wrap: unset;
+    border-radius: 1rem;
 }
 div.code-space.code-small {
     left: calc(15% + 35px);
@@ -255,9 +256,38 @@ div.code-space.code-large {
     text-align: center;
 } 
 #edit {
-    display: inline-block;    
+    display: inline-block;
     white-space: nowrap;
     border: none;
     outline: none;
+    color: #684630;
+}
+#edit:hover, #edit:active {
+    cursor: text;
+}
+#edit::selection, #display::selection {
+    background-color: yellow;
+}
+#display {
+    position: absolute;
+    left: 50px;
+    display: inline-block;
+    white-space: nowrap;
+    pointer-events: none;
+}
+#display:hover {
+    cursor:not-allowed;
 }
 
+/*Color Coding*/
+
+span.fun {
+    color: purple;
+}
+span.operator {
+    color: blue;
+}
+
+span.comment, span.fun.comment, span.operator.comment {
+    color: green;
+}
