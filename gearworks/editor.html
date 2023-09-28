@@ -37,7 +37,9 @@
                     </div>
                 </div>
                 <div class="editwrapper">
-                    <div id="edit" contenteditable="true"></div>
+                    <div id="display"><span class="comment"></span></div>
+                    <div id="edit" contenteditable="true" aria-placeholder="Welcome to the Gear Works Editor!"></div>
+                    
                 </div>
             </div>
         </div>
@@ -46,14 +48,14 @@
         <div class="right-bar">
             <div class="canvas-div">
                 <div class="controls-div">Controls</div>
-                <canvas width="800" height="800"></canvas>
+                <canvas width="800" height="800" id="cvs"></canvas>
             </div>
             <div class="info-div">
                 <p>Mouse-x:<br>Mouse-y:</p>
             </div>
             <div class="cabneit page">
                 <div class="container">
-                    <p>The Cabneit!</p>
+                    <p>The Cabinet!</p>
                 </div>
             </div>
         </div>
@@ -63,6 +65,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <!--Gear Works JS and Libraries-->
+    <script>
+        const ctx = document.getElementById("cvs").getContext("2d");
+    </script>
     <script src="./editor.js"></script>
+    <script src="./gwLib.js"></script>
 </body>
 </html>
