@@ -66,6 +66,16 @@ div.container {
     flex-direction: column;
     flex-wrap: nowrap;
 }
+div.code-controls {
+    font-size: 25px;
+    text-align: right;
+    margin-right: 40px;
+    margin-bottom: 40px;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    z-index: 15;
+}
 div.page {
     margin-right: 0%;
     overflow-x: hidden;
@@ -80,7 +90,8 @@ div.page {
 }
 .editwrapper{
     width: 90%;
-    left: 10%;
+    left: 0px;
+    position: relative;
 }
 div.footer {
     background-color: ghostwhite;
@@ -166,8 +177,22 @@ a.side-bar-control {
     padding: 5px;
     background-color: beige;
     border-bottom-right-radius: 1rem;
-}   
-a.side-bar-control:hover {
+}  
+a.zoom {
+    background-color: beige;
+    border-radius: 1rem;
+    padding: 5px;
+    margin: 5px;
+    z-index: 15;
+}
+a.zoom.disabled {
+    background-color: rgb(111, 111, 91);
+}
+a.zoom.disabled:hover {
+    background-color: rgb(111, 111, 91);
+    cursor: default;
+}
+a.side-bar-control:hover, a.zoom:hover {
     background-color: bisque;
     cursor: pointer;
 }
@@ -180,7 +205,7 @@ div.code-space {
     font-family: monospace;
     overflow-x: hidden;
     word-wrap: unset;
-    border-radius: 1rem;
+    overflow: hidden;
 }
 div.code-space.code-small {
     left: calc(15% + 35px);
@@ -260,34 +285,51 @@ div.code-space.code-large {
     white-space: nowrap;
     border: none;
     outline: none;
-    color: #684630;
+    color: transparent;
+    caret-color: black;
+    position: absolute;
+    z-index: inherit;
+}
+#zoom-placeholder {
+    display: inline-block;
+    white-space: nowrap;
+    border: none;
+    outline: none;
+    color: transparent;
+    position: absolute;
+    background-color: transparent;
+    z-index: inherit;
+    pointer-events: none;
 }
 #edit:hover, #edit:active {
     cursor: text;
 }
-#edit::selection, #display::selection {
-    background-color: yellow;
+::selection {
+    background-color: #ffd139;
 }
 #display {
     position: absolute;
-    left: 50px;
     display: inline-block;
     white-space: nowrap;
     pointer-events: none;
-}
-#display:hover {
-    cursor:not-allowed;
+    overflow: hidden;
+    z-index: 10;
 }
 
 /*Color Coding*/
 
-span.fun {
+keyword {
     color: purple;
 }
-span.operator {
+operator {
     color: blue;
 }
-
-span.comment, span.fun.comment, span.operator.comment {
+colon {
+    color: rgb(79, 62, 0);
+}
+str, str keyword, str operator, str colon {
     color: green;
+}
+comment, comment keyword, comment operator, comment colon, comment str {
+    color: #8a6046;
 }
