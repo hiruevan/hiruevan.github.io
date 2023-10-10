@@ -26,7 +26,7 @@
                 <p>The (shortened) docs and console will go here!!!</p>
             </div>
         </div>
-        <a class="side-bar-control" onclick="toggleSideBar();">◀</a>
+        <a class="side-bar-control" onclick="gw_toggleSideBar();">◀</a>
 
         <!--Code Space-->
         <div class="code-space code-small">
@@ -45,8 +45,8 @@
                 
             </div>
             <div class="code-controls">
-                <a class="zoom" onclick="zoomIn(); textAreaAdjust($('#edit'));"><img src="./Zoom in.svg" width="40"></a>
-                <a class="zoom" onclick="zoomOut(); textAreaAdjust($('#edit'));"><img src="./Zoom out.svg" width="40"></a>
+                <a class="zoom" onclick="gw_zoomIn(); gw_textAreaAdjust($('#edit'));"><img src="./Zoom in.svg" width="40"></a>
+                <a class="zoom" onclick="gw_zoomOut(); gw_textAreaAdjust($('#edit'));"><img src="./Zoom out.svg" width="40"></a>
             </div>
         </div>
 
@@ -54,7 +54,7 @@
         <div class="right-bar">
             <div class="canvas-div">
                 <div class="controls-div">
-                    <a class="play-controls right" onclick="fullscreen();">Fullscreen</a>
+                    <a class="play-controls right" onclick="gw_fullscreen();">Fullscreen</a>
                     <a class="play-controls">Run</a>
                     <a class="play-controls right-left">Stop</a></div>
                 <canvas width="800" height="800" id="cvs"></canvas>
