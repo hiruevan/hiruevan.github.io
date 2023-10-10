@@ -67,8 +67,7 @@ div.container {
     flex-wrap: nowrap;
 }
 div.code-controls {
-    font-size: 25px;
-    text-align: right;
+    font-size: 40px;
     margin-right: 40px;
     margin-bottom: 40px;
     position: absolute;
@@ -87,6 +86,7 @@ div.page {
     width: 100%;
     height: 100%;
     overflow: scroll;
+    background-color: rgb(168, 160, 156);
 }
 .editwrapper{
     width: 90%;
@@ -142,7 +142,7 @@ div.info-div {
 }
 div.cabneit {
     position: absolute;
-    background-color: beige;
+    background-color: orange;
     height: auto;
     top: 0px;
     margin-top: calc(105% + 70px);
@@ -181,24 +181,36 @@ a.side-bar-control {
 a.zoom {
     background-color: beige;
     border-radius: 1rem;
-    padding: 5px;
+    padding: 10px;
+    padding-bottom: 5px;
     margin: 5px;
     z-index: 15;
 }
-a.zoom.disabled {
+a.play-controls {
+    background-color: rgb(255, 255, 192);
+    border-radius: 1rem;
+    position: absolute;
+    font-size: 15px;
+}
+a.right-left {
+    left: 30px;
+}
+a.right {
+    right: 0px;
+}
+a.zoom.disabled, a.play-controls.disabled {
     background-color: rgb(111, 111, 91);
 }
-a.zoom.disabled:hover {
+a.zoom.disabled:hover, a.play-controls.disabled {
     background-color: rgb(111, 111, 91);
     cursor: default;
 }
-a.side-bar-control:hover, a.zoom:hover {
+a.side-bar-control:hover, a.zoom:hover, a.play-controls:hover {
     background-color: bisque;
     cursor: pointer;
 }
 div.code-space {
     position: inherit;
-    background-color: #d28d62;
     right: calc(25% + 35px);
     top: 15px;
     bottom: 15px;
@@ -282,13 +294,19 @@ div.code-space.code-large {
 } 
 #edit {
     display: inline-block;
-    white-space: nowrap;
-    border: none;
     outline: none;
+    background: transparent;
+    resize: none;
+    overflow: hidden;
+    border: none;
+    white-space: none;
+    font-size: inherit;
     color: transparent;
     caret-color: black;
     position: absolute;
     z-index: inherit;
+    min-width: 100%;
+    min-height: 70%;
 }
 #zoom-placeholder {
     display: inline-block;
@@ -304,9 +322,6 @@ div.code-space.code-large {
 #edit:hover, #edit:active {
     cursor: text;
 }
-::selection {
-    background-color: #ffd139;
-}
 #display {
     position: absolute;
     display: inline-block;
@@ -314,22 +329,38 @@ div.code-space.code-large {
     pointer-events: none;
     overflow: hidden;
     z-index: 10;
+    font-size: inherit;
+}
+::selection {
+    background-color: #ffd139;
+}
+a::selection, button::selection, img::selection {
+    background-color: transparent;
 }
 
 /*Color Coding*/
 
-keyword {
+keyword, lKeyword {
     color: purple;
 }
-operator {
+operator, loperator {
     color: blue;
 }
-colon {
+punctuation {
     color: rgb(79, 62, 0);
 }
-str, str keyword, str operator, str colon {
+strkeyword {
+    color: orangered;
+}
+str, str keyword, str lKeyword, str operator, str loperator, str punctuation {
     color: green;
 }
-comment, comment keyword, comment operator, comment colon, comment str {
+comment, comment keyword, comment lKeyword, comment operator, comment loperator, comment punctuation, comment str, comment str strkeyword {
     color: #8a6046;
+}
+comment error, hidden {
+    color: transparent;
+}
+error {
+    color: red;
 }
