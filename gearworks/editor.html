@@ -38,19 +38,25 @@
                 </div>
                 <div class="editwrapper">
                     <div id="display"><comment>// Welcome to the Gear Works Editor!</comment></div>
-                    <div id="edit" contenteditable="true"></div>
+                    <textarea id="edit">// Welcome to the Gear Works Editor!</textarea>
                     <div id="zoom-placeholder">Line Measurement Element!!!</div>
                     
                 </div>
                 
             </div>
-            <div class="code-controls"><a class="zoom" onclick="zoomIn();">➕</a><a class="zoom" onclick="zoomOut();">➖</a></div>
+            <div class="code-controls">
+                <a class="zoom" onclick="zoomIn(); textAreaAdjust($('#edit'));"><img src="./Zoom in.svg" width="40"></a>
+                <a class="zoom" onclick="zoomOut(); textAreaAdjust($('#edit'));"><img src="./Zoom out.svg" width="40"></a>
+            </div>
         </div>
 
         <!--Canvas-->
         <div class="right-bar">
             <div class="canvas-div">
-                <div class="controls-div">Controls</div>
+                <div class="controls-div">
+                    <a class="play-controls right" onclick="fullscreen();">Fullscreen</a>
+                    <a class="play-controls">Run</a>
+                    <a class="play-controls right-left">Stop</a></div>
                 <canvas width="800" height="800" id="cvs"></canvas>
             </div>
             <div class="info-div">
@@ -69,7 +75,8 @@
 
     <!--Gear Works JS and Libraries-->
     <script>
-        const ctx = document.getElementById("cvs").getContext("2d");
+        const cvs = document.getElementById("cvs");
+        const ctx = cvs.getContext("2d");
     </script>
     <script src="./editor.js"></script>
     <script src="./gwLib.js"></script>
