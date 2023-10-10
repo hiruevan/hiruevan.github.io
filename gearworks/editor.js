@@ -1,5 +1,5 @@
 // Toggles sidebar (With css animation)
-function toggleSideBar() {
+function gw_toggleSideBar() {
     if (document.getElementsByClassName('side-bar-control')[0].textContent === "◀") {
         document.getElementsByClassName('side-bar')[0].classList.add('side-bar-in');
         document.getElementsByClassName('side-bar')[0].classList.remove('side-bar-out');
@@ -17,7 +17,7 @@ function toggleSideBar() {
     }
 }
 
-function colorWord(text, word, classifier) {
+function gw_colorWord(text, word, classifier) {
     if (text.includes(word)) {
         if (classifier === "keyword") {
             text = text.replaceAll(word + " ", "<keyword>" + word + "</keyword> ");
@@ -55,7 +55,7 @@ function colorWord(text, word, classifier) {
     return text;
 }
 
-function stripHTMLTags(str) {
+function gw_stripHTMLTags(str) {
     str = str.toString();
     str = str.replaceAll("<br><div>", "\n");
     str = str.replaceAll("<div><br>", "\n");
@@ -68,7 +68,7 @@ function stripHTMLTags(str) {
     return str.replaceAll(/<[^>]*>/g, '');
 }
 
-function colorComments(s) {
+function gw_colorComments(s) {
     let str = s;
     let ret = "";
     let openComment = false;
@@ -110,7 +110,7 @@ function colorComments(s) {
     return ret;
 }
 
-function colorStrs(str) {
+function gw_colorStrs(str) {
     let ret = "";
     let openStr = false;
     let firstOpener;
@@ -162,38 +162,38 @@ function colorStrs(str) {
 
 
 // Text Editor Zoom code
-let codeZoom = 2;
-let zoomClasses = ["xsmall", "small", "norm", "large", "xlarge"];
-function zoomIn() {
-    codeZoom++;
+let gw_codeZoom = 2;
+let gw_zoomClasses = ["xsmall", "small", "norm", "large", "xlarge"];
+function gw_zoomIn() {
+    gw_codeZoom++;
     document.getElementsByClassName("zoom")[1].classList.remove("disabled");
-    if (codeZoom === 4) {
+    if (gw_codeZoom === 4) {
         document.getElementsByClassName("zoom")[0].classList.add("disabled");
     } else {
-        if (codeZoom > 4) {
-            codeZoom = 4;
+        if (gw_codeZoom > 4) {
+            gw_codeZoom = 4;
             return;
         }
         document.getElementsByClassName("zoom")[0].classList.remove("disabled");
     }
-    document.getElementsByClassName("code-text")[0].classList.remove(zoomClasses[codeZoom-1]);
-    document.getElementsByClassName("code-text")[0].classList.add(zoomClasses[codeZoom]);
+    document.getElementsByClassName("code-text")[0].classList.remove(gw_zoomClasses[gw_codeZoom-1]);
+    document.getElementsByClassName("code-text")[0].classList.add(zgw_oomClasses[gw_codeZoom]);
 }
 
 function zoomOut() {
-    codeZoom--;
+    gw_codeZoom--;
     document.getElementsByClassName("zoom")[0].classList.remove("disabled");
-    if (codeZoom === 0) {
+    if (gw_codeZoom === 0) {
         document.getElementsByClassName("zoom")[1].classList.add("disabled");
     } else {
-        if (codeZoom < 0) {
+        if (gw_codeZoom < 0) {
             codeZoom = 0;
             return;
         }
         document.getElementsByClassName("zoom")[1].classList.remove("disabled");
     }
-    document.getElementsByClassName("code-text")[0].classList.remove(zoomClasses[codeZoom+1]);
-    document.getElementsByClassName("code-text")[0].classList.add(zoomClasses[codeZoom]);
+    document.getElementsByClassName("code-text")[0].classList.remove(gw_zoomClasses[gw_codeZoom+1]);
+    document.getElementsByClassName("code-text")[0].classList.add(gw_zoomClasses[gw_codeZoom]);
 }
 
 
@@ -222,8 +222,8 @@ $(document).ready(function(){
             e.preventDefault();
             
         }
-        textAreaAdjust(this);
-        setColors();
+        gw_textAreaAdjust(this);
+        gw_setColors();
         if($("#display").height()!=currentHeight){
                 lineHeight = $("#zoom-placeholder").height();
                 currentHeight = $("#display").height();
@@ -240,7 +240,7 @@ $(document).ready(function(){
 
 
 
-function setColors() {
+function gw_setColors() {
     let raw = document.getElementById("edit").value;
 
     // strip html
@@ -308,7 +308,7 @@ function setColors() {
     document.getElementById("display").innerHTML = raw + "<hidden>stretch</hidden>";
 }
 
-function textAreaAdjust() {
+function gw_textAreaAdjust() {
     let el = document.getElementById("edit");
     let dis = document.getElementById("display");
     let bounding = dis.getBoundingClientRect();
@@ -316,20 +316,20 @@ function textAreaAdjust() {
     el.style.width = (25+Math.ceil(bounding.width)) + "px";
 }
 
-function run() {
+function gw_run() {
     let script = document.createElement("script");
     script.classList.add("canvas-script");
     script.innerHTML = document.getElementById("edit").value;
     document.body.appendChild(script);
 }
 
-function fullscreen() {
+function gw_fullscreen() {
     //goInFullscreen(document.getElementsByClassName("code-space")[0]);
 }
 
 
 /* Get into full screen */
-var goInFullscreen = function(element) {
+var gw_goInFullscreen = function(element) {
 	if (element.requestFullscreen) {
 		element.requestFullscreen();
 	} else if(element.mozRequestFullScreen) {
@@ -342,7 +342,7 @@ var goInFullscreen = function(element) {
 };
 
 /* Get out of full screen */
-var goOutFullscreen = function() {
+var gw_goOutFullscreen = function() {
 	if(document.exitFullscreen) {
 		document.exitFullscreen();
 	} else if(document.mozCancelFullScreen) {
@@ -355,7 +355,7 @@ var goOutFullscreen = function() {
 };
 
 /* Is currently in full screen or not */
-var isFullScreen = function() {
+var gw_isFullScreen = function() {
 	var full_screen_element = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement || null;
 	// If no element is in full-screen
 	if(full_screen_element === null) {
