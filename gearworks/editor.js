@@ -297,8 +297,8 @@ function gw_setColors() {
     
     // Key-phrases
     
-    raw = colorStrs(raw);
-    raw = colorComments(raw);
+    raw = gw_colorStrs(raw);
+    raw = gw_colorComments(raw);
 
     // return to html
     raw = raw.replaceAll(" ", "&nbsp;");
