@@ -37,6 +37,17 @@ button {
     border: none;
     border-bottom: #979797;
 }
+button.side-bar {
+    height: 8%;
+    background-color: #97979759;
+    left:-5px;
+}
+button.tab.selected {
+    background-color: #3a6895a9;
+}
+button.tab.selected:active, button.tab.selected:hover {
+    background-color: #3a6895a9;
+}
 button:active, button:hover {
     background-color: #acacac;
     cursor: pointer;
@@ -241,6 +252,9 @@ div.code-space.code-large {
 }
 .code-text.xlarge {
     font-size: 45px;
+}
+.hidden {
+    display: none;
 }
 @keyframes hide-side-bar {
     0% {
