@@ -38,7 +38,7 @@ button {
     border-bottom: #979797;
 }
 button.side-bar {
-    height: 8%;
+    height: 30px;
     background-color: #97979759;
     left:-5px;
 }
@@ -129,20 +129,32 @@ div.canvas-div {
     width: 100%;
     height: 0;
     padding-bottom: 105%;
+    background-color: #9d9d9d;
 }
+
 div.controls-div {
     position: inherit;
-    height: 0;
+    height: 20px;
     width: 100%;
-    padding-bottom: 5%;
+    padding: 0;
+    margin: 0;
     top: 0px;
+    background-color: #bababa;
 }
 div.canvas-div canvas {
     position: inherit;
     height: auto;
     width: 100%;
-    top: 5%;
+    top: 0px;
     background-color: white;
+    
+}
+div.canvas-div.fullscreen canvas {
+    --height-of-canvas: calc(100vh - 20px);
+    height: var(--height-of-canvas);
+    width: auto;
+    left: calc((100vw - var(--height-of-canvas))/2);
+    top: 20px;
 }
 div.info-div {
     position: inherit;
@@ -352,10 +364,26 @@ a::selection, button::selection, img::selection {
     background-color: transparent;
 }
 
+/*Color Coding of the console*/
+div.log {
+    border-bottom: 1px solid black;
+    font-family: monospace;
+    font-size: 15px;
+}
+div.log.error {
+    color: red;
+}
+div.log.warn {
+    color: orange;
+}
+
 /*Color Coding*/
 
 keyword, lKeyword {
     color: purple;
+}
+gwkey {
+    color: rgb(158, 63, 0);
 }
 operator, loperator {
     color: blue;
@@ -366,10 +394,10 @@ punctuation {
 strkeyword {
     color: orangered;
 }
-str, str keyword, str lKeyword, str operator, str loperator, str punctuation {
+str, str keyword, str lKeyword, str operator, str loperator, str punctuation, str gwkey {
     color: green;
 }
-comment, comment keyword, comment lKeyword, comment operator, comment loperator, comment punctuation, comment str, comment str strkeyword {
+comment, comment keyword, comment lKeyword, comment operator, comment loperator, comment punctuation, comment str, comment str strkeyword, comment gwkey {
     color: #8a6046;
 }
 comment error, hidden {
