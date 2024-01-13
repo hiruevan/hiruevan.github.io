@@ -23,7 +23,18 @@
 		<div class="side-bar side-bar-out">
             <div class="container page">
                 <br>
-                <p>The (shortened) docs and console will go here!!!</p>
+                <button class="side-bar tab selected" onclick="gw_switchToDocs();">Docs</button>
+                <button class="side-bar tab" onclick="gw_switchToConsole();">Console</button>
+                
+                <!--Docs-->
+                <div class="docs">
+                    <p>The (shortened) docs and console will go here!!!</p>
+                </div>
+
+                <!--Console-->
+                <div class="console hidden">
+                    <p>Console logs appear here.</p>
+                </div>
             </div>
         </div>
         <a class="side-bar-control" onclick="gw_toggleSideBar();">◀</a>
@@ -39,14 +50,14 @@
                 <div class="editwrapper">
                     <div id="display"><comment>// Welcome to the Gear Works Editor!</comment></div>
                     <textarea id="edit">// Welcome to the Gear Works Editor!</textarea>
-                    <div id="zoom-placeholder">Line Measurement Element!!!</div>
+                    <div id="zoom-placeholder">(Line Measurement Element)</div>
                     
                 </div>
                 
             </div>
             <div class="code-controls">
-                <a class="zoom" onclick="gw_zoomIn(); gw_textAreaAdjust($('#edit'));"><img src="./Zoom in.svg" width="40"></a>
-                <a class="zoom" onclick="gw_zoomOut(); gw_textAreaAdjust($('#edit'));"><img src="./Zoom out.svg" width="40"></a>
+                <a class="zoom" onclick="gw_zoomIn(); gw_textAreaAdjust();"><img src="./Zoom in.svg" width="40"></a>
+                <a class="zoom" onclick="gw_zoomOut(); gw_textAreaAdjust();"><img src="./Zoom out.svg" width="40"></a>
             </div>
         </div>
 
@@ -55,7 +66,7 @@
             <div class="canvas-div">
                 <div class="controls-div">
                     <a class="play-controls right" onclick="gw_fullscreen();">Fullscreen</a>
-                    <a class="play-controls">Run</a>
+                    <a class="play-controls" onclick="gw_run();">Run</a>
                     <a class="play-controls right-left">Stop</a></div>
                 <canvas width="800" height="800" id="cvs"></canvas>
             </div>
