@@ -44,9 +44,15 @@ function gw_colorWord(text, word, classifier) {
             text = text.replaceAll(word + "{", "<keyword>" + word + "</keyword>{");
             text = text.replaceAll(word + "(", "<keyword>" + word + "</keyword>(");
             text = text.replaceAll(word + "[", "<keyword>" + word + "</keyword>[");
+        } else if (classifier === "gwkey") {
+            text = text.replaceAll(word + " ", "<gwkey>" + word + "</gwkey> ");
+            text = text.replaceAll(word + ";", "<gwkey>" + word + "</gwkey>;");
+            text = text.replaceAll(word + ".", "<gwkey>" + word + "</gwkey>.");
         } else if (classifier === "loperator") {
             text = text.replaceAll(word + " ", "<loperator>" + word + "</loperator> ");
             text = text.replaceAll(word + ";", "<loperator>" + word + "</loperator>;");
+            text = text.replaceAll(word + ")", "<loperator>" + word + "</loperator>)");
+            text = text.replaceAll(word + ",", "<loperator>" + word + "</loperator>,");
             text = text.replaceAll(word + "*", "<loperator>" + word + "</loperator>*");
             text = text.replaceAll(word + "=", "<loperator>" + word + "</loperator>=");
             text = text.replaceAll(word + "+", "<loperator>" + word + "</loperator>+");
@@ -260,57 +266,58 @@ $(document).ready(function(){
 function gw_setColors() {
     let raw = document.getElementById("edit").value;
 
-    // strip html
-    //raw = stripHTMLTags(raw);
-
     // Key-words
-    // raw = colorWord(raw, "function ", "lKeyword");
-    // raw = colorWord(raw, "let ", "lKeyword");
-    // raw = colorWord(raw, "var ", "lKeyword");
-    // raw = colorWord(raw, "const ", "lKeyword");
-    // raw = colorWord(raw, "in ", "lKeyword");
-    // raw = colorWord(raw, "delete ", "lKeyword");
-    // raw = colorWord(raw, "float ", "lKeyword");
-    // raw = colorWord(raw, "new ", "lKeyword");
-    // raw = colorWord(raw, "static ", "lKeyword");
+    raw = gw_colorWord(raw, "function ", "lKeyword");
+    raw = gw_colorWord(raw, "let ", "lKeyword");
+    raw = gw_colorWord(raw, "var ", "lKeyword");
+    raw = gw_colorWord(raw, "const ", "lKeyword");
+    raw = gw_colorWord(raw, "in ", "lKeyword");
+    raw = gw_colorWord(raw, "delete ", "lKeyword");
+    raw = gw_colorWord(raw, "float ", "lKeyword");
+    raw = gw_colorWord(raw, "new ", "lKeyword");
+    raw = gw_colorWord(raw, "static ", "lKeyword");
     
-    // // These keywords cannot have anything but a ;, ., or \n after them
-    // raw = colorWord(raw, "break", "keyword");
-    // raw = colorWord(raw, "return", "keyword");
-    // raw = colorWord(raw, "undefined", "keyword");
-    // raw = colorWord(raw, "null", "keyword");
-    // raw = colorWord(raw, "true", "keyword");
-    // raw = colorWord(raw, "false", "keyword");
-    // raw = colorWord(raw, "try", "keyword");
-    // raw = colorWord(raw, "catch", "keyword");
-    // raw = colorWord(raw, "if", "keyword");
-    // raw = colorWord(raw, "else", "keyword");
-    // raw = colorWord(raw, "while", "keyword");
-    // raw = colorWord(raw, "for", "keyword");
-    // raw = colorWord(raw, "this", "keyword");
+    // These keywords cannot have anything but a ;, ., or \n after them
+    raw = gw_colorWord(raw, "break", "keyword");
+    raw = gw_colorWord(raw, "return", "keyword");
+    raw = gw_colorWord(raw, "undefined", "keyword");
+    raw = gw_colorWord(raw, "null", "keyword");
+    raw = gw_colorWord(raw, "true", "keyword");
+    raw = gw_colorWord(raw, "false", "keyword");
+    raw = gw_colorWord(raw, "try", "keyword");
+    raw = gw_colorWord(raw, "catch", "keyword");
+    raw = gw_colorWord(raw, "if", "keyword");
+    raw = gw_colorWord(raw, "else", "keyword");
+    raw = gw_colorWord(raw, "while", "keyword");
+    raw = gw_colorWord(raw, "for", "keyword");
+    raw = gw_colorWord(raw, "this", "keyword");
 
-    // // Operators
-    // // raw = colorWord(raw, "0", "loperator");
-    // // raw = colorWord(raw, "1", "loperator");
-    // // raw = colorWord(raw, "2", "loperator");
-    // // raw = colorWord(raw, "3", "loperator");
-    // // raw = colorWord(raw, "4", "loperator");
-    // // raw = colorWord(raw, "5", "loperator");
-    // // raw = colorWord(raw, "6", "loperator");
-    // // raw = colorWord(raw, "7", "loperator");
-    // // raw = colorWord(raw, "8", "loperator");
-    // // raw = colorWord(raw, "9", "loperator");
+    // Gear works keywords
+    raw = gw_colorWord(raw, "draw", "gwkey");
+    raw = gw_colorWord(raw, "gearWorks", "gwkey");
 
-    // raw = colorWord(raw, "=", "operator");
-    // raw = colorWord(raw, "+", "operator");
-    // raw = colorWord(raw, "-", "operator");
-    // raw = colorWord(raw, "%", "operator");
+    // Operators
+    raw = gw_colorWord(raw, "0", "loperator");
+    raw = gw_colorWord(raw, "1", "loperator");
+    raw = gw_colorWord(raw, "2", "loperator");
+    raw = gw_colorWord(raw, "3", "loperator");
+    raw = gw_colorWord(raw, "4", "loperator");
+    raw = gw_colorWord(raw, "5", "loperator");
+    raw = gw_colorWord(raw, "6", "loperator");
+    raw = gw_colorWord(raw, "7", "loperator");
+    raw = gw_colorWord(raw, "8", "loperator");
+    raw = gw_colorWord(raw, "9", "loperator");
 
-    // // Puncuation (Muted Color)
-    // raw = colorWord(raw, ";", "punctuation");
-    // raw = colorWord(raw, ":", "punctuation");
-    // raw = colorWord(raw, ".", "punctuation");
-    // raw = colorWord(raw, ",", "punctuation");
+    raw = gw_colorWord(raw, "=", "operator");
+    raw = gw_colorWord(raw, "+", "operator");
+    raw = gw_colorWord(raw, "-", "operator");
+    raw = gw_colorWord(raw, "%", "operator");
+
+    // Puncuation (Muted Color)
+    raw = gw_colorWord(raw, ";", "punctuation");
+    raw = gw_colorWord(raw, ":", "punctuation");
+    raw = gw_colorWord(raw, ".", "punctuation");
+    raw = gw_colorWord(raw, ",", "punctuation");
     
     // Key-phrases
     
@@ -333,17 +340,57 @@ function gw_textAreaAdjust() {
     el.style.width = (25+Math.ceil(bounding.width)) + "px";
 }
 
+function gw_error(log) {
+    let id = Math.random()*97249857;
+    document.getElementsByClassName("console-logs")[0].innerHTML += "<div id='" + id + "' class='error log'>" + log + "</div>";
+    gw_switchToConsole();
+    gw_escapeFullscreen();
+    if (document.getElementsByClassName('side-bar-control')[0].textContent === "▶") {
+        gw_toggleSideBar();
+    }
+    let aTag = document.createElement("a");
+    aTag.href = "#" + id;
+    document.body.appendChild(aTag);
+    aTag.click();
+}
+
+function gw_log(log) {
+    document.getElementsByClassName("console-logs")[0].innerHTML += "<div class='log'>" + log + "</div>";
+}
+
+function gw_warn(log) {
+    document.getElementsByClassName("console-logs")[0].innerHTML += "<div class='warn log'>" + log + "</div>";
+}
+
+function gw_clearConsole() {
+    document.getElementsByClassName("console-logs")[0].innerHTML = "";
+}
+
+function primeScriptForErrors(code) {
+    let raw = "try {" + code + "\n} catch (e) {gw_error(e)}";
+    return raw;
+}
+
 function gw_run() {
     let script = document.createElement("script");
     script.classList.add("canvas-script");
-    script.innerHTML = document.getElementById("edit").value;
+    let raw = document.getElementById("edit").value;
+    raw = primeScriptForErrors(raw);
+    script.innerHTML = raw;
     document.body.appendChild(script);
 }
 
 function gw_fullscreen() {
-    //goInFullscreen(document.getElementsByClassName("code-space")[0]);
+    gw_goInFullscreen(document.getElementsByClassName("canvas-div")[0]);
+    document.getElementsByClassName("right")[0].textContent = "Escape";
+    document.getElementsByClassName("right")[0].setAttribute("onclick", "gw_escapeFullscreen();");
 }
 
+function gw_escapeFullscreen() {
+    gw_goOutFullscreen(document.getElementsByClassName("canvas-div")[0]);
+    document.getElementsByClassName("right")[0].textContent = "Fullscreen";
+    document.getElementsByClassName("right")[0].setAttribute("onclick", "gw_fullscreen();");
+}
 
 /* Get into full screen */
 var gw_goInFullscreen = function(element) {
@@ -356,10 +403,11 @@ var gw_goInFullscreen = function(element) {
 	} else if(element.msRequestFullscreen) {
 		element.msRequestFullscreen();
 	}
+    element.classList.add("fullscreen");
 };
 
 /* Get out of full screen */
-var gw_goOutFullscreen = function() {
+var gw_goOutFullscreen = function(element) {
 	if(document.exitFullscreen) {
 		document.exitFullscreen();
 	} else if(document.mozCancelFullScreen) {
@@ -369,6 +417,7 @@ var gw_goOutFullscreen = function() {
 	} else if(document.msExitFullscreen) {
 		document.msExitFullscreen();
 	}
+    element.classList.remove("fullscreen");
 };
 
 /* Is currently in full screen or not */
@@ -381,3 +430,26 @@ var gw_isFullScreen = function() {
 		return true;
 	}
 };
+
+// Check to escape fullscreen
+if (document.addEventListener) {
+    document.addEventListener('fullscreenchange', gw_exitHandler, false);
+    document.addEventListener('mozfullscreenchange', gw_exitHandler, false);
+    document.addEventListener('MSFullscreenChange', gw_exitHandler, false);
+    document.addEventListener('webkitfullscreenchange', gw_exitHandler, false);
+}
+
+function gw_exitHandler() {
+    if (!document.webkitIsFullScreen && !document.mozFullScreen && !document.msFullscreenElement) {
+        // When the user exits fullscreen
+        gw_escapeFullscreen();
+    }
+}
+
+
+
+
+
+// Place starting console
+gw_log("The logs your programs make will apear here, in the console. This also includes errors that Gear Works catches, to make bug fixing easier for you!");
+gw_warn("Keep in mind that not all errors will register and be loged in this console, the program may not work in the first place.")
