@@ -1,15 +1,30 @@
+// Get canvas
 const gw_canvas = document.getElementById('cvs');
-const draw = gw_canvas.getContext("2d");
-const gw =
-{
- log: function(str) {
-   console.log(str);
-   //for the gearworks log
-  } 
+
+// Get context
+let gw_ctx = gw_canvas.getContext("2d");
+gw_ctx.background = function(color) {
+    let prevCol = this.fillStyle;
+    this.fillStyle = color;
+    this.fillRect(0, 0, 800, 800);
+    this.fillStyle = prevCol;
 }
 
-const draw =
-{
-  thisIsAFunction: function() {
-  }
-}
+// draw obj
+const draw = gw_ctx;
+
+// gearWorks obj
+const gearWorks = {
+    log: function(log) {
+        console.log(log);
+        gw_log(log);
+    },
+    warn: function(log) {
+        console.warn(warn);
+        gw_warn(log);
+    },
+    error: function(log) {
+        console.error(error);
+        gw_error(log);
+    }
+};
