@@ -17,6 +17,23 @@ function gw_toggleSideBar() {
     }
 }
 
+// Sidebar tabs
+function gw_switchToConsole() {
+    document.getElementsByClassName("tab")[1].classList.add("selected");
+    document.getElementsByClassName("tab")[0].classList.remove("selected");
+    document.getElementsByClassName("docs")[0].classList.add("hidden");
+    document.getElementsByClassName("console")[0].classList.remove("hidden");
+}
+
+function gw_switchToDocs() {
+    document.getElementsByClassName("tab")[0].classList.add("selected");
+    document.getElementsByClassName("tab")[1].classList.remove("selected");
+    document.getElementsByClassName("console")[0].classList.add("hidden");
+    document.getElementsByClassName("docs")[0].classList.remove("hidden");
+}
+
+
+// Colors code
 function gw_colorWord(text, word, classifier) {
     if (text.includes(word)) {
         if (classifier === "keyword") {
@@ -177,10 +194,10 @@ function gw_zoomIn() {
         document.getElementsByClassName("zoom")[0].classList.remove("disabled");
     }
     document.getElementsByClassName("code-text")[0].classList.remove(gw_zoomClasses[gw_codeZoom-1]);
-    document.getElementsByClassName("code-text")[0].classList.add(zgw_oomClasses[gw_codeZoom]);
+    document.getElementsByClassName("code-text")[0].classList.add(gw_zoomClasses[gw_codeZoom]);
 }
 
-function zoomOut() {
+function gw_zoomOut() {
     gw_codeZoom--;
     document.getElementsByClassName("zoom")[0].classList.remove("disabled");
     if (gw_codeZoom === 0) {
@@ -222,7 +239,7 @@ $(document).ready(function(){
             e.preventDefault();
             
         }
-        gw_textAreaAdjust(this);
+        gw_textAreaAdjust();
         gw_setColors();
         if($("#display").height()!=currentHeight){
                 lineHeight = $("#zoom-placeholder").height();
