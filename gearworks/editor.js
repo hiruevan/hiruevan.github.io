@@ -342,7 +342,8 @@ function gw_textAreaAdjust() {
 
 function gw_error(log) {
     let id = Math.random()*97249857;
-    document.getElementsByClassName("console-logs")[0].innerHTML += "<div id='" + id + "' class='error log'>" + log + "</div>";
+    toLog = log.replaceAll("\n", "<br>");
+    document.getElementsByClassName("console-logs")[0].innerHTML += "<div id='" + id + "' class='error log'>" + toLog + "</div>";
     gw_switchToConsole();
     gw_escapeFullscreen();
     if (document.getElementsByClassName('side-bar-control')[0].textContent === "▶") {
@@ -355,11 +356,13 @@ function gw_error(log) {
 }
 
 function gw_log(log) {
-    document.getElementsByClassName("console-logs")[0].innerHTML += "<div class='log'>" + log + "</div>";
+    toLog = log.replaceAll("\n", "<br>");
+    document.getElementsByClassName("console-logs")[0].innerHTML += "<div class='log'>" + toLog + "</div>";
 }
 
 function gw_warn(log) {
-    document.getElementsByClassName("console-logs")[0].innerHTML += "<div class='warn log'>" + log + "</div>";
+    toLog = log.replaceAll("\n", "<br>");
+    document.getElementsByClassName("console-logs")[0].innerHTML += "<div class='warn log'>" + toLog + "</div>";
 }
 
 function gw_clearConsole() {
@@ -451,5 +454,5 @@ function gw_exitHandler() {
 
 
 // Place starting console
-gearWorks.log("The logs your programs make will apear here, in the console. This also includes errors that Gear Works catches, to make bug fixing easier for you!");
-gearWorks.warn("Keep in mind that not all errors will register and be loged in this console, the program may not work in the first place.")
+gw_log("The logs your programs make will apear here, in the console. This also includes errors that Gear Works catches, to make bug fixing easier for you!");
+gw_warn("Keep in mind that not all errors will register and be loged in this console, the program may not work in the first place.")
