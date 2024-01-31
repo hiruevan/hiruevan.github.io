@@ -17,7 +17,7 @@ const varType = [
 
     for(let i in varNames)
     {
-        document.getElementsByClassNames('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(i + ",", '<span class="var">' + i +'</span> '+ ',');
+        document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(i + ",", '<span class="var">' + i +'</span> '+ ',');
         document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(i + ")", '<span class="var">' + i +'</span>' + ')');
     }
     for(let i in varType)
