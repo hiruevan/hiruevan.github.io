@@ -16,15 +16,15 @@ const varType = [
 const bdy = document.body;
 
 
-for(v in varNames)
+for(i in varNames)
 {
-    bdy.innerHtml.replaceAll(v + ",", '<span class="var">'+v+'</span>'+',');
-    bdy.innerHtml.replaceAll(v + ")", '<span class="var">'+v+'</span>'+')');
+    bdy.innerHtml.replaceAll(i + ",", '<span class="var">' + i +'</span> '+ ',');
+    bdy.innerHtml.replaceAll(i + ")", '<span class="var">' + i +'</span>' + ')');
 }
-for(t in vartype)
+for(i in vartype)
 {
-    bdy.innerHtml.replaceAll(v, '<span class="vartype">'+t+'</span>');
-    bdy.innerHtml.replaceAll(v, '<span class="vartype">'+t+'</span>');
+    bdy.innerHtml.replaceAll(i, '<span class="vartype">' + i + '</span>');
+    bdy.innerHtml.replaceAll(i, '<span class="vartype">' + i + '</span>');
 }
 
 
