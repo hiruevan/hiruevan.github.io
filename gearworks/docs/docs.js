@@ -17,13 +17,13 @@ const varType = [
 
     for(let i in varNames)
     {
-        document.body.innerHTML = document.body.innerHTML.replaceAll(i + ",", '<span class="var">' + i +'</span> '+ ',');
-        document.body.innerHTML = document.body.innerHTML.replaceAll(i + ")", '<span class="var">' + i +'</span>' + ')');
+        document.getElementsByClassNames('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(i + ",", '<span class="var">' + i +'</span> '+ ',');
+        document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(i + ")", '<span class="var">' + i +'</span>' + ')');
     }
     for(let i in vartype)
     {
-        document.body.innerHTML = document.body.innerHTML.replaceAll(i, '<span class="vartype">' + i + '</span>');
-        document.body.innerHTML = document.body.innerHTML.replaceAll(i, '<span class="vartype">' + i + '</span>');
+        document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(i, '<span class="vartype">' + i + '</span>');
+        document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(i, '<span class="vartype">' + i + '</span>');
     }
 
 
