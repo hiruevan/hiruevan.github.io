@@ -42,7 +42,7 @@ color:skyblue;
 .vartype{
 color:orange;
 }
-`);
+`));
 
 
 
