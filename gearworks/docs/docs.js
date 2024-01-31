@@ -20,7 +20,7 @@ const varType = [
         document.getElementsByClassNames('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(i + ",", '<span class="var">' + i +'</span> '+ ',');
         document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(i + ")", '<span class="var">' + i +'</span>' + ')');
     }
-    for(let i in vartype)
+    for(let i in varType)
     {
         document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(i, '<span class="vartype">' + i + '</span>');
         document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(i, '<span class="vartype">' + i + '</span>');
