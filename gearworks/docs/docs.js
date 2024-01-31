@@ -13,7 +13,7 @@ const varType = [
 'float',
 'bool',
 ];
-const bdy = document.body
+const bdy = document.body;
 
 function addspans()
 {
