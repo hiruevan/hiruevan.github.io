@@ -1,5 +1,6 @@
 body {
     font-family: 'Luckiest Guy', cursive;
+    z-index:-1;
 }
 h1 {
     font-size: 70px;
@@ -10,7 +11,7 @@ h2 {
 div.top-bar {
     background-color: #787878;
     position: fixed;
-    z-index: 0;
+    z-index: 10000;
     display: block;
     width: 100%;
     height: 6%;
