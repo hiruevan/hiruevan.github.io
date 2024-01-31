@@ -13,14 +13,14 @@ const varType = [
 'float',
 'bool',
 ];
-const bdy = document.body;
+
 
 function addspans()
 {
     for(let i in varNames)
     {
-        bdy.innerHTML = bdy.innerHTML.replaceAll(i + ",", '<span class="var">' + i +'</span> '+ ',');
-        bdy.innerHTML = bdy.innerHTML.replaceAll(i + ")", '<span class="var">' + i +'</span>' + ')');
+        document.body.innerHTML = document.body.innerHTML.replace(i + ",", '<span class="var">' + i +'</span> '+ ',');
+        document.body.innerHTML = document.body.innerHTML. eplace(i + ")", '<span class="var">' + i +'</span>' + ')');
     }
     for(let i in vartype)
     {
