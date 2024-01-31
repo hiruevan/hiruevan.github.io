@@ -30,9 +30,9 @@ function addspans()
 }
 
 
-function createTag(type, innerHtml)
+function createTag(type, inner)
 {
-   return document.createElement(type).appendChild(document.createTextNode(innerHTML));
+   return document.createElement(type).appendChild(document.createTextNode(inner));
 }
 
 
