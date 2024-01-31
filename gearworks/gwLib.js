@@ -16,12 +16,20 @@ const draw = gw_ctx;
 // gearWorks obj
 const gearWorks = {
     log: function(log) {
-        gw_log(log)
+        try{gw_log(log);}
+        catch(err){throw "there is no gearworks console";}
     },
     warn: function(log) {
-        gw_warn(log);
+        try{gw_warn(log);}
+        catch(err){throw "there is no gearworks console";}
     },
     error: function(log) {
-        gw_error(log)
+        try{gw_error(log);}
+        catch(err){throw "there is no console";}
+    },
+    clear: function() {
+        try{gw_clearConsole();}
+        catch(err){throw "there is no console";}
     }
+    
 };
