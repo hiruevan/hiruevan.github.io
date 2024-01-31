@@ -28,13 +28,21 @@ for(t in vartype)
 }
 
 
-document.head.innerHTML = document.head.innerHTML + `
-<style>
+
+function createTag(type, innerHtml)
+{
+   return document.createElement(type).appendChild(document.createTextNode(innerHTML));
+}
+
+
+document.head.appendChild(createTag('style', `
 .var{
 color:skyblue;
-}
-.vartype
 {
+.vartype{
 color:orange;
 }
-</style>`
+`);
+
+
+
