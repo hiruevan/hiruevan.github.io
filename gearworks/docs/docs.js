@@ -13,20 +13,21 @@ const varType = [
 'float',
 'bool',
 ];
-const bdy = document.body;
+const bdy = document.body
 
-
-for(let i in varNames)
+function addspans()
 {
-    bdy.innerHtml.replaceAll(i + ",", '<span class="var">' + i +'</span> '+ ',');
-    bdy.innerHtml.replaceAll(i + ")", '<span class="var">' + i +'</span>' + ')');
+    for(let i in varNames)
+    {
+        bdy.innerHTML = bdy.innerHTML.replaceAll(i + ",", '<span class="var">' + i +'</span> '+ ',');
+        bdy.innerHTML = bdy.innerHTML.replaceAll(i + ")", '<span class="var">' + i +'</span>' + ')');
+    }
+    for(let i in vartype)
+    {
+        bdy.innerHTML = bdy.innerHTML.replaceAll(i, '<span class="vartype">' + i + '</span>');
+        bdy.innerHTML = bdy.innerHTML.replaceAll(i, '<span class="vartype">' + i + '</span>');
+    }
 }
-for(let i in vartype)
-{
-    bdy.innerHtml.replaceAll(i, '<span class="vartype">' + i + '</span>');
-    bdy.innerHtml.replaceAll(i, '<span class="vartype">' + i + '</span>');
-}
-
 
 
 function createTag(type, innerHtml)
@@ -44,5 +45,5 @@ color:orange;
 }
 `));
 
-
+addspans();
 
