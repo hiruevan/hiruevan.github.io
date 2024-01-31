@@ -13,18 +13,18 @@ const varType = [
 'float',
 'bool',
 ];
-const b = document.body;
+const bdy = document.body;
 
 
 for(v in varNames)
 {
-    b.innerHtml.replaceAll(v + ",", '<span class="var">'+v+'</span>'+',');
-    b.innerHtml.replaceAll(v + ")", '<span class="var">'+v+'</span>'+')');
+    bdy.innerHtml.replaceAll(v + ",", '<span class="var">'+v+'</span>'+',');
+    bdy.innerHtml.replaceAll(v + ")", '<span class="var">'+v+'</span>'+')');
 }
 for(t in vartype)
 {
-    b.innerHtml.replaceAll(v, '<span class="vartype">'+t+'</span>');
-    b.innerHtml.replaceAll(v, '<span class="vartype">'+t+'</span>');
+    bdy.innerHtml.replaceAll(v, '<span class="vartype">'+t+'</span>');
+    bdy.innerHtml.replaceAll(v, '<span class="vartype">'+t+'</span>');
 }
 
 
