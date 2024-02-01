@@ -30,4 +30,7 @@ document.head.appendChild(createTag('style', `
 .vartype{
     color: #FF9012;
 }
+.objs {
+    color: #9e3f00;
+}
 `));
