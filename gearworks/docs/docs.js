@@ -19,9 +19,9 @@ function createTag(type, inner) {
 
 document.head.appendChild(createTag('style', `
 .var{
-    color: skyblue;
+    color: #33ECFF;
 }
 .vartype{
-    color: orange;
+    color: #FF9012;
 }
 `));
