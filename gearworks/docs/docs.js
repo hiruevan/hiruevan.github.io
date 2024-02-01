@@ -13,8 +13,8 @@ for (let i in varType) {
 }
 
 for (let i in objs) {
-    document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(varType[i], '<span class="objs">' + varType[i] + '</span>');
-    document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(varType[i], '<span class="objs">' + varType[i] + '</span>');
+    document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(objs[i], '<span class="objs">' + objs[i] + '</span>');
+    document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(objs[i], '<span class="objs">' + objs[i] + '</span>');
 }
 
 function createTag(type, inner) {
