@@ -8,16 +8,6 @@ h1 {
 h2 {
     font-size: 40px;
 }
-div.codeblock {
-    font-family: monospace;
-    font-size: 16px;
-    background-color:#3b3b3b;
-    color: white;
-    border-radius: 2px;
-}
-div.codeblock p {
-    padding-left: 20px;
-}
 div.top-bar {
     background-color: #787878;
     position: fixed;
