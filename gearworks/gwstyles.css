@@ -1,5 +1,5 @@
 body {
-    font-family: monospace, cursive;
+    font-family: 'Jost';
     z-index:-1;
 }
 h1 {
@@ -31,7 +31,8 @@ div.top-bar span {
 }
 button {
     font-size: 20px;
-    font-family: 'Luckiest Guy', cursive;
+    font-family: 'Jost';
+    font-weight: bolder;
     height: 138%;
     position: relative;
     background-color: #787878;
