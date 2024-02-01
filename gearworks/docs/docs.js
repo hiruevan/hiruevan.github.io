@@ -1,5 +1,5 @@
 const varNames = ['x', 'y', 'z', 'w', 'a', 'b', 'c'];
-const varType = ['str', 'int', 'float', 'bool'];
+const varType = ['str', 'int', 'float', 'bool', 'color'];
 
 for (let i in varNames) {
     document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(varNames[i] + ",", '<span class="var">' + varNames[i] + '</span> ' + ',');
