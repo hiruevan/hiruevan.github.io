@@ -1,6 +1,6 @@
 const varNames = ['x', 'y', 'z', 'w', 'a', 'b', 'c'];
-const varType = ['str', 'int', 'float', 'bool', 'color'];
-const objs = ['gearWorks', 'draw', 'Math'];
+const varType = ['str', 'int', 'float', 'bool', 'color', 'array', 'obj', 'class', 'func'];
+const objs = ['gearWorks', 'draw', 'Math', 'document', 'console'];
 
 for (let i in varNames) {
     document.getElementsByClassName('container')[0].innerHTML = document.getElementsByClassName('container')[0].innerHTML.replaceAll(varNames[i] + ",", '<span class="var">' + varNames[i] + '</span> ' + ',');
@@ -22,8 +22,7 @@ function createTag(type, inner) {
     tag.appendChild(document.createTextNode(inner));
     return tag;
 }
-
-document.head.appendChild(createTag('style', `
+createTag('style', `
 .var{
     color: #33ECFF;
 }
@@ -33,4 +32,5 @@ document.head.appendChild(createTag('style', `
 .objs {
     color: #9e3f00;
 }
-`));
+`);
+document.head.appendChild(tag);
