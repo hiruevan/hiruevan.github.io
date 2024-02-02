@@ -1,5 +1,5 @@
 body {
-    font-family: 'Jost';
+    font-family: 'Sometype Mono', monospace;
     z-index:-1;
 }
 h1 {
@@ -31,7 +31,7 @@ div.top-bar span {
 }
 button {
     font-size: 20px;
-    font-family: 'Jost';
+    font-family: 'Sometype Mono', monospace;
     font-weight: bolder;
     height: 138%;
     position: relative;
@@ -108,7 +108,7 @@ div.page {
 }
 div.footer {
     background-color: ghostwhite;
-    font-family: monospace;
+    font-family: 'Sometype Mono', monospace;
     font-size: 30px;
     text-align: center;
     left: 0px;
@@ -124,7 +124,7 @@ div.right-bar {
     right: 35px;
     position: inherit;
     width: calc(25% - 35px);
-    font-family: monospace;
+    font-family: 'Sometype Mono', monospace;
     font-size: 15px;
 }
 div.canvas-div {
@@ -194,7 +194,7 @@ div.side-bar.side-bar-out {
     animation: show-side-bar 0.25s ease 0s 1;
 }
 div.side-bar p {
-    font-family: monospace;
+    font-family: 'Sometype Mono', monospace;
     font-size: 25px;
 }
 a.side-bar-control {
@@ -240,7 +240,7 @@ div.code-space {
     right: calc(25% + 35px);
     top: 15px;
     bottom: 15px;
-    font-family: monospace;
+    font-family: 'Sometype Mono', monospace;
     overflow-x: hidden;
     word-wrap: unset;
     overflow: hidden;
@@ -370,7 +370,7 @@ a::selection, button::selection, img::selection {
 /*Color Coding of the console*/
 div.log {
     border-bottom: 1px solid black;
-    font-family: monospace;
+    font-family: 'Sometype Mono', monospace;
     font-size: 15px;
 }
 div.log.error {
