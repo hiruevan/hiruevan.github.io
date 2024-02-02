@@ -18,7 +18,7 @@ for (let i in objs) {
 }
 
 function createTag(type, inner) {
-    const tag = document.createElement(type);
+    let tag = document.createElement(type);
     tag.appendChild(document.createTextNode(inner));
     return tag;
 }
