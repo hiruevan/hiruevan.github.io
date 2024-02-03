@@ -22,7 +22,8 @@ function createTag(type, inner) {
     tag.appendChild(document.createTextNode(inner));
     return tag;
 }
-createTag('style', `
+
+document.head.appendChild(createTag('style', `
 .var{
     color: #33ECFF;
 }
@@ -32,5 +33,4 @@ createTag('style', `
 .objs {
     color: #9e3f00;
 }
-`);
-document.head.appendChild(tag);
+`));
