@@ -39,28 +39,13 @@
             </div>
         </div>
         <a class="side-bar-control" onclick="gw_toggleSideBar();">◀</a>
-
-        <!--Code Space-->
-        <div class="code-space code-small">
-            <div class="editcontainer code-text norm">
-                <div class="nums">
-                    <div id="nums">
-                        <span>1</span>
-                    </div>
-                </div>
-                <div class="editwrapper">
-                    <div id="display"><comment>// Welcome to the Gear Works Editor!</comment></div>
-                    <textarea id="edit">// Welcome to the Gear Works Editor!</textarea>
-                    <div id="zoom-placeholder">(Line Measurement Element)</div>
-                    
-                </div>
-                
-            </div>
-            <div class="code-controls">
-                <a class="zoom" onclick="gw_zoomIn(); gw_textAreaAdjust();"><img src="./images/Zoom in.svg" width="40"></a>
-                <a class="zoom" onclick="gw_zoomOut(); gw_textAreaAdjust();"><img src="./images/Zoom out.svg" width="40"></a>
-            </div>
+        
+        <!-- Code Space -->
+        <div class="code-controls">
+            <a class="zoom" onclick="gw_zoomIn();"><img src="./images/Zoom in.svg" width="40"></a>
+            <a class="zoom" onclick="gw_zoomOut();"><img src="./images/Zoom out.svg" width="40"></a>
         </div>
+        <div id="editor" class="editor-text norm">// Welcome to the Gearworks Editor!</div>
 
         <!--Canvas-->
         <div class="right-bar">
@@ -74,7 +59,7 @@
             <div class="info-div">
                 <p>Mouse-x:<br>Mouse-y:</p>
             </div>
-            <div class="cabneit page">
+            <div class="cabinet page">
                 <div class="container">
                     <p>The Cabinet!</p>
                 </div>
@@ -82,10 +67,25 @@
         </div>
     </div>
 
+    <!-- Ace Editor -->
+    <script src="ace-editor/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ace-editor/ext-language_tools.js"></script>
+    <script>
+        var editor = ace.edit("editor");
+        ace.require("ace/ext/language_tools");
+        editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: true,
+        });
+        editor.setTheme("ace/theme/tomorrow_night_eighties");
+        editor.session.setMode("ace/mode/javascript");
+    </script>
+
     <!--JQuery-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-    <!--Gear Works JS and Libraries-->
+    <!--Gearworks JS and Libraries-->
     <script src="./editor.js"></script>
     <script src="./gwLib.js"></script>
 </body>

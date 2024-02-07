@@ -85,7 +85,7 @@ div.code-controls {
     margin-bottom: 40px;
     position: absolute;
     bottom: 0px;
-    right: 0px;
+    right: 26%;
     z-index: 15;
 }
 div.page {
@@ -166,7 +166,7 @@ div.info-div {
     top: -15px;
     margin-top: calc(105% + 15px);
 }
-div.cabneit {
+div.cabinet {
     position: absolute;
     background-color: orange;
     height: auto;
@@ -235,9 +235,10 @@ a.side-bar-control:hover, a.zoom:hover, a.play-controls:hover {
     background-color: bisque;
     cursor: pointer;
 }
-div.code-space {
+#editor {
     position: inherit;
     right: calc(25% + 35px);
+    left: 17%;
     top: 15px;
     bottom: 15px;
     font-family: 'Sometype Mono', monospace;
@@ -245,27 +246,27 @@ div.code-space {
     word-wrap: unset;
     overflow: hidden;
 }
-div.code-space.code-small {
+div#editor.code-small {
     left: calc(15% + 35px);
     animation: shrink-code-space 0.25s ease 0s 1;
 }
-div.code-space.code-large {
+div#editor.code-large {
     left: 35px;
     animation: expand-code-space 0.25s ease 0s 1;
 }
-.code-text.xsmall {
+.editor-text.xsmall {
     font-size: 10px;
 }
-.code-text.small {
+.editor-text.small {
     font-size: 15px;
 }
-.code-text.norm {
+.editor-text.norm {
     font-size: 20px;
 }
-.code-text.large {
+.editor-text.large {
     font-size: 30px;
 }
-.code-text.xlarge {
+.editor-text.xlarge {
     font-size: 45px;
 }
 .hidden {
