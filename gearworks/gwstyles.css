@@ -289,16 +289,7 @@ a.play-controls:hover {
     overflow-x: hidden;
     word-wrap: unset;
     overflow: hidden;
-}
-
-div#editor.code-small {
-    left: calc(15% + 35px);
-    animation: shrink-code-space 0.25s ease 0s 1;
-}
-
-div#editor.code-large {
-    left: 35px;
-    animation: expand-code-space 0.25s ease 0s 1;
+    transition: left 0.25s ease;
 }
 
 .editor-text.xsmall {
@@ -342,26 +333,6 @@ div#editor.code-large {
 
     100% {
         left: 0px;
-    }
-}
-
-@keyframes expand-code-space {
-    0% {
-        left: calc(15% + 35px);
-    }
-
-    100% {
-        left: 35px;
-    }
-}
-
-@keyframes shrink-code-space {
-    0% {
-        left: 35px;
-    }
-
-    100% {
-        left: calc(15% + 35px);
     }
 }
 
