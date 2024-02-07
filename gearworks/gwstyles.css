@@ -1,34 +1,41 @@
 body {
     font-family: 'Sometype Mono', monospace;
-    z-index:-1;
+    z-index: -1;
 }
+
 h1 {
     font-size: 70px;
 }
+
 h2 {
     font-size: 40px;
 }
+
 div.top-bar {
     background-color: #787878;
     position: fixed;
     z-index: 10000;
     display: block;
     width: 100%;
-    height: 6%;
+    height: 7%;
     top: 0px;
     left: 0px;
     word-wrap: unset;
     overflow: hidden;
 }
+
 div.top-bar img {
-    height: 100%;
+    height: 75%;
+    padding: 5px;
 }
+
 div.top-bar span {
     position: relative;
     bottom: 38%;
     height: inherit;
     padding: none;
 }
+
 button {
     font-size: 20px;
     font-family: 'Sometype Mono', monospace;
@@ -39,46 +46,57 @@ button {
     border: none;
     border-bottom: #979797;
 }
+
 button.side-bar {
     height: 30px;
     background-color: #97979759;
-    left:-5px;
+    left: -5px;
 }
+
 button.tab.selected {
     background-color: #3a6895a9;
 }
-button.tab.selected:active, button.tab.selected:hover {
+
+button.tab.selected:active,
+button.tab.selected:hover {
     background-color: #3a6895a9;
 }
-button:active, button:hover {
+
+button:active,
+button:hover {
     background-color: #acacac;
     cursor: pointer;
 }
+
 body {
     background-color: #9d9d9d;
 }
+
 .content {
     position: absolute;
-    top: 6%;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-    height: calc(100% - 6%);
+    top: 7%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(100% - 7%);
     width: 100%;
-    overflow: hidden; 
+    overflow: hidden;
     word-wrap: break-word;
 }
+
 .scroll {
     overflow-y: scroll;
 }
+
 div.container {
     margin-left: 2%;
     margin-right: 2%;
-    align-items:stretch;
+    align-items: stretch;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
 }
+
 div.code-controls {
     font-size: 40px;
     margin-right: 40px;
@@ -88,12 +106,14 @@ div.code-controls {
     right: 26%;
     z-index: 15;
 }
+
 div.page {
     margin-right: 0%;
     overflow-x: hidden;
     overflow-y: scroll;
     height: 100%;
 }
+
 .editcontainer {
     display: flex;
     width: 100%;
@@ -101,11 +121,13 @@ div.page {
     overflow: scroll;
     background-color: rgb(168, 160, 156);
 }
-.editwrapper{
+
+.editwrapper {
     width: 90%;
     left: 0px;
     position: relative;
 }
+
 div.footer {
     background-color: ghostwhite;
     font-family: 'Sometype Mono', monospace;
@@ -118,6 +140,7 @@ div.footer {
     position: relative;
     margin-top: 40%;
 }
+
 div.right-bar {
     bottom: 15px;
     top: 15px;
@@ -127,6 +150,7 @@ div.right-bar {
     font-family: 'Sometype Mono', monospace;
     font-size: 15px;
 }
+
 div.canvas-div {
     position: relative;
     width: 100%;
@@ -144,21 +168,23 @@ div.controls-div {
     top: 0px;
     background-color: #bababa;
 }
+
 div.canvas-div canvas {
     position: inherit;
     height: auto;
     width: 100%;
     top: 0px;
     background-color: white;
-    
 }
+
 div.canvas-div.fullscreen canvas {
     --height-of-canvas: calc(100vh - 20px);
     height: var(--height-of-canvas);
     width: auto;
-    left: calc((100vw - var(--height-of-canvas))/2);
+    left: calc((100vw - var(--height-of-canvas)) / 2);
     top: 20px;
 }
+
 div.info-div {
     position: inherit;
     height: 55px;
@@ -166,6 +192,7 @@ div.info-div {
     top: -15px;
     margin-top: calc(105% + 15px);
 }
+
 div.cabinet {
     position: absolute;
     background-color: orange;
@@ -177,6 +204,7 @@ div.cabinet {
     bottom: 0px;
     font-size: 25px;
 }
+
 div.side-bar {
     bottom: 0px;
     top: 0px;
@@ -185,25 +213,30 @@ div.side-bar {
     height: 100%;
     width: 15%;
 }
+
 div.side-bar.side-bar-in {
     left: calc(0px - 15%);
     animation: hide-side-bar 0.25s ease 0s 1;
 }
+
 div.side-bar.side-bar-out {
     left: 0px;
     animation: show-side-bar 0.25s ease 0s 1;
 }
+
 div.side-bar p {
     font-family: 'Sometype Mono', monospace;
     font-size: 25px;
 }
+
 a.side-bar-control {
     position: fixed;
     font-size: 20px;
     padding: 5px;
     background-color: beige;
     border-bottom-right-radius: 1rem;
-}  
+}
+
 a.zoom {
     background-color: beige;
     border-radius: 1rem;
@@ -212,29 +245,40 @@ a.zoom {
     margin: 5px;
     z-index: 15;
 }
+
 a.play-controls {
     background-color: rgb(255, 255, 192);
     border-radius: 1rem;
     position: absolute;
     font-size: 15px;
 }
+
 a.right-left {
     left: 30px;
 }
+
 a.right {
     right: 0px;
 }
-a.zoom.disabled, a.play-controls.disabled {
+
+a.zoom.disabled,
+a.play-controls.disabled {
     background-color: rgb(111, 111, 91);
 }
-a.zoom.disabled:hover, a.play-controls.disabled {
+
+a.zoom.disabled:hover,
+a.play-controls.disabled {
     background-color: rgb(111, 111, 91);
     cursor: default;
 }
-a.side-bar-control:hover, a.zoom:hover, a.play-controls:hover {
+
+a.side-bar-control:hover,
+a.zoom:hover,
+a.play-controls:hover {
     background-color: bisque;
     cursor: pointer;
 }
+
 #editor {
     position: inherit;
     right: calc(25% + 35px);
@@ -246,82 +290,99 @@ a.side-bar-control:hover, a.zoom:hover, a.play-controls:hover {
     word-wrap: unset;
     overflow: hidden;
 }
+
 div#editor.code-small {
     left: calc(15% + 35px);
     animation: shrink-code-space 0.25s ease 0s 1;
 }
+
 div#editor.code-large {
     left: 35px;
     animation: expand-code-space 0.25s ease 0s 1;
 }
+
 .editor-text.xsmall {
     font-size: 10px;
 }
+
 .editor-text.small {
     font-size: 15px;
 }
+
 .editor-text.norm {
     font-size: 20px;
 }
+
 .editor-text.large {
     font-size: 30px;
 }
+
 .editor-text.xlarge {
     font-size: 45px;
 }
+
 .hidden {
     display: none;
 }
+
 @keyframes hide-side-bar {
     0% {
         left: 0px;
     }
+
     100% {
         left: calc(0px - 15%);
     }
 }
+
 @keyframes show-side-bar {
     0% {
         left: calc(0px - 15%);
     }
+
     100% {
         left: 0px;
     }
 }
+
 @keyframes expand-code-space {
     0% {
         left: calc(15% + 35px);
     }
+
     100% {
         left: 35px;
     }
 }
+
 @keyframes shrink-code-space {
     0% {
         left: 35px;
     }
+
     100% {
         left: calc(15% + 35px);
     }
 }
 
-
-
-/*Code-space lines css*/
+/* Code-space lines css */
 #nums {
     width: inherit;
 }
+
 .nums {
     width: 50px;
     background-color: lightgrey;
 }
+
 #nums span {
     background-color: lightgrey;
     width: 25px;
     width: 100%;
     display: block;
     text-align: center;
-} 
+}
+
 #edit {
     display: inline-block;
     outline: none;
@@ -338,6 +399,7 @@ div#editor.code-large {
     min-width: 100%;
     min-height: 70%;
 }
+
 #zoom-placeholder {
     display: inline-block;
     white-space: nowrap;
@@ -349,9 +411,12 @@ div#editor.code-large {
     z-index: inherit;
     pointer-events: none;
 }
-#edit:hover, #edit:active {
+
+#edit:hover,
+#edit:active {
     cursor: text;
 }
+
 #display {
     position: absolute;
     display: inline-block;
@@ -361,52 +426,83 @@ div#editor.code-large {
     z-index: 10;
     font-size: inherit;
 }
+
 ::selection {
     background-color: #ffd139;
 }
-a::selection, button::selection, img::selection {
+
+a::selection,
+button::selection,
+img::selection {
     background-color: transparent;
 }
 
-/*Color Coding of the console*/
+/* Color Coding of the console */
 div.log {
     border-bottom: 1px solid black;
     font-family: 'Sometype Mono', monospace;
     font-size: 15px;
 }
+
 div.log.error {
     color: red;
 }
+
 div.log.warn {
     color: orange;
 }
 
-/*Color Coding*/
+/* Color Coding */
 
-keyword, lKeyword {
+keyword,
+lKeyword {
     color: purple;
 }
+
 gwkey {
     color: rgb(158, 63, 0);
 }
-operator, loperator {
+
+operator,
+loperator {
     color: blue;
 }
+
 punctuation {
     color: rgb(79, 62, 0);
 }
+
 strkeyword {
     color: orangered;
 }
-str, str keyword, str lKeyword, str operator, str loperator, str punctuation, str gwkey {
+
+str,
+str keyword,
+str lKeyword,
+str operator,
+str loperator,
+str punctuation,
+str gwkey {
     color: green;
 }
-comment, comment keyword, comment lKeyword, comment operator, comment loperator, comment punctuation, comment str, comment str strkeyword, comment gwkey {
+
+comment,
+comment keyword,
+comment lKeyword,
+comment operator,
+comment loperator,
+comment punctuation,
+comment str,
+comment str strkeyword,
+comment gwkey {
     color: #8a6046;
 }
-comment error, hidden {
+
+comment error,
+hidden {
     color: transparent;
 }
+
 error {
     color: red;
 }
