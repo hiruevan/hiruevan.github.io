@@ -59,7 +59,7 @@
                 <div class="controls-div">
                     <a class="play-controls right" onclick="gw_fullscreen();">Fullscreen</a>
                     <a class="play-controls" onclick="gw_run();">Run</a>
-                    <a class="play-controls right-left">Stop</a></div>
+                    <a class="play-controls right-left" onclick="gw_stop();">Stop</a></div>
                 <canvas width="800" height="800" id="cvs"></canvas>
             </div>
             <div class="info-div">
@@ -67,7 +67,16 @@
             </div>
             <div class="cabinet page">
                 <div class="container">
-                    <p>The Cabinet!</p>
+                    <button onclick="document.getElementById('img-upload').click();">Add Images</button>
+                    <input id="img-upload" type="file" class="hidden">
+                    <img id="add-img" src="#" class="hidden">
+                    <div class="container uploaded-images">
+                    </div>
+                    <button onclick="document.getElementById('sound-upload').click();">Add Sounds</button>
+                    <input id="sound-upload" type="file" class="hidden">
+                    <img id="add-sound" src="#" class="hidden">
+                    <div class="container uploaded-sounds">
+                    </div>
                 </div>
             </div>
         </div>
