@@ -123,7 +123,7 @@ let mouse = {
     x: 0,
     y: 0
 }
-window.addEventListener("mousemove", function(e) {
+document.getElementById("cvs").addEventListener("mousemove", function(e) {
     let cvsWidth = (window.innerWidth*0.25 - 35);
     let leftCvsPos = (window.innerWidth - 35) - cvsWidth;
     mouse.x = e.clientX - leftCvsPos;
