@@ -306,11 +306,11 @@ document.getElementById('img-upload').addEventListener('change', function() {
         imgToDataURL(img.src, function(url) {
             document.getElementsByClassName("uploaded-images")[0].innerHTML += "<img class='imported-image' src='" + url + "'><p>" + gw_cabinet.imageNames[gw_cabinet.imageNames.length - 1] + "</p>";
             gw_cabinet.imageUrls.push(url);
-        });
+        }, 'png');
     }
 });
 
-function imgToDataURL(src, callback) {
+function imgToDataURL(src, callback, filetype) {
     var image = new Image();
     image.crossOrigin = 'Anonymous';
     image.onload = function(){
@@ -319,7 +319,7 @@ function imgToDataURL(src, callback) {
        canvas.height = this.naturalHeight;
        canvas.width = this.naturalWidth;
        context.drawImage(this, 0, 0);
-       var dataURL = canvas.toDataURL('image/jpeg');
+       var dataURL = canvas.toDataURL('image/' + filetype);
        callback(dataURL);
     };
     image.src = src;
