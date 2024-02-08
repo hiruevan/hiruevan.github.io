@@ -36,8 +36,24 @@ div.top-bar span {
     padding: none;
 }
 
+div.top-bar div {
+    position: fixed;
+    height: 150px;
+    width: 98px;
+    left: calc(5.25vh + 19px);
+    top: 7%;
+    padding: none;
+    background-color: inherit;
+}
+
+div.file-box button {
+    font-size: 18px;
+    height: 33.3%;
+    width: 100%;
+}
+
 button {
-    font-size: 20px;
+    font-size: 25px;
     font-family: 'Sometype Mono', monospace;
     font-weight: bolder;
     height: 138%;
@@ -421,59 +437,4 @@ div.log.error {
 
 div.log.warn {
     color: orange;
-}
-
-/* Color Coding */
-
-keyword,
-lKeyword {
-    color: purple;
-}
-
-gwkey {
-    color: rgb(158, 63, 0);
-}
-
-operator,
-loperator {
-    color: blue;
-}
-
-punctuation {
-    color: rgb(79, 62, 0);
-}
-
-strkeyword {
-    color: orangered;
-}
-
-str,
-str keyword,
-str lKeyword,
-str operator,
-str loperator,
-str punctuation,
-str gwkey {
-    color: green;
-}
-
-comment,
-comment keyword,
-comment lKeyword,
-comment operator,
-comment loperator,
-comment punctuation,
-comment str,
-comment str strkeyword,
-comment gwkey {
-    color: #8a6046;
-}
-
-comment error,
-hidden {
-    color: transparent;
-}
-
-error {
-    color: red;
 }
