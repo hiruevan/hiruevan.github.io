@@ -63,6 +63,10 @@ button {
     border-bottom: #979797;
 }
 
+div.cabinet div.container button {
+    margin: 15px;
+}
+
 button.side-bar {
     height: 30px;
     background-color: #97979759;
@@ -221,6 +225,11 @@ div.cabinet {
     font-size: 25px;
 }
 
+img.imported-image {
+    height: auto;
+    width: 100px;
+}
+
 div.side-bar {
     bottom: 0px;
     top: 0px;
@@ -243,6 +252,11 @@ div.side-bar.side-bar-out {
 div.side-bar p {
     font-family: 'Sometype Mono', monospace;
     font-size: 25px;
+}
+
+div.cabinet div.container div p {
+    padding-bottom: 15px;
+    border-bottom: dotted black 2px;
 }
 
 a.side-bar-control {
