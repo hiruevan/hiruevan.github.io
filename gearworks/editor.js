@@ -289,13 +289,18 @@ let gw_cabinet = {
     soundNames: [],
     soundUrls: []
 };
-
 // Images
 document.getElementById('img-upload').addEventListener('change', function() {
     if (this.files && this.files[0]) {
         var img = document.getElementById('add-img');
+        const ext = this.files[0].name.split(".")[1];
         img.onload = () => {
             URL.revokeObjectURL(img.src);  // no longer needed, free memory
+        }
+
+        if (ext != "png" && ext != "jpg" && ext != "jpeg" && ext != "svg") {
+            alert("Sorry, that's not a valid image!");
+            return;
         }
 
         img.src = URL.createObjectURL(this.files[0]); // set src to blob url
@@ -328,12 +333,15 @@ function imgToDataURL(src, callback, filetype) {
 // Sounds
 document.getElementById('sound-upload').addEventListener('change', function() {
     if (this.files && this.files[0]) {
-        // Add list entry
+        const ext = this.files[0].name.split(".")[1];
         gw_cabinet.soundNames.push(this.files[0].name);
 
-        audioToBase64(this.files[0]).then(result => gw_addResult(result));
+        if (ext != "wav" && ext != "mp3" && ext != "m4a" && ext != "wma" && ext != "ogg") {
+            alert("Sorry, that's not a valid audio file!");
+            return;
+        }
 
-        
+        audioToBase64(this.files[0]).then(result => gw_addResult(result));
     }
 });
 
