@@ -1,3 +1,6 @@
+// The forever loop (Used by learning coders)
+function forever() {}
+
 // Toggles sidebar (With css animation)
 function gw_toggleSideBar() {
     if (document.getElementsByClassName('side-bar-control')[0].textContent === "◀") {
@@ -78,9 +81,11 @@ function gw_zoomOut() {
     document.getElementsByClassName("editor-text")[0].classList.add(gw_zoomClasses[gw_codeZoom]);
 }
 
+
+// Console logging
 function gw_error(log) {
     let id = Math.random()*97249857;
-    toLog = log.replaceAll("\n", "<br>");
+    toLog = String(log).replaceAll("\n", "<br>");
     document.getElementsByClassName("console-logs")[0].innerHTML += "<div id='" + id + "' class='error log'>" + toLog + "</div>";
     gw_switchToConsole();
     gw_escapeFullscreen();
@@ -94,12 +99,12 @@ function gw_error(log) {
 }
 
 function gw_log(log) {
-    toLog = log.replaceAll("\n", "<br>");
+    toLog = String(log).replaceAll("\n", "<br>");
     document.getElementsByClassName("console-logs")[0].innerHTML += "<div class='log'>" + toLog + "</div>";
 }
 
 function gw_warn(log) {
-    toLog = log.replaceAll("\n", "<br>");
+    toLog = String(log).replaceAll("\n", "<br>");
     document.getElementsByClassName("console-logs")[0].innerHTML += "<div class='warn log'>" + toLog + "</div>";
 }
 
@@ -112,6 +117,36 @@ function primeScriptForErrors(code) {
     return raw;
 }
 
+
+// Mouse position handling
+let mouse = {
+    x: 0,
+    y: 0
+}
+window.addEventListener("mousemove", function(e) {
+    let cvsWidth = (window.innerWidth*0.25 - 35);
+    let leftCvsPos = (window.innerWidth - 35) - cvsWidth;
+    mouse.x = e.clientX - leftCvsPos;
+    mouse.x = Math.floor((mouse.x*800)/cvsWidth);
+    if (mouse.x < 0) {
+        mouse.x = 0;
+    } else if (mouse.x > 800) {
+        mouse.x = 800;
+    }
+    let cvsDivTop = (window.innerHeight*0.07 + 15)
+    let topCvsPos =  cvsDivTop + 20;
+    mouse.y = e.clientY - topCvsPos;
+    mouse.y = Math.floor((mouse.y*800)/cvsWidth);
+    if (mouse.y < 0) {
+        mouse.y = 0;
+    } else if (mouse.y > 800) {
+        mouse.y = 800;
+    }
+    
+});
+
+
+// running code
 function gw_run() {
     let script = document.createElement("script");
     script.classList.add("canvas-script");
@@ -121,6 +156,23 @@ function gw_run() {
     document.body.appendChild(script);
 }
 
+// This repeats forever
+function gw_repeat() {
+    try {
+        forever();
+    } catch (e) {
+        gw_error("Uncaught Error: " + e)
+    }
+    
+    document.getElementById("m-x").textContent = mouse.x;
+    document.getElementById("m-y").textContent = mouse.y;
+
+    window.requestAnimationFrame(gw_repeat);
+}
+
+gw_repeat();
+
+// Fullscreen
 function gw_fullscreen() {
     gw_goInFullscreen(document.getElementsByClassName("canvas-div")[0]);
     document.getElementsByClassName("right")[0].textContent = "Escape";
@@ -148,7 +200,7 @@ var gw_goInFullscreen = function(element) {
 };
 
 /* Get out of full screen */
-var gw_goOutFullscreen = function(element) {
+function gw_goOutFullscreen(element) {
 	if(document.exitFullscreen) {
 		document.exitFullscreen();
 	} else if(document.mozCancelFullScreen) {
@@ -187,8 +239,33 @@ function gw_exitHandler() {
     }
 }
 
+// File (Saving, loading, etc)
 
+function gw_toggleFileBox() {
+    if (document.getElementsByClassName("file-button")[0].textContent.includes("▼")) {
+    document.getElementsByClassName("file-box")[0].classList.remove("hidden");
+    document.getElementsByClassName("file-button")[0].textContent = "File ▲";
+    } else {
+        document.getElementsByClassName("file-box")[0].classList.add("hidden");
+        document.getElementsByClassName("file-button")[0].textContent = "File ▼";
+    }
+}
 
+function gw_downloadProject() {
+
+}
+
+function gw_openProject() {
+    if (!confirm("Are you sure you want to replace the current contents of the Editor?")) {
+        return;
+    }
+
+    console.log("replace!");
+}
+
+function gw_packageProject() {
+
+}
 
 
 // Place starting console
