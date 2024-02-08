@@ -96,6 +96,7 @@ function gw_error(log) {
     aTag.href = "#" + id;
     document.body.appendChild(aTag);
     aTag.click();
+    gw_stop();
 }
 
 function gw_log(log) {
@@ -148,12 +149,25 @@ document.getElementById("cvs").addEventListener("mousemove", function(e) {
 
 // running code
 function gw_run() {
+    gw_stop();
     let script = document.createElement("script");
     script.classList.add("canvas-script");
     let raw = editor.getValue();
     raw = primeScriptForErrors(raw);
     script.innerHTML = raw;
     document.body.appendChild(script);
+}
+
+function gw_stop() {
+    forever = function() {}
+    gw_ctx.fillStyle = "white";
+    gw_ctx.fillRect(0, 0, 800, 800);
+    try {
+        document.getElementsByClassName("canvas-script")[0].remove();
+        console.log("Script Cleanup: Scripts cleaned.")
+    } catch (e) {
+        console.error("Script Cleanup: Scripts Cleaned; Nothing to remove.")
+    }
 }
 
 // This repeats forever
@@ -265,6 +279,77 @@ function gw_openProject() {
 
 function gw_packageProject() {
 
+}
+
+
+// Cabinet
+let gw_cabinet = {
+    imageNames: [],
+    imageUrls: [],
+    soundNames: [],
+    soundUrls: []
+};
+
+// Images
+document.getElementById('img-upload').addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+        var img = document.getElementById('add-img');
+        img.onload = () => {
+            URL.revokeObjectURL(img.src);  // no longer needed, free memory
+        }
+
+        img.src = URL.createObjectURL(this.files[0]); // set src to blob url
+
+        // Add list entry
+        gw_cabinet.imageNames.push(this.files[0].name);
+
+        imgToDataURL(img.src, function(url) {
+            document.getElementsByClassName("uploaded-images")[0].innerHTML += "<img class='imported-image' src='" + url + "'><p>" + gw_cabinet.imageNames[gw_cabinet.imageNames.length - 1] + "</p>";
+            gw_cabinet.imageUrls.push(url);
+        });
+    }
+});
+
+function imgToDataURL(src, callback) {
+    var image = new Image();
+    image.crossOrigin = 'Anonymous';
+    image.onload = function(){
+       var canvas = document.createElement('canvas');
+       var context = canvas.getContext('2d');
+       canvas.height = this.naturalHeight;
+       canvas.width = this.naturalWidth;
+       context.drawImage(this, 0, 0);
+       var dataURL = canvas.toDataURL('image/jpeg');
+       callback(dataURL);
+    };
+    image.src = src;
+}
+
+// Sounds
+document.getElementById('sound-upload').addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+        // Add list entry
+        gw_cabinet.soundNames.push(this.files[0].name);
+
+        audioToBase64(this.files[0]).then(result => gw_addResult(result));
+
+        
+    }
+});
+
+function gw_addResult(r) {
+    let url = r;
+    document.getElementsByClassName("uploaded-sounds")[0].innerHTML += "<audio class='imported-sound' src='" + url + "' controls></audio><p>" + gw_cabinet.soundNames[gw_cabinet.soundNames.length - 1] + "</p>";
+    gw_cabinet.soundUrls.push(url);
+}
+
+async function audioToBase64(audioFile) {
+    return new Promise((resolve, reject) => {
+        let reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(audioFile);
+    });
 }
 
 
