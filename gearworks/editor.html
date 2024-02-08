@@ -13,9 +13,15 @@
 <body spellcheck="false">
 	<div class="top-bar">
 		<a href="https://hiruevan.github.io/gearworks"><img src="./images/Gw-Favicon.svg"></a>
-		<span><button onclick="">File ▼</button></span>
+		<span><button class="file-button" onclick="gw_toggleFileBox()">File ▼</button>
+            </span>
 		<span><button onclick="window.location = './tutorials'">Tutorials</button></span>
 		<span><button onclick="window.location = './documentation'">DOCS</button></span>
+        <div class="file-box hidden">
+            <button onclick="gw_openProject();">Upload</button>
+            <button onclick="gw_downloadProject();">Download</button>
+            <button onclick="gw_packageProject();">Package</button>
+        </div>
     </div>
 	<div class="content">
         
@@ -57,7 +63,7 @@
                 <canvas width="800" height="800" id="cvs"></canvas>
             </div>
             <div class="info-div">
-                <p>Mouse-x:<br>Mouse-y:</p>
+                <p>Mouse-x: <span id="m-x"></span><br>Mouse-y: <span id="m-y"></span></p>
             </div>
             <div class="cabinet page">
                 <div class="container">
