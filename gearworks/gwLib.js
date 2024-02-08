@@ -30,6 +30,38 @@ const gearWorks = {
     clear: function() {
         try{gw_clearConsole();}
         catch(err){throw "there is no console";}
+    },
+    url: function(url) {
+        if (!url[0] == "/") {
+            gw_error("URL Converter: The string entered is not a URL.")
+        }
+        let itemName = url;
+        itemName.slice(0, 1)
+        if (gw_cabinet.imageNames.includes(itemName)) {
+            let url = gw_cabinet.imageUrls[gw_cabinet.imageNames.indexOf(itemName)];
+
+            // Images need the entire element
+            let img = document.createElement("img");
+            img.src = url;
+            return img;
+        } else if (gw_cabinet.soundNames.includes(itemName)) {
+            let url = gw_cabinet.soundUrls[gw_cabinet.soundNames.indexOf(itemName)];
+
+            // Sounds only need the url
+            return url;
+        } else {
+
+            // If nothing else works
+            gw_error("URL Converter: The requested URL does not exist.");
+            let img = document.createElement("img");
+            img.src = "#";
+            return img;
+        }
+    },
+    playSound: function(url) {
+        let sound = document.createElement("audio");
+        sound.src = url;
+        document.body.appendChild(sound);
+        sound.play();
     }
-    
 };
