@@ -36,6 +36,12 @@ div.top-bar span {
     padding: none;
 }
 
+span input {
+    font-size: 30px;
+    position: relative;
+    top: 6px;
+}
+
 div.top-bar div {
     position: fixed;
     height: 150px;
