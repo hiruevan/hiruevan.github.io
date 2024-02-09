@@ -11,7 +11,35 @@ gw_ctx.background = function(color) {
 }
 
 // draw obj
-const draw = gw_ctx;
+var draw = gw_ctx;
+draw.image = function(pUrl, x, y, h = null, w = null, c = null, d = null) {
+    let itemName = pUrl;
+    let url;
+    if (gw_cabinet.imageNames.includes(itemName)) {
+        let src = gw_cabinet.imageUrls[gw_cabinet.imageNames.indexOf(itemName)];
+
+        // Images need the entire element
+        let img = document.createElement("img");
+        img.src = src;
+        url = img;
+    } else {
+
+        // If nothing else works
+        gw_error("URL Converter: The requested URL does not exist.");
+        return;
+    }
+    if (h == null && w == null) {
+        this.drawImage(url, x, y);
+    } else {
+        if (c == null && d == null) {
+            this.drawImage(url, x, y, h, w);
+        } else {
+            this.drawImage(url, x, y, h, w, c, d);
+        }
+    }
+}
+
+
 
 // gearWorks obj
 const gearWorks = {
@@ -58,9 +86,19 @@ const gearWorks = {
             return img;
         }
     },
-    playSound: function(url) {
+    playSound: function(pUrl, repeat = false) {
+        let url;
+        if (gw_cabinet.soundNames.includes(pUrl)) {
+            url = gw_cabinet.soundUrls[gw_cabinet.soundNames.indexOf(pUrl)];
+        } else {
+            // If nothing else works
+            gw_error("URL Converter: The requested URL does not exist.");
+            return;
+        }
         let sound = document.createElement("audio");
         sound.src = url;
+        sound.loop = true;
+        sound.classList.add("canvas-sound");
         document.body.appendChild(sound);
         sound.play();
     }
