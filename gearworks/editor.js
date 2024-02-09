@@ -384,7 +384,7 @@ function gw_packageProject() {
 
 /*
 
-Specail Symbols: 
+Special Symbols:
 ⇇⇉⇔
 
 .gw1 file format
@@ -394,14 +394,14 @@ Project Title
 Js Content
 Images
 Sounds
-Extentions (Format of .gwx files)
+Extensions (Format of .gwx files)
 */
 
 document.getElementById("project-uploader").addEventListener("change", function() {
     const ext = this.files[0].name.split(".")[1];
 
     if (ext !== "gw1") {
-        alert("That is not the proper .gw1 file we were looking for");
+        alert("Sorry, that isn't a valid Gearworks project file (.gw1)!");
         return;
     }
     var gw_reader = new FileReader();
