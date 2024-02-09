@@ -3,7 +3,9 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<title>Gearworks | Editor</title>
+
 	<link rel="shortcut icon" type="image/x-icon" href="./images/Gw-Favicon.svg">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,8 +19,10 @@
             </span>
 		<span><button onclick="window.location = './tutorials'">Tutorials</button></span>
 		<span><button onclick="window.location = './documentation'">DOCS</button></span>
+        <span><input type="text" maxlength="16" placeholder="Untited Project" id="name-input"></span>
         <div class="file-box hidden">
             <button onclick="gw_openProject();">Upload</button>
+            <input type="file" class="hidden" id="project-uploader">
             <button onclick="gw_downloadProject();">Download</button>
             <button onclick="gw_packageProject();">Package</button>
         </div>
@@ -81,6 +85,18 @@
             </div>
         </div>
     </div>
+
+    <!-- Project Name -->
+    <script>
+        document.getElementById("name-input").addEventListener("change", function(e) {
+            if (document.getElementById("name-input").value == "") {
+                document.getElementsByTagName("title")[0].innerHTML = "Gearworks | Editor";
+            } else {
+                document.getElementsByTagName("title")[0].innerHTML = "Gearworks | " + document.getElementById("name-input").value;
+            }
+            
+        });
+    </script>
 
     <!-- Ace Editor -->
     <script src="ace-editor/ace.js" type="text/javascript" charset="utf-8"></script>
