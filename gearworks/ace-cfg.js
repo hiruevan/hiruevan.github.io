@@ -10,41 +10,31 @@ editor.setOptions({
 editor.setTheme("ace/theme/tomorrow_night_eighties");
 editor.session.setMode("ace/mode/javascript");
 
-let wordList = [
-    {
-        "word": "gearWorks",
-        "freq": 24,
-        "score": 300,
-        "flags": "bc",
-        "syllables": "2"
-    },
-    {
-        "word": "draw",
-        "freq": 24,
-        "score": 300,
-        "flags": "bc",
-        "syllables": "1"
+var gearWorksMethodCompleter = {
+    getCompletions: function(editor, session, pos, prefix, callback) {
+        var wordList = Object.keys(gearWorks);
+        callback(null, wordList.map(function(word) {
+            return {
+                caption: word,
+                value: word,
+                meta: "method"
+            };
+        }));
     }
-];
+};
 
-var rhymeCompleter = {
-  getCompletions: (editor, session, pos, prefix, callback) => {
-    if (prefix.length === 0) {
-      callback(null, []);
-      return
+var objNameCompleter = {
+    getCompletions: function(editor, session, pos, prefix, callback) {
+        var wordList = ["gearWorks", "draw"];
+        callback(null, wordList.map(function(word) {
+            return {
+                caption: word,
+                value: word,
+                meta: "object"
+            };
+        }));
     }
+};
 
-    console.log(pos, session.getTokenAt(pos.row, pos.column));
-
-    callback(null, wordList.map(function(ea) {
-      return {
-        name: ea.word,
-        value: ea.word,
-        score: ea.score,
-        meta: "keyword"
-      };
-    }))
-  }
-}
-
-langTools.addCompleter(rhymeCompleter);
+langTools.addCompleter(gearWorksMethodCompleter);
+langTools.addCompleter(objNameCompleter);
