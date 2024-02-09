@@ -158,8 +158,19 @@ function gw_run() {
     document.body.appendChild(script);
 }
 
+function gw_clearAllSounds() {
+    $.each($('audio'), function () {
+        $(this).stop();
+    });
+    let sounds = document.getElementsByClassName("canvas-sound");
+    for (let i = 0; i < sounds.length; i++) {
+        sounds[i].remove();
+    }
+}
+
 function gw_stop() {
     forever = function() {}
+    gw_clearAllSounds();
     gw_ctx.fillStyle = "white";
     gw_ctx.fillRect(0, 0, 800, 800);
     try {
@@ -177,7 +188,7 @@ function gw_repeat() {
     } catch (e) {
         gw_error("Uncaught Error: " + e)
     }
-    
+
     document.getElementById("m-x").textContent = mouse.x;
     document.getElementById("m-y").textContent = mouse.y;
 
@@ -252,35 +263,6 @@ function gw_exitHandler() {
         gw_escapeFullscreen();
     }
 }
-
-// File (Saving, loading, etc)
-
-function gw_toggleFileBox() {
-    if (document.getElementsByClassName("file-button")[0].textContent.includes("▼")) {
-    document.getElementsByClassName("file-box")[0].classList.remove("hidden");
-    document.getElementsByClassName("file-button")[0].textContent = "File ▲";
-    } else {
-        document.getElementsByClassName("file-box")[0].classList.add("hidden");
-        document.getElementsByClassName("file-button")[0].textContent = "File ▼";
-    }
-}
-
-function gw_downloadProject() {
-
-}
-
-function gw_openProject() {
-    if (!confirm("Are you sure you want to replace the current contents of the Editor?")) {
-        return;
-    }
-
-    console.log("replace!");
-}
-
-function gw_packageProject() {
-
-}
-
 
 // Cabinet
 let gw_cabinet = {
@@ -360,6 +342,224 @@ async function audioToBase64(audioFile) {
     });
 }
 
+// Downloading
+function gw_download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + text);
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+};
+
+
+// File (Saving, loading, etc)
+
+function gw_toggleFileBox() {
+    if (document.getElementsByClassName("file-button")[0].textContent.includes("▼")) {
+    document.getElementsByClassName("file-box")[0].classList.remove("hidden");
+    document.getElementsByClassName("file-button")[0].textContent = "File ▲";
+    } else {
+        document.getElementsByClassName("file-box")[0].classList.add("hidden");
+        document.getElementsByClassName("file-button")[0].textContent = "File ▼";
+    }
+}
+
+function gw_openProject() {
+    if (!confirm("Are you sure you want to replace the current contents of the Editor?")) {
+        return;
+    }
+
+    document.getElementById("project-uploader").click();
+}
+
+function gw_packageProject() {
+
+}
+
+
+/*
+
+Specail Symbols: 
+⇇⇉⇔
+
+.gw1 file format
+
+META
+Project Title
+Js Content
+Images
+Sounds
+Extentions (Format of .gwx files)
+*/
+
+document.getElementById("project-uploader").addEventListener("change", function() {
+    const ext = this.files[0].name.split(".")[1];
+
+    if (ext !== "gw1") {
+        alert("That is not the proper .gw1 file we were looking for");
+        return;
+    }
+    var gw_reader = new FileReader();
+    gw_reader.onload = function(e) {
+        gw_loadProjectFile(e.target.result);
+    };
+    gw_reader.readAsText(this.files[0]);
+})
+
+function gw_loadProjectFile(text) {
+    let pName = "";
+    let content = "";
+    gw_cabinet = {
+        imageNames: [],
+        imageUrls: [],
+        soundNames: [],
+        soundUrls: []
+    };
+
+    let txt = text;
+    if (!txt[13] == "1") {
+        alert("An error occured!")
+        return;
+    }
+    for (let i = 0; i < txt.length; i++) {
+        if (txt[i] == "⇇") {
+            i++;
+            // Document & Meta
+            if (txt[i] == "!" || txt[i] == "M") {
+                while (txt[i] != "⇉") {
+                    i++;
+                }
+                // Thsese can be ignored
+            }
+            // Title
+            if (txt[i] == "T") {
+                while (txt[i] != "⇔") {
+                    i++;
+                }
+                i++;
+                while (txt[i] != "⇔") {
+                    pName += txt[i];
+                    i++;
+                }
+                i++;
+                // Author Ignored
+                while (txt[i] != "⇉") {
+                    i++;
+                }
+            }
+            // Js content
+            if (txt[i] == "J") {
+                while (txt[i] != "⇔") {
+                    i++;
+                }
+                i++;
+                while (txt[i] != "⇉") {
+                    content += txt[i];
+                    i++;
+                }
+            }
+            // Images
+            if (txt[i] == "I") {
+                let name = "";
+                let url = "";
+                while (txt[i] != "⇔") {
+                    i++;
+                }
+                i++;
+                while (txt[i] != "⇔") {
+                    name += txt[i];
+                    i++;
+                }
+                i++;
+                while(txt[i] != "⇉") {
+                    url += txt[i];
+                    i++;
+                }
+
+                gw_cabinet.imageNames.push(name);
+                gw_cabinet.imageUrls.push(url);
+                
+            }
+            // Sounds
+            if (txt[i] == "S") {
+                let name = "";
+                let url = "";
+                while (txt[i] != "⇔") {
+                    i++;
+                }
+                i++;
+                while (txt[i] != "⇔") {
+                    name += txt[i];
+                    i++;
+                }
+                i++;
+                while(txt[i] != "⇉") {
+                    url += txt[i];
+                    i++;
+                }
+
+                gw_cabinet.soundNames.push(name);
+                gw_cabinet.soundUrls.push(url);
+                document.getElementsByClassName("uploaded-sounds")[0].innerHTML += "<audio class='imported-sound' src='" + url + "' controls></audio><p>" + gw_cabinet.soundNames[gw_cabinet.soundNames.length - 1] + "</p>";
+            }
+            // Extentions
+            if (txt[i] == "X") {
+                while (txt[i] != "⇉") {
+                    i++;
+                }
+                // Ignored for the moment
+            }
+            if (txt[i] == "E") {
+                document.getElementById("name-input").value = pName;
+                editor.setValue(content);
+                for (let i = 0; i < gw_cabinet.imageNames.length; i++) {
+                    document.getElementsByClassName("uploaded-images")[0].innerHTML += "<img class='imported-image' src='" + gw_cabinet.imageUrls[i] + "'><p>" + gw_cabinet.imageNames[i] + "</p>";
+                }
+                for (let i = 0; i < gw_cabinet.soundNames.length; i++) {
+                    document.getElementsByClassName("uploaded-sounds")[0].innerHTML += "<audio class='imported-sound' src='" + gw_cabinet.soundUrls[i] + "'><p>" + gw_cabinet.soundNames[i] + "</p>";
+                }
+                return;
+            }
+        }
+    }
+}
+
+function gw_getDownloadFile() {
+    let txt = "⇇!DOCTYPE⇔gw1⇉";
+    txt += "⇇META⇔" + Date().toString() + "⇉";
+    
+    txt += "⇇TITLE⇔" + document.getElementById("name-input").value + "⇔gw_user⇉";
+    txt += "⇇JSCONTENT⇔" + editor.getValue() + "⇉";
+    for (let i = 0; i < gw_cabinet.imageNames.length; i++) {
+        txt += "⇇IMAGE⇔" + gw_cabinet.imageNames[i] + "⇔" + gw_cabinet.imageUrls[i] + "⇉";
+    }
+
+    for (let i = 0; i < gw_cabinet.soundNames.length; i++) {
+        txt += "⇇SOUND⇔" + gw_cabinet.soundNames[i] + "⇔" + gw_cabinet.soundUrls[i] + "⇉";
+    }
+
+    // Extention is ⇇XTEN⇉
+
+    txt += "⇇END⇉";
+
+    return txt;
+}
+
+function gw_downloadProject() {
+    let name = document.getElementById("name-input").value;
+
+    if (name == "") {
+        name = "Untitled_Project";
+    }
+    name = name.replaceAll(" ", "_");
+
+    gw_download(name + ".gw1", gw_getDownloadFile());
+}
 
 // Place starting console
 gw_log("The logs your programs make will appear here in the console. This also includes errors that Gearworks catches, to make bug fixing easier for you!");
