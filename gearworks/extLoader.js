@@ -19,14 +19,14 @@ Special Symbols:
 ←→↭
 
 META
-Extention Title + Author
+Extension Title + Author
 Overveiw + Color
 Js Content
 Docs (Overveiw of objs + Function Docs)
 END
 */
 
-function gw_readExtentionFile(txt) {
+function gw_readExtensionFile(txt) {
     let ext = {
         name: "",
         author: "",
@@ -39,7 +39,7 @@ function gw_readExtentionFile(txt) {
     };
 
     if (!txt[13] == "x" || !txt[1] == "!") {
-        alert("An error occured loading the Extention!")
+        alert("An error occured loading the Extension!")
         return;
     }
 

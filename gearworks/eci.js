@@ -18,7 +18,7 @@ Special Symbols:
 ←→↭
 
 META
-Extention Title + Author
+Extension Title + Author
 Overveiw + Color
 Js Content
 Docs (Overveiw of objs + Function Docs)
@@ -57,12 +57,12 @@ document.getElementById("import").addEventListener("change", function() {
     const ext = this.files[0].name.split(".")[1];
 
     if (ext !== "gwx") {
-        alert("Sorry, that isn't a valid Gearworks extention file (.gwx)!");
+        alert("Sorry, that isn't a valid Gearworks extension file (.gwx)!");
         return;
     }
     var gw_reader = new FileReader();
     gw_reader.onload = function(e) {
-        let xten = gw_readExtentionFile(e.target.result);
+        let xten = gw_readExtensionFile(e.target.result);
         gw_importToEci(xten);
     };
     gw_reader.readAsText(this.files[0]);
