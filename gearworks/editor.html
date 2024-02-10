@@ -39,6 +39,10 @@
                 <!--Docs-->
                 <div class="docs">
                     <p>The (shortened) docs will go here.</p>
+                    <div class="extention-docs-holder"></div>
+                    <br>
+                    <button class="side-bar" onclick="document.getElementById('ext-uploader').click();">Add Extention</button>
+                    <input type="file" class="hidden" id="ext-uploader" accept=".gwx">
                 </div>
 
                 <!--Console-->
@@ -108,6 +112,7 @@
 
     <!--Gearworks JS and Libraries-->
     <script src="./editor.js"></script>
+    <script src="./extLoader.js"></script>
     <script src="./gwLib.js"></script>
 </body>
 </html>
