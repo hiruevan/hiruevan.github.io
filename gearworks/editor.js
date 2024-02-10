@@ -342,22 +342,11 @@ async function audioToBase64(audioFile) {
     });
 }
 
-// Downloading
-function gw_download(filename, text) {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + text);
-    element.setAttribute('download', filename);
-
-    element.style.display = 'none';
-    document.body.appendChild(element);
-
-    element.click();
-
-    document.body.removeChild(element);
-};
-
 
 // File (Saving, loading, etc)
+
+// Extentions
+let xtns = [];
 
 function gw_toggleFileBox() {
     if (document.getElementsByClassName("file-button")[0].textContent.includes("▼")) {
@@ -395,6 +384,7 @@ Js Content
 Images
 Sounds
 Extensions (Format of .gwx files)
+END
 */
 
 document.getElementById("project-uploader").addEventListener("change", function() {
@@ -412,6 +402,9 @@ document.getElementById("project-uploader").addEventListener("change", function(
 })
 
 function gw_loadProjectFile(text) {
+    document.getElementsByClassName("uploaded-images")[0].innerHTML = "";
+    document.getElementsByClassName("uploaded-sounds")[0].innerHTML = "";
+
     let pName = "";
     let content = "";
     gw_cabinet = {
@@ -420,9 +413,11 @@ function gw_loadProjectFile(text) {
         soundNames: [],
         soundUrls: []
     };
+    xtns = [];
+    let xtnsFiles = [];
 
     let txt = text;
-    if (!txt[13] == "1") {
+    if (!txt[13] == "1" || !txt[1] == "!") {
         alert("An error occured!")
         return;
     }
@@ -509,12 +504,19 @@ function gw_loadProjectFile(text) {
             }
             // Extentions
             if (txt[i] == "X") {
-                while (txt[i] != "⇉") {
+                while (txt[i] != "⇔") {
                     i++;
                 }
-                // Ignored for the moment
+                i++;
+                let file = "";
+                while (txt[i] != "⇉") {
+                    file += txt[i];
+                    i++;
+                }
+                xtnsFiles.push(file);
             }
             if (txt[i] == "E") {
+                // Load everything In
                 document.getElementById("name-input").value = pName;
                 editor.setValue(content);
                 for (let i = 0; i < gw_cabinet.imageNames.length; i++) {
@@ -522,6 +524,9 @@ function gw_loadProjectFile(text) {
                 }
                 for (let i = 0; i < gw_cabinet.soundNames.length; i++) {
                     document.getElementsByClassName("uploaded-sounds")[0].innerHTML += "<audio class='imported-sound' src='" + gw_cabinet.soundUrls[i] + "'><p>" + gw_cabinet.soundNames[i] + "</p>";
+                }
+                for (let i = 0; i < xtnsFiles.length; i++) {
+                    gw_loadExtention(gw_readExtentionFile(xtnsFiles[i]));
                 }
                 return;
             }
@@ -544,9 +549,24 @@ function gw_getDownloadFile() {
     }
 
     // Extention is ⇇XTEN⇉
+    for (let i = 0; i < xtns.length; i++) {
+        txt += "⇇XTEN⇔" + gw_getExtentionFile(xtns[i]) + "⇉";
+    }
+    
 
     txt += "⇇END⇉";
 
+    return txt;
+}
+
+function gw_getExtentionFile(obj) {
+    let txt = "←!DOCTYPE↭gwx→";
+    txt += "←META↭" + obj.date + "→";
+    txt += "←TITLE↭" + obj.name + "↭" + obj.author + "→";
+    txt += "←OVERVEIW↭" + obj.overveiw + "↭" + obj.color.replaceAll("#", "↯") + "→";
+    txt += "←JSCONTENT↭" + obj.js + "→";
+    txt += "←DOCUMENTATION↭" + obj.docs + "→"; 
+    txt += "←END→";
     return txt;
 }
 
@@ -559,6 +579,51 @@ function gw_downloadProject() {
     name = name.replaceAll(" ", "_");
 
     gw_download(name + ".gw1", gw_getDownloadFile());
+}
+
+/*
+.gwx File format
+
+Special Symbols:
+←→↭
+
+META
+Extention Title + Author
+Overveiw + Color
+Js Content
+Docs (Overveiw of objs + Function Docs)
+END
+*/
+
+document.getElementById("ext-uploader").addEventListener("change", function() {
+    const ext = this.files[0].name.split(".")[1];
+
+    if (ext !== "gwx") {
+        alert("Sorry, that isn't a valid Gearworks extention file (.gwx)!");
+        return;
+    }
+    var gw_reader = new FileReader();
+    gw_reader.onload = function(e) {
+        let xten = gw_readExtentionFile(e.target.result);
+        gw_loadExtention(xten);
+    };
+    gw_reader.readAsText(this.files[0]);
+});
+
+function gw_loadExtention(ext) {
+    xtns.push(ext);
+    let d = document.createElement("div");
+    d.classList.add(ext.name.replaceAll(" ", "_") + "-" + ext.author.replaceAll(" ", "_"));
+    d.style = "background-color: " + ext.color;
+    d.innerHTML += "<p><b>" + ext.name + "</b></p>";
+    d.innerHTML += "<p><em>" + ext.overveiw + "</em></p>";
+    d.innerHTML += "<p>" + ext.docs + "</p>";
+    document.getElementsByClassName("extention-docs-holder")[0].appendChild(d);
+
+    let s = document.createElement("script");
+    s.textContent = ext.js;
+    s.classList.add("ext-script");
+    document.body.appendChild(s);
 }
 
 // Place starting console
