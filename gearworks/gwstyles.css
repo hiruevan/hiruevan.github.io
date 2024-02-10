@@ -458,3 +458,13 @@ div.log.error {
 div.log.warn {
     color: orange;
 }
+
+
+/*ECI*/
+.eci-editor {
+    position: relative;
+    left: 0px;
+    width: 100%;
+    height: 500px;
+    font-size: 20px;
+}
