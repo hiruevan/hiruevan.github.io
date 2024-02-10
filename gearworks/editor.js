@@ -345,7 +345,7 @@ async function audioToBase64(audioFile) {
 
 // File (Saving, loading, etc)
 
-// Extentions
+// extensions
 let xtns = [];
 
 function gw_toggleFileBox() {
@@ -502,7 +502,7 @@ function gw_loadProjectFile(text) {
                 gw_cabinet.soundUrls.push(url);
                 document.getElementsByClassName("uploaded-sounds")[0].innerHTML += "<audio class='imported-sound' src='" + url + "' controls></audio><p>" + gw_cabinet.soundNames[gw_cabinet.soundNames.length - 1] + "</p>";
             }
-            // Extentions
+            // extensions
             if (txt[i] == "X") {
                 while (txt[i] != "⇔") {
                     i++;
@@ -526,7 +526,7 @@ function gw_loadProjectFile(text) {
                     document.getElementsByClassName("uploaded-sounds")[0].innerHTML += "<audio class='imported-sound' src='" + gw_cabinet.soundUrls[i] + "'><p>" + gw_cabinet.soundNames[i] + "</p>";
                 }
                 for (let i = 0; i < xtnsFiles.length; i++) {
-                    gw_loadExtention(gw_readExtentionFile(xtnsFiles[i]));
+                    gw_loadExtension(gw_readExtensionFile(xtnsFiles[i]));
                 }
                 return;
             }
@@ -548,9 +548,9 @@ function gw_getDownloadFile() {
         txt += "⇇SOUND⇔" + gw_cabinet.soundNames[i] + "⇔" + gw_cabinet.soundUrls[i] + "⇉";
     }
 
-    // Extention is ⇇XTEN⇉
+    // Extension is ⇇XTEN⇉
     for (let i = 0; i < xtns.length; i++) {
-        txt += "⇇XTEN⇔" + gw_getExtentionFile(xtns[i]) + "⇉";
+        txt += "⇇XTEN⇔" + gw_getExtensionFile(xtns[i]) + "⇉";
     }
     
 
@@ -559,7 +559,7 @@ function gw_getDownloadFile() {
     return txt;
 }
 
-function gw_getExtentionFile(obj) {
+function gw_getExtensionFile(obj) {
     let txt = "←!DOCTYPE↭gwx→";
     txt += "←META↭" + obj.date + "→";
     txt += "←TITLE↭" + obj.name + "↭" + obj.author + "→";
@@ -588,7 +588,7 @@ Special Symbols:
 ←→↭
 
 META
-Extention Title + Author
+Extension Title + Author
 Overveiw + Color
 Js Content
 Docs (Overveiw of objs + Function Docs)
@@ -599,18 +599,18 @@ document.getElementById("ext-uploader").addEventListener("change", function() {
     const ext = this.files[0].name.split(".")[1];
 
     if (ext !== "gwx") {
-        alert("Sorry, that isn't a valid Gearworks extention file (.gwx)!");
+        alert("Sorry, that isn't a valid Gearworks extension file (.gwx)!");
         return;
     }
     var gw_reader = new FileReader();
     gw_reader.onload = function(e) {
-        let xten = gw_readExtentionFile(e.target.result);
-        gw_loadExtention(xten);
+        let xten = gw_readExtensionFile(e.target.result);
+        gw_loadExtension(xten);
     };
     gw_reader.readAsText(this.files[0]);
 });
 
-function gw_loadExtention(ext) {
+function gw_loadExtension(ext) {
     xtns.push(ext);
     let d = document.createElement("div");
     d.classList.add(ext.name.replaceAll(" ", "_") + "-" + ext.author.replaceAll(" ", "_"));
@@ -618,7 +618,7 @@ function gw_loadExtention(ext) {
     d.innerHTML += "<p><b>" + ext.name + "</b></p>";
     d.innerHTML += "<p><em>" + ext.overveiw + "</em></p>";
     d.innerHTML += "<p>" + ext.docs + "</p>";
-    document.getElementsByClassName("extention-docs-holder")[0].appendChild(d);
+    document.getElementsByClassName("extension-docs-holder")[0].appendChild(d);
 
     let s = document.createElement("script");
     s.textContent = ext.js;
