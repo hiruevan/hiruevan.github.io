@@ -25,15 +25,13 @@ draw.image = function(pUrl, x, y, h = null, w = null, c = null, d = null) {
     } else {
 
         // If nothing else works
-        try
-        {
-            gw_error("URL Converter: The requested URL does not exist.");
-        }
-        catch
-        {
-            throw "wait... that didn't work, maybe you didn't calabrate the program corectly? IDK why you would do that, I think ur dumb.";
-            //please don't change the throw, its funny.
-        }
+        gw_error("URL Converter: The requested URL does not exist.");
+        // throw "wait... that didn't work, maybe you didn't calabrate the program corectly? IDK why you would do that, I think ur dumb.";
+        // please don't change the throw, its funny.
+        //
+        // again, probably shouldn't joke around like that
+        // also. the gw_error function already logs something in the console if it can't send the error
+        //                 -- kaykay
         return;
     }
     if (h == null && w == null) {
@@ -111,21 +109,25 @@ const gearWorks = {
         sound.play();
     },
     //please don't get mad at me for this:
-    pmp: function(){
-        gearWorks.log("park-master-pro!!!!!!!!");
-        alert("The master of pros!!!");
-    },
-    nm: function(){
-        gearWorks.log("MR. PolyGon!!!!");
-        alert("Shape is in his name");
-    },
-    eh: function(){
-        gearWorks.log("tHe EBaN of hIRU!!!!");
-        alert("Mr Big Brain");
-    },
-    mk: function(){
-        gearWorks.log("the K of T!!!");
-        alert('"Cool Dude" - papyrus');
-    }
+    //
+    // parker lets not joke around in the actual code
+    // you can be funny in the comments cuz nobodys gonna see that lol
+    //                            -- kaykay 
+    // pmp: function(){
+    //     gearWorks.log("park-master-pro!!!!!!!!");
+    //     alert("The master of pros!!!");
+    // },
+    // nm: function(){
+    //     gearWorks.log("MR. PolyGon!!!!");
+    //     alert("Shape is in his name");
+    // },
+    // eh: function(){
+    //     gearWorks.log("tHe EBaN of hIRU!!!!");
+    //     alert("Mr Big Brain");
+    // },
+    // mk: function(){
+    //     gearWorks.log("the K of T!!!");
+    //     alert('"Cool Dude" - papyrus');
+    // }
     
 };
