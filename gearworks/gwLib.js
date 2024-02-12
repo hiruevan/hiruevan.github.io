@@ -12,6 +12,7 @@ gw_ctx.background = function(color) {
 
 // draw obj
 var draw = gw_ctx;
+draw.canvas = gw_canvas;
 draw.image = function(pUrl, x, y, h = null, w = null, c = null, d = null) {
     let itemName = pUrl;
     let url;
