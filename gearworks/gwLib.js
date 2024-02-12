@@ -25,7 +25,7 @@ draw.image = function(pUrl, x, y, h = null, w = null, c = null, d = null) {
     } else {
 
         // If nothing else works
-        gw_error("URL Converter: The requested URL does not exist.");
+        gearwork.error("URL Converter: The requested URL does not exist.");
         return;
     }
     if (h == null && w == null) {
