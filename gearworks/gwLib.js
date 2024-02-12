@@ -113,15 +113,19 @@ const gearWorks = {
     //please don't get mad at me for this:
     pmp: function(){
         gearworks.log("park-master-pro!!!!!!!!");
+        alert("The master of pros!!!");
     },
     nm: function(){
         gearworks.log("MR. PolyGon!!!!");
+        alert("Shape is in his name");
     },
     eh: function(){
         gearworks.log("tHe EBaN of hIRU!!!!");
+        alert("Mr Big Brain");
     },
     mk: function(){
         gearworks.log("the K of T!!!");
+        alert('"Cool Dude" - papyrus');
     }
     
 };
