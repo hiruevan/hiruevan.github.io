@@ -53,19 +53,19 @@ draw.image = function(pUrl, x, y, h = null, w = null, c = null, d = null) {
 const gearWorks = {
     log: function(log) {
         try{gw_log(log);}
-        catch(err){throw "there is no gearworks console";}
+        catch(err){throw "there is no gw console, for your logs to go to sorry";}
     },
     warn: function(log) {
         try{gw_warn(log);}
-        catch(err){throw "there is no gearworks console";}
+        catch(err){throw "there is no gw console, for your logs to go to sorry";}
     },
     error: function(log) {
         try{gw_error(log);}
-        catch(err){throw "there is no console";}
+        catch(err){throw "there is no gw console, for your logs to go to sorry";}
     },
     clear: function() {
         try{gw_clearConsole();}
-        catch(err){throw "there is no console";}
+        catch(err){throw "there is no gw console, for your logs to go to sorry";}
     },
     url: function(url) {
         if (!url[0] == "/") {
@@ -109,5 +109,19 @@ const gearWorks = {
         sound.classList.add("canvas-sound");
         document.body.appendChild(sound);
         sound.play();
+    },
+    //please don't get mad at me for this:
+    pmp: function(){
+        gearworks.log("park-master-pro!!!!!!!!");
+    },
+    nm: function(){
+        gearworks.log("MR. PolyGon!!!!");
+    },
+    eh: function(){
+        gearworks.log("tHe EBaN of hIRU!!!!");
+    },
+    mk: function(){
+        gearworks.log("the K of T!!!");
     }
+    
 };
