@@ -52,19 +52,19 @@ draw.image = function(pUrl, x, y, h = null, w = null, c = null, d = null) {
 const gearWorks = {
     log: function(log) {
         try{gw_log(log);}
-        catch(err){throw "there is no gw console, for your logs to go to sorry";}
+        catch(err){throw "Gearworks Console not found!";}
     },
     warn: function(log) {
         try{gw_warn(log);}
-        catch(err){throw "there is no gw console, for your logs to go to sorry";}
+        catch(err){throw "Gearworks Console not found!";}
     },
     error: function(log) {
-        try{gw_error(log);}
-        catch(err){throw "there is no gw console, for your logs to go to sorry";}
+        try{gw_error(log);}                   
+        catch(err){throw "Gearworks Console not found!";}
     },
     clear: function() {
         try{gw_clearConsole();}
-        catch(err){throw "there is no gw console, for your logs to go to sorry";}
+        catch(err){throw "Gearworks Console not found!";}
     },
     url: function(url) {
         if (!url[0] == "/") {
@@ -109,6 +109,9 @@ const gearWorks = {
         document.body.appendChild(sound);
         sound.play();
     },
+    stop: function() {
+        gw_stop();
+    }
     //please don't get mad at me for this:
     //
     // parker lets not joke around in the actual code
