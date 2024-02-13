@@ -19,9 +19,9 @@ Special Symbols:
 
 META
 Extension Title + Author
-Overveiw + Color
+overview + Color
 Js Content
-Docs (Overveiw of objs + Function Docs)
+Docs (overview of objs + Function Docs)
 END
 */
 
@@ -30,7 +30,7 @@ function gw_exportGwx() {
     let txt = "←!DOCTYPE↭gwx→";
     txt += "←META↭" + Date().toString() + "→";
     txt += "←TITLE↭" + document.getElementById("name").value + "↭" + document.getElementById("author").value + "→";
-    txt += "←OVERVEIW↭" + document.getElementById("overveiw").value + "↭" + document.getElementById("color").value + "→";
+    txt += "←overview↭" + document.getElementById("overview").value + "↭" + document.getElementById("color").value + "→";
     txt += "←JSCONTENT↭" + editor.getValue() + "→";
     txt += "←DOCUMENTATION↭" + document.getElementById("docs").value + "→"; 
     txt += "←END→";
@@ -47,7 +47,7 @@ function gw_exportFromEci() {
 function gw_importToEci(xtn) {
     document.getElementById("name").value = xtn.name;
     document.getElementById("author").value = xtn.author;
-    document.getElementById("overveiw").value = xtn.overveiw.replaceAll("<br>", "\n");
+    document.getElementById("overview").value = xtn.overview.replaceAll("<br>", "\n");
     document.getElementById("color").value = xtn.color;
     document.getElementById("docs").value = xtn.docs.replaceAll("<br>", "\n");
     editor.setValue(xtn.js);
