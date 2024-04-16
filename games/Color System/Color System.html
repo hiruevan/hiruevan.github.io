@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <title>Video</title>
+    <style>
+      html {
+        box-sizing:  border-box;
+      }
+
+      *, *::before, *::after {
+        box-sizing: inherit;
+      }
+      video, canvas {
+        margin: 0;
+        padding: 0;
+        top: 0;
+        left: 0;
+        position: fixed;
+        background-color: black;
+        cursor: default;
+        font-family: monospace;
+      }
+      video {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <video id="video" autoplay></video>
+    <canvas id="display"></canvas>
+    <script src="system.js"></script>
+  </body>
+</html>

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+
+    <script type="module">
+        import * as THREE from 'https://cdn.skypack.dev/three@0.130.1/build/three.module.js';
+        // import { OBJLoader } from 'https://cdn.skypack.dev/three@0.130.1/examples/jsm/loaders/OBJLoader.js';
+        // import { MTLLoader } from 'https://cdn.skypack.dev/three@0.130.1/examples/jsm/loaders/MTLLoader.js';
+
+        // Setup Cannon.js physics
+        const world = new CANNON.World();
+        world.gravity.set(0, -20, 0); // Revert gravity back to vertical
+        world.broadphase = new CANNON.NaiveBroadphase();
+        world.solver.iterations = 10;
+
+        // Setup Three.js scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.BasicShadowMap; // Choose appropriate shadow mapping type
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Add lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        // Create a directional light
+        var light = new THREE.DirectionalLight(0xffffff, 0.75);
+        light.position.set(50, 100, 70);
+        light.castShadow = true; // Set the light to cast shadows
+        light.shadow.mapSize.width = 4096; // Set shadow map width
+        light.shadow.mapSize.height = 4096; // Set shadow map height
+        light.shadow.camera.near = 0.5; // Set shadow camera near plane
+        light.shadow.camera.far = 300; // Set shadow camera far plane
+        light.shadow.camera.left = 80;
+        light.shadow.camera.right = -80;
+        light.shadow.camera.top = 80;
+        light.shadow.camera.bottom = -80;
+        light.shadow.bias = -0.0007;
+        // var shadowHelper = new THREE.CameraHelper( light.shadow.camera );
+        // scene.add( shadowHelper );
+        scene.add(light);
+
+        // Load texture images
+        const textureLoader = new THREE.TextureLoader();
+        const groundTexture = textureLoader.load('./grass.png');
+
+        // Create materials with textures
+        const groundMaterial = new THREE.MeshLambertMaterial({ map: groundTexture });
+
+        // Create basic shapes
+        const hitboxShape = new CANNON.Sphere(1);
+        const cubeShape = new CANNON.Box(new CANNON.Vec3(0.5, 1, 0.5))
+        const groundShape = new CANNON.Plane();
+        
+        const cubeGeometry = new THREE.BoxGeometry(1, 2, 1);
+        const groundGeometry = new THREE.PlaneGeometry(100, 100);
+
+        // Load texture images for the skybox
+        const skyboxTextures = [
+            textureLoader.load('skybox_left.png'),
+            textureLoader.load('skybox_right.png'),
+            textureLoader.load('skybox_up.png'),
+            textureLoader.load('skybox_down.png'),
+            textureLoader.load('skybox_front.png'),
+            textureLoader.load('skybox_back.png')
+        ];
+        const skyboxMaterial = skyboxTextures.map(texture => new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide }));
+
+        // Create skybox mesh
+        const skyboxGeometry = new THREE.BoxGeometry(1000, 1000, 1000);
+        let skybox = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
+        scene.add(skybox);
+
+        // Create ground
+        const groundBody = new CANNON.Body({ mass: 0 });
+        groundBody.addShape(groundShape);
+        groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI / 2);
+        world.addBody(groundBody);
+
+        
+        groundGeometry.receiveShadow = true;
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2; // Rotate the ground to be horizontal
+        ground.receiveShadow = true; // Enable shadow receiving
+        scene.add(ground);
+
+        // Create player
+        const playerBody = new CANNON.Body({ mass: 50, shape: hitboxShape });
+        playerBody.position.set(0, 10, 0);
+        world.addBody(playerBody);
+
+        const cubeMaterial = new THREE.MeshPhongMaterial({ color: 0x888888 }); // Light grey color
+        const playerMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
+        playerMesh.castShadow = true; 
+        playerMesh.receiveShadow = true; // Enable shadow casting
+        scene.add(playerMesh);
+
+        // // Test Model
+
+        // // Function to load OBJ file with textures
+        // function loadOBJWithTextures(objPath, mtlPath, scene, onLoad, onError) {
+        //     const objLoader = new THREE.OBJLoader();
+        //     const mtlLoader = new THREE.MTLLoader();
+
+        //     mtlLoader.load(
+        //         mtlPath,
+        //         (materials) => {
+        //             materials.preload();
+        //             objLoader.setMaterials(materials);
+        //             objLoader.load(
+        //                 objPath,
+        //                 (object) => {
+        //                     if (onLoad) onLoad(object);
+        //                 },
+        //                 undefined,
+        //                 (error) => {
+        //                     console.error('Error loading OBJ file:', error);
+        //                     if (onError) onError(error);
+        //                 }
+        //             );
+        //         },
+        //         undefined,
+        //         (error) => {
+        //             console.error('Error loading MTL file:', error);
+        //             if (onError) onError(error);
+        //         }
+        //     );
+        // }
+
+        // // Load OBJ model with textures
+        // loadOBJWithTextures(
+        //     'path_to_your_model.obj', // Path to your OBJ file
+        //     'path_to_your_materials.mtl', // Path to your MTL file
+        //     scene,
+        //     (object) => {
+        //         scene.add(object);
+        //         console.log('OBJ model loaded successfully!');
+        //     },
+        //     (error) => {
+        //         console.error('Error loading OBJ model:', error);
+        //     }
+        // );
+
+
+        // Weapon
+        const wepGeo = new THREE.BoxGeometry(0.4, 1.5, 0.4)
+        const weapon = new THREE.Mesh(wepGeo, cubeMaterial);
+        weapon.castShadow = true;
+
+        weapon.state = 'idle';
+        weapon.timer = 0;
+        
+        scene.add(weapon);
+
+        
+        // console.log("Collision Filter Group:", boxBody.collisionFilterGroup);
+        // console.log("Collision Filter Mask:", boxBody.collisionFilterMask);
+
+        // Test Shapes
+        // Create a wall as a box shape
+        var wallShape = new CANNON.Box(new CANNON.Vec3(1, 5, 16)); // Adjust the size as needed
+        var wallBody = new CANNON.Body({ mass: 0 });
+        wallBody.addShape(wallShape);
+        wallBody.position.set(5, 0, 0); // Position the wall as needed
+        world.addBody(wallBody);
+
+        // Create a wall mesh in THREE.js
+        var wallGeometry = new THREE.BoxGeometry(2, 10, 32); // Adjust the size as needed
+        var wallMaterial = new THREE.MeshPhongMaterial({ color: '#009113' });
+        var wallMesh = new THREE.Mesh(wallGeometry, wallMaterial);
+        wallMesh.castShadow = true; 
+        wallMesh.receiveShadow = true;// Enable shadow casting
+        scene.add(wallMesh);
+
+        wallMesh.position.copy(wallBody.position);
+
+        // Create a wall as a box shape
+        var wallShape2 = new CANNON.Box(new CANNON.Vec3(3, 2.5, 16)); // Adjust the size as needed
+        var wallBody2 = new CANNON.Body({ mass: 0 });
+        wallBody2.addShape(wallShape2);
+        wallBody2.position.set(7, 0, 0); // Position the wall as needed
+        world.addBody(wallBody2);
+
+        // Create a wall mesh in THREE.js
+        var wallGeometry2 = new THREE.BoxGeometry(6, 5, 32); // Adjust the size as needed
+        var wallMesh2 = new THREE.Mesh(wallGeometry2, wallMaterial);
+        wallMesh2.castShadow = true; 
+        wallMesh2.receiveShadow = true;// Enable shadow casting
+        scene.add(wallMesh2);
+
+        wallMesh2.position.copy(wallBody2.position);
+
+        // Create Box to play with
+        var boxMaterial = new THREE.MeshPhongMaterial({ color: '#f7bb59' });
+
+        var boxThingShape = new CANNON.Box(new CANNON.Vec3(1, 1, 1)); // Adjust the size as needed
+        var boxThing = new CANNON.Body({ mass: 85 });
+        boxThing.addShape(boxThingShape);
+        boxThing.position.set(0, 8, 12); // Position the wall as needed
+        world.addBody(boxThing);
+
+        var boxThingGeo = new THREE.BoxGeometry(2, 2, 2); // Adjust the size as needed
+        var boxThingMesh = new THREE.Mesh(boxThingGeo, boxMaterial);
+        boxThingMesh.castShadow = true; 
+        boxThingMesh.receiveShadow = true;// Enable shadow casting
+        scene.add(boxThingMesh);
+
+        // Create Box to play with
+        var boxThingShape2 = new CANNON.Box(new CANNON.Vec3(0.75, 0.75, 0.75));
+       
+        var boxThing2 = new CANNON.Body({ mass: 35 });
+        boxThing2.addShape(boxThingShape2);
+        boxThing2.position.set(0, 8, -6); // Position the wall as needed
+        world.addBody(boxThing2);
+
+        var boxThingGeo2 = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+        var boxThingMesh2 = new THREE.Mesh(boxThingGeo2, boxMaterial);
+        boxThingMesh2.castShadow = true; 
+        boxThingMesh2.receiveShadow = true;// Enable shadow casting
+        scene.add(boxThingMesh2);
+
+        // Mock Emeny
+        const monsterBody = new CANNON.Body({ mass: 50, shape: hitboxShape });
+        monsterBody.position.set(9, 5, 0);
+        world.addBody(monsterBody);
+        monsterBody.health = 100;
+        monsterBody.dead = false;
+
+        const monsterMaterial = new THREE.MeshPhongMaterial({ color: 'red' }); // Red color
+        const monsterMesh = new THREE.Mesh(cubeGeometry, monsterMaterial);
+        monsterMesh.castShadow = true; 
+        monsterMesh.receiveShadow = true; // Enable shadow casting
+        scene.add(monsterMesh);
+
+        // Setup controls for both player and camera
+        const camSmooth = 0.2;
+        const moveSpeed = 0.4;
+        const rotateSpeed = 0.03;
+        const jumpVelocity = 12; // Initial jump velocity
+        let cameraDistance = 15; // Distance of the camera from the character
+        let cameraAngle = Math.PI / 4; // Angle of the camera relative to the character
+        const minCameraAngle = 0.13539816339744815; // Minimum camera angle in radians
+        const maxCameraAngle = 1.3853981633974488; // Maximum camera angle in radians
+
+        // "Fake" camera to store desired position relative to the player
+        const thirdCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        thirdCamera.position.set(0, 10, 20);
+        scene.add(thirdCamera);
+
+        const updateCamera = () => {
+            const relativeCameraOffset = new THREE.Vector3(0, cameraDistance * Math.sin(cameraAngle), cameraDistance * Math.cos(cameraAngle));
+            const cameraOffset = relativeCameraOffset.applyMatrix4(playerMesh.matrixWorld);
+            thirdCamera.position.copy(cameraOffset);
+            thirdCamera.lookAt(playerMesh.position);
+
+            // Update "real" camera
+            // Smoothly interpolate camera position
+            camera.position.lerp(thirdCamera.position, camSmooth);
+
+            // Smoothly interpolate camera lookAt
+            const lookAtTarget = playerMesh.position.clone();
+            const currentLookAt = camera.getWorldDirection(new THREE.Vector3()).add(camera.position);
+            camera.lookAt(currentLookAt.lerp(lookAtTarget, camSmooth/10));
+        };
+
+        let keyDown = [];
+        function playerController() {
+            // console.log(keyDown);
+            let moveDirection = new THREE.Vector3(); // Initialize movement direction vector
+            for (let i = 0; i < keyDown.length; i++) {
+                switch (keyDown[i]) {
+                    case 'w':
+                        moveDirection.z = -1;
+                        break;
+                    case 's':
+                        moveDirection.z = 1;
+                        break;
+                    case 'a':
+                        moveDirection.x = 1;
+                        break;
+                    case 'd':
+                        moveDirection.x = -1;
+                        break;
+                    case 'ArrowLeft':
+                        playerMesh.rotation.y += rotateSpeed;
+                        break;
+                    case 'ArrowRight':
+                        playerMesh.rotation.y -= rotateSpeed;
+                        break;
+                    case 'ArrowUp':
+                        cameraAngle = Math.max(cameraAngle - rotateSpeed, minCameraAngle); // Cap camera angle
+                        break;
+                    case 'ArrowDown':
+                        cameraAngle = Math.min(cameraAngle + rotateSpeed, maxCameraAngle); // Cap camera angle
+                        break;
+                    case 'f':
+                        if (weapon.timer > 20 && weapon.state == 'ready') {
+                            weapon.timer = 0;
+                            weapon.state = 'attacking';
+                        }
+                        if (weapon.state == 'idle') {
+                            weapon.state = 'ready';
+                        }
+                        
+                        break;
+                    case ' ':
+                        // Jump when spacebar is pressed and player is on the ground
+                        if (isPlayerOnGround()) {
+                            playerBody.velocity.y = jumpVelocity;
+                        }
+                        break;
+                }
+            }
+
+            // Convert movement direction to world coordinates based on camera orientation
+            const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(playerMesh.quaternion); // Calculate forward direction
+            const sideways = new THREE.Vector3(1, 0, 0).applyQuaternion(playerMesh.quaternion); // Calculate sideways direction
+
+
+            
+            
+
+            // Move the player
+            const speed = moveSpeed * (keyDown.includes("Arrow") ? 1 : 0.5); // Reduce speed if rotating camera
+            playerBody.position.x += (sideways.x * moveDirection.x + forward.x * moveDirection.z) * -speed;
+            playerBody.position.z += (sideways.z * moveDirection.x + forward.z * moveDirection.z) * -speed;
+
+            // Weapon holding
+            weapon.position.copy(playerBody.position);
+            
+            weapon.position.x += (sideways.x*0.25 + forward.x)*1;
+            weapon.position.z += (sideways.z*0.25 + forward.z)*1;
+
+            let targetVector;
+            let targetHeight;
+            let lerpSpeed;
+
+            // Ready Position
+            if (weapon.state == 'ready') {
+                targetHeight = 0.5;
+                targetVector = new THREE.Vector3(Math.PI/2, 0, -playerMesh.rotation.y - Math.PI/8);
+                lerpSpeed = 0.8;
+                weapon.timer++;
+                if (weapon.timer > 360) {
+                    weapon.state = 'idle';
+                }
+            } else
+
+            // Idle Position
+            if (weapon.state == 'idle') {
+                targetHeight = 0.15;
+                targetVector = new THREE.Vector3((Math.PI/4)*Math.cos(-playerMesh.rotation.y), 0, (Math.PI/4)*Math.sin(-playerMesh.rotation.y));
+                lerpSpeed = 0.6;
+                weapon.timer = 0;
+            } else
+
+            // Attacking
+            if (weapon.state == 'attacking') {
+                targetHeight = 0.5;
+                targetVector = new THREE.Vector3(Math.PI/2, 0, -playerMesh.rotation.y - Math.PI/2);
+                lerpSpeed = 1;
+                weapon.timer++;
+                if (weapon.timer > 15) {
+                    targetVector = new THREE.Vector3(Math.PI/2, 0, -playerMesh.rotation.y + Math.PI/8);
+                    if (weapon.timer > 35) {
+                        weapon.state = 'ready';
+                    }
+                }
+            }
+
+            // Go to position
+            const targetY = weapon.position.y + targetHeight;
+            weapon.rotation.x = THREE.MathUtils.lerp(weapon.rotation.x, targetVector.x, lerpSpeed/10);
+            weapon.rotation.y = THREE.MathUtils.lerp(weapon.rotation.y, targetVector.y, lerpSpeed/10);
+            weapon.rotation.z = THREE.MathUtils.lerp(weapon.rotation.z, targetVector.z, lerpSpeed/10);
+            weapon.position.y = THREE.MathUtils.lerp(weapon.position.y, targetY, lerpSpeed);
+
+            // weaponPhys.position.clone(weapon.position);
+
+        }
+        document.addEventListener('keydown', function(e) {
+            if (!keyDown.includes(e.key)) {
+                keyDown.push(e.key);
+            }
+        });
+        document.addEventListener('keyup', function(e) {
+            if (keyDown.includes(e.key)) {
+                keyDown.splice(keyDown.indexOf(e.key), 1);
+            }
+        });
+
+        const isPlayerOnGround = () => {
+            // Define a small threshold for change in Y position to account for slight differences due to physics simulation
+            const yThreshold = 1.00; // Adjust as needed
+
+            let DOWN_DIRECTION = new THREE.Vector3(0, -1, 0); 
+            const rayCaster = new THREE.Raycaster(playerMesh.position, DOWN_DIRECTION, 0, 10); 
+            rayCaster.set(playerMesh.position, DOWN_DIRECTION);
+            const intersect = rayCaster.intersectObjects(scene.children, true);
+
+            if (intersect.length > 0) {
+                // Check if the player's distance to ground is close enough to consider on ground
+                return intersect[0].distance < yThreshold;
+            }
+        };
+
+        // Set initial camera position
+        camera.position.set(0, 100, 200);
+
+        // Render loop
+        const animate = () => {
+            requestAnimationFrame(animate);
+
+            // Step the physics world
+            world.step(1 / 60);
+            playerController();
+
+            // Sync Three.js objects with Cannon.js objects
+            playerMesh.position.copy(playerBody.position);
+
+            boxThingMesh.position.copy(boxThing.position);
+            boxThingMesh2.position.copy(boxThing2.position);
+            
+
+            // Natural Resistance
+            playerBody.velocity.x = playerBody.velocity.x*0.3;
+            playerBody.velocity.z = playerBody.velocity.z*0.3;
+
+            monsterMesh.position.copy(monsterBody.position);
+            if (monsterBody.health > 0) {
+                monsterBody.velocity.x = monsterBody.velocity.x*0.3;
+                monsterBody.velocity.z = monsterBody.velocity.z*0.3;
+            } else {
+                if (monsterBody.dead == false) {
+                    monsterBody.shapes[0] = cubeShape;
+                    monsterBody.dead = true;
+                    monsterBody.quaternion.x = 0;
+                    monsterBody.quaternion.y = 0;
+                    monsterBody.quaternion.z = 0;
+                }
+                copyRotation(monsterBody, monsterMesh);
+            }
+
+            // Friction
+            playerBody.velocity.x = playerBody.velocity.x*0.9;
+            playerBody.velocity.z = playerBody.velocity.z*0.9;
+            monsterBody.velocity.x = monsterBody.velocity.x*0.9;
+            monsterBody.velocity.z = monsterBody.velocity.z*0.9;
+
+            updateCamera();
+
+            // spin skybox
+            skybox.rotation.z += 0.0001;
+            skybox.rotation.x += 0.0004;
+            renderer.render(scene, camera);
+            
+        };
+
+        // Copy rotation quaternion from Cannon.js body to THREE.js object
+        function copyRotation(cannonBody, threeObject) {
+            // Get the quaternion representing the rotation of the Cannon.js body
+            var cannonQuaternion = cannonBody.quaternion;
+
+            // Create a THREE.js quaternion from the Cannon.js quaternion
+            var threeQuaternion = new THREE.Quaternion(cannonQuaternion.x, cannonQuaternion.y, cannonQuaternion.z, cannonQuaternion.w);
+
+            // Set the rotation of the THREE.js object
+            threeObject.quaternion.copy(threeQuaternion);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
