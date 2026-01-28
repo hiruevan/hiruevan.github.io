@@ -1,0 +1,2293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Tale of Willow's Rest</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        #game-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        #output {
+            min-height: 400px;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        #input-container {
+            display: flex;
+            gap: 10px;
+        }
+        #input {
+            flex: 1;
+            background-color: #222;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        #input:focus {
+            outline: none;
+            border-color: #888;
+        }
+        .prompt {
+            color: #fff;
+        }
+        .item {
+            color: #00ced1;
+        }
+        .yellow { color: #ffff00; }
+        .green { color: #00ff00; }
+        .darkgreen { color: #006400; }
+        .red { color: #ff0000; }
+        .darkred { color: #8b0000; }
+        .cyan { color: #00ffff; }
+        .darkcyan { color: #008b8b; }
+        .gray { color: #808080; }
+        .darkgray { color: #a9a9a9; }
+        .magenta { color: #ff00ff; }
+        .white { color: #ffffff; }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="output"></div>
+        <div id="input-container">
+            <span class="prompt">></span>
+            <input type="text" id="input" autocomplete="off" autofocus>
+        </div>
+    </div>
+
+    <script>
+                // ===========================
+        // AdventureConsole
+        // ===========================
+        class AdventureConsole {
+            static rand = Math.random;
+            static gameRef = null;
+            static wrapWidth = 80;
+            static outputElement = document.getElementById('output');
+            static inputElement = document.getElementById('input');
+            static waitingForInput = false;
+            static inputCallback = null;
+            static typeDelay = 1;
+
+            static wrapText(text, wrapWidth) {
+                const words = text.split(' ');
+                const lines = [];
+                let line = '';
+
+                for (const word of words) {
+                    if ((line + word).length > wrapWidth) {
+                        if (line) lines.push(line.trim());
+                        line = word + ' ';
+                    } else {
+                        line += word + ' ';
+                    }
+                }
+                if (line) lines.push(line.trim());
+                return lines;
+            }
+
+            static printWrapped(text, color = 'white', itemColor = true, delay = 0, newline = false) {
+                const lines = this.wrapText(text, this.wrapWidth);
+                let output = '';
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    let currentColor = color;
+                    let itemToggled = false;
+
+                    for (const char of line) {
+                        if (char === '/' && itemColor) {
+                            itemToggled = !itemToggled;
+                            currentColor = itemToggled ? 'darkcyan' : color;
+                        } else {
+                            output += `<span class="${currentColor}">${this.escapeHtml(char)}</span>`;
+                        }
+                    }
+
+                    if (i < lines.length - 1) output += '\n';
+                }
+
+                if (newline) output += '\n';
+                
+                this.outputElement.innerHTML += output;
+                this.scrollToBottom();
+            }
+
+            static escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            static type(text, color = 'white', itemColor = true, delay = 1) {
+                this.printWrapped(text, color, itemColor, delay, false);
+            }
+
+            static typeLine(text, color = 'white', itemColor = true, delay = 1) {
+                this.printWrapped(text, color, itemColor, delay, true);
+            }
+
+            static write(text, color = 'white', itemColor = true) {
+                this.printWrapped(text, color, itemColor, 0, false);
+            }
+
+            static writeLine(text, color = 'white', itemColor = true) {
+                this.printWrapped(text, color, itemColor, 0, true);
+            }
+
+            static newLine() {
+                this.outputElement.innerHTML += '\n';
+            }
+
+            static async readLine() {
+                return new Promise((resolve) => {
+                    this.waitingForInput = true;
+                    this.inputCallback = (input) => {
+                        this.waitingForInput = false;
+                        this.inputCallback = null;
+                        resolve(input.trim());
+                    };
+                });
+            }
+
+            static sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            static async askPlayer(things) {
+                this.typeLine("Which one do you want?", 'yellow');
+                
+                for (let i = 0; i < things.length; i++) {
+                    this.typeLine(`[/${i + 1}/] ${things[i].name}`);
+                }
+
+                this.type("> ");
+
+                while (true) {
+                    const input = await this.readLine();
+                    const index = parseInt(input);
+
+                    if (!isNaN(index) && index >= 1 && index <= things.length) {
+                        return things[index - 1];
+                    }
+
+                    this.typeLine("Please enter a valid option.", 'gray');
+                    this.type("> ");
+                }
+            }
+
+            static scrollToBottom() {
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+
+            static randomInt(min, max) {
+                return Math.floor(Math.random() * (max - min)) + min;
+            }
+        }
+
+        // Handle input
+        AdventureConsole.inputElement.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && AdventureConsole.waitingForInput) {
+                const input = AdventureConsole.inputElement.value;
+                AdventureConsole.writeLine(input, 'white');
+                AdventureConsole.inputElement.value = '';
+                if (AdventureConsole.inputCallback) {
+                    AdventureConsole.inputCallback(input);
+                }
+            }
+        });
+
+        // ===========================
+        // Interactable Base Class
+        // ===========================
+        class Interactable {
+            constructor(name, lookDescription = null) {
+                this.name = name;
+                this.lookDescription = lookDescription;
+            }
+
+            toString() {
+                return `/${this.name.toUpperCase()}/`;
+            }
+
+            splitName() {
+                return this.name.toUpperCase().split(/\s+/).filter(Boolean);
+            }
+
+            refersTo(arg) {
+                return this.splitName().includes(arg.toUpperCase()) || 
+                       arg.toUpperCase() === this.name.toUpperCase();
+            }
+
+            lookAt() {
+                if (this instanceof Dialogue) return;
+                
+                if (World.dirs.includes(this.name.toUpperCase()) && this instanceof Exit) {
+                    AdventureConsole.typeLine(`You look in that direction and see ${this.next}`);
+                    return;
+                }
+
+                if (this instanceof Exit && !this.lookDescription) {
+                    AdventureConsole.typeLine("Why would you want to look at that?", 'gray');
+                    return;
+                }
+
+                AdventureConsole.type(`You look at the ${this.toString()}. `);
+                
+                if (!this.lookDescription) {
+                    if (this instanceof Chest) {
+                        AdventureConsole.type("It can be opened. ");
+                        if (this.open) {
+                            AdventureConsole.type("But it is empty.");
+                        }
+                        AdventureConsole.newLine();
+                    }
+                    if (this instanceof Item) {
+                        AdventureConsole.typeLine("You can pick it up.");
+                    }
+                    if (this instanceof NPC) {
+                        AdventureConsole.typeLine("You can talk to them.");
+                    }
+                } else {
+                    AdventureConsole.typeLine(this.lookDescription);
+                }
+            }
+
+            doCommand(cmd) {
+                return false;
+            }
+        }
+
+        // ===========================
+        // Item Classes
+        // ===========================
+        class Item extends Interactable {
+            constructor(name, description) {
+                super(name);
+                this.description = description;
+            }
+
+            shortString() {
+                return `/${this.name.toUpperCase()}/`;
+            }
+
+            string() {
+                return `/${this.name.toUpperCase()}/: ${this.description}`;
+            }
+        }
+
+        class EquipableItem extends Item {
+            constructor(name, description) {
+                super(name, description);
+                this.weight = 0;
+            }
+
+            canHold(strength) {
+                return strength >= this.weight;
+            }
+
+            reducedAgility(strength, agility) {
+                if (!this.canHold(strength)) return 0;
+                const enc = this.weight / strength;
+                const modifier = 1 / (1 + enc);
+                return Math.max(Math.floor(agility * modifier), 1);
+            }
+
+            reducedStrength(baseStrength) {
+                if (!this.canHold(baseStrength)) {
+                    return Math.max(baseStrength - 8, 1);
+                }
+                const enc = this.weight / baseStrength;
+                const penalty = Math.min(Math.max(Math.floor(enc * 3), 0), 5);
+                return Math.max(baseStrength - penalty, 1);
+            }
+        }
+
+        class Weapon extends EquipableItem {
+            constructor(name, description) {
+                super(name, description);
+                this._attackPower = 0;
+            }
+
+            get attackPower() {
+                return this._attackPower;
+            }
+
+            set attackPower(value) {
+                this._attackPower = value;
+            }
+        }
+
+        class NullWeapon extends Weapon {
+            constructor() {
+                super("None", "");
+            }
+        }
+
+        class Armour extends EquipableItem {
+            constructor(name, description) {
+                super(name, description);
+                this._defence = 0;
+            }
+
+            get defence() {
+                return this._defence;
+            }
+
+            set defence(value) {
+                this._defence = value;
+            }
+        }
+
+        class NullArmour extends Armour {
+            constructor() {
+                super("None", "");
+            }
+        }
+
+        class Shield extends EquipableItem {
+            constructor(name, description) {
+                super(name, description);
+                this._defence = 0;
+                this.shielding = false;
+            }
+
+            holdShield() { this.shielding = true; }
+            dropShield() { this.shielding = false; }
+
+            get baseDefence() { return this._defence; }
+            
+            get defence() {
+                return this.shielding ? 
+                    Math.floor(this._defence * 1.2) : 
+                    Math.floor(this._defence * 0.2);
+            }
+
+            set defence(value) {
+                this._defence = value;
+            }
+
+            get up() { return this.shielding; }
+            set up(value) { this.shielding = value; }
+        }
+
+        class NullShield extends Shield {
+            constructor() {
+                super("None", "");
+            }
+        }
+
+        class Consumable extends Item {
+            constructor(name, description) {
+                super(name, description);
+            }
+        }
+
+        class Effect {
+            constructor(name = "None") {
+                this.name = name;
+                this.heal = 0;
+                this.poison = 0;
+                this.duration = 0;
+                this.augmentStrength = 0;
+                this.augmentAgility = 0;
+                this.augmentAttackPower = 0;
+                this.doubleAttack = false;
+                this.elementResistance = Element.Normal;
+                this.elementDefence = 0;
+            }
+
+            shortString() {
+                return this.name.toUpperCase();
+            }
+
+            string() {
+                let s = `${this.name.toUpperCase()} (`;
+                if (this.heal > 0) {
+                    s += `Heals ${this.heal} health.`;
+                } else if (this.poison > 0) {
+                    s += `Applies ${this.poison} poison damage for ${this.duration} turns.`;
+                } else if (this.augmentStrength !== 0) {
+                    s += this.augmentStrength > 0 ?
+                        `Increases strength by ${this.augmentStrength} for ${this.duration} turns.` :
+                        `Decreases strength by ${-this.augmentStrength} for ${this.duration} turns.`;
+                } else if (this.augmentAgility !== 0) {
+                    s += this.augmentAgility > 0 ?
+                        `Increases agility by ${this.augmentAgility} for ${this.duration} turns.` :
+                        `Decreases agility by ${-this.augmentAgility} for ${this.duration} turns.`;
+                } else if (this.augmentAttackPower !== 0) {
+                    s += this.augmentAttackPower > 0 ?
+                        `Increases attack power by ${this.augmentAttackPower} for ${this.duration} turns.` :
+                        `Decreases attack power by ${-this.augmentAttackPower} for ${this.duration} turns.`;
+                } else if (this.doubleAttack) {
+                    s += `Allows you to attack twice per turn. Lasts ${this.duration} turns.`;
+                } else if (this.elementDefence > 0) {
+                    s += `Resistance lv${this.elementDefence} to ${this.elementResistance} damage. Lasts ${this.duration} turns.`;
+                } else {
+                    s += "No special effect.";
+                }
+                return s + ")";
+            }
+        }
+
+        class NullEffect extends Effect {
+            constructor() {
+                super("None");
+            }
+        }
+
+        class Potion extends Consumable {
+            constructor(name, effect) {
+                super(name, effect.string());
+                this.effect = effect;
+            }
+        }
+
+        class Key extends Item {
+            constructor(name, description) {
+                super(name, description);
+                this.unlockId = "";
+            }
+
+            checkKey(keyId) {
+                return this.unlockId === keyId;
+            }
+        }
+
+        class Trinket extends Item {
+            constructor(name, description) {
+                super(name, description);
+            }
+        }
+
+        class Book extends Item {
+            constructor(name, content, description = "It is a book.") {
+                super(name, description);
+                this.content = content;
+            }
+
+            get title() { return this.name; }
+
+            doCommand(cmd) {
+                switch (cmd) {
+                    case "read":
+                    case "examine":
+                    case "study":
+                    case "use":
+                        AdventureConsole.typeLine(`You open ${this}. It reads:`);
+                        AdventureConsole.typeLine(`"\n${this.content}\n"`, 'yellow');
+                        return true;
+                }
+                return false;
+            }
+        }
+
+        // ===========================
+        // Element System
+        // ===========================
+        class Element {
+            constructor(type = "normal") {
+                this.type = type;
+            }
+
+            toString() {
+                return this.type.toUpperCase();
+            }
+
+            get inverse() {
+                if (this === Element.Ice) return Element.Fire;
+                if (this === Element.Fire) return Element.Ice;
+                if (this === Element.Electric) return Element.Water;
+                if (this === Element.Water) return Element.Electric;
+                if (this === Element.Earth) return Element.Air;
+                if (this === Element.Air) return Element.Earth;
+                return Element.Normal;
+            }
+        }
+
+        Element.Normal = new Element();
+        Element.Poison = new Element("poison");
+        Element.Water = new Element("water");
+        Element.Ice = new Element("ice");
+        Element.Fire = new Element("fire");
+        Element.Electric = new Element("electric");
+        Element.Earth = new Element("earth");
+        Element.Air = new Element("air");
+
+        // ===========================
+        // Combat Classes
+        // ===========================
+        class Attack {
+            constructor(power, message, element = null) {
+                this.power = power;
+                this.message = message;
+                this.element = element || Element.Normal;
+            }
+        }
+
+        class Monster {
+            constructor(name, health, xpReward, strength, agility) {
+                this.name = name;
+                this.maxHealth = health;
+                this.health = health;
+                this.strength = strength;
+                this.agility = agility;
+                this.xpReward = xpReward;
+                this.turnCounter = AdventureConsole.randomInt(0, 15);
+            }
+
+            get isAlive() {
+                return this.health > 0;
+            }
+
+            attack(turn) {
+                return new Attack(0, "Monster stands there.");
+            }
+
+            takeTurn() {
+                this.turnCounter++;
+                return this.attack(this.turnCounter);
+            }
+
+            hurt(damage) {
+                this.health -= damage;
+                if (this.health < 0) this.health = 0;
+            }
+
+            displayStatus() {
+                console.log(`${this.name}: HP ${this.health}/${this.maxHealth}, STR ${this.strength}, AGI ${this.agility}`);
+            }
+        }
+
+        class Boss extends Monster {
+            constructor(name, health, phase2Health, xpReward, strength, agility) {
+                super(name, health, xpReward, strength, agility);
+                this.phase2Health = phase2Health;
+                this.phase2 = false;
+            }
+
+            get isAlive() {
+                if (this.health > 0) return true;
+                else if (this.phase2) return false;
+                else {
+                    this.phase2 = true;
+                    AdventureConsole.typeLine(`${this.name} got angry!`, 'red');
+                    this.strength = Math.floor(this.strength * 1.5);
+                    this.health = this.phase2Health;
+                    return true;
+                }
+            }
+        }
+
+        class Troll extends Boss {
+            constructor() {
+                super("Troll", 170, 90, 92, 22, 6);
+            }
+
+            attack(turn) {
+                if (turn % 4 === 0) {
+                    return new Attack(this.strength * 3, `${this.name} drops his bat down hard!`);
+                } else if (turn % 3 === 0) {
+                    return new Attack(this.strength * 2, `${this.name} kicks you!`);
+                } else {
+                    if (this.phase2) {
+                        return new Attack(18, `${this.name} shakes the ground.`);
+                    } else {
+                        return new Attack(0, `${this.name} looks annoyed!`);
+                    }
+                }
+            }
+        }
+
+        class Dragon extends Boss {
+            constructor() {
+                super("Dragon", 300, 150, 150, 30, 18);
+            }
+
+            attack(turn) {
+                if (turn % 5 === 0) {
+                    return new Attack(this.strength * 4, `${this.name} breathes fire!`);
+                } else if (turn % 2 === 0) {
+                    return new Attack(this.strength * 2, `${this.name} slashes with claws!`);
+                } else {
+                    return new Attack(this.strength, `${this.name} growls menacingly.`);
+                }
+            }
+        }
+
+        class NPCAttacker extends Monster {
+            constructor(npc) {
+                super(npc.name, npc.health, 15, npc.strength, npc.agility);
+                this.popularity = npc.popularity;
+            }
+
+            attack(turn) {
+                return new Attack(this.strength, `${this.name} attacked!`);
+            }
+        }
+
+        // ===========================
+        // Other Classes
+        // ===========================
+        class Chest extends Interactable {
+            constructor(item, name = "chest") {
+                super(name);
+                this.item = item;
+                this.locked = false;
+                this.keyId = null;
+                this.open = false;
+            }
+        }
+
+        class Dialogue extends Interactable {
+            constructor(response) {
+                super(response);
+            }
+
+            get value() {
+                return this.name;
+            }
+        }
+
+        class Exit extends Interactable {
+            constructor(name, next) {
+                super(name);
+                this.next = next;
+            }
+
+            get isDirection() {
+                return World.dirs.includes(this.name.toUpperCase());
+            }
+        }
+
+        const Reputation = {
+            Monster: 'Monster',
+            Criminal: 'Criminal',
+            Untrustworthy: 'Untrustworthy',
+            Neutral: 'Neutral',
+            Honest: 'Honest',
+            Cool: 'Cool',
+            Hero: 'Hero'
+        };
+
+        class NPC extends Interactable {
+            constructor(name, dialogue) {
+                super(name);
+                this.dialogue = dialogue;
+                this.strength = 10;
+                this.health = 30;
+                this.agility = 15;
+                this.dead = false;
+                this.popularity = 5;
+            }
+
+            async talk(reputation) {
+                if (this.dead) {
+                    AdventureConsole.typeLine("They are dead...", 'darkred');
+                    return;
+                }
+
+                AdventureConsole.type(`${this} says: `);
+                
+                if (reputation === Reputation.Monster) {
+                    AdventureConsole.typeLine(`"Get away from me you, you... you MONSTER!!!"`, 'yellow');
+                } else if (reputation === Reputation.Criminal) {
+                    AdventureConsole.typeLine(`"Leave me, CRIMINAL, I don't want to talk to you."`, 'yellow');
+                } else if (reputation === Reputation.Untrustworthy) {
+                    AdventureConsole.typeLine(`"I don't trust you. ${this.dialogue}"`, 'yellow');
+                } else {
+                    AdventureConsole.typeLine(`"${this.dialogue}"`, 'yellow');
+                }
+            }
+
+            get enemyStats() {
+                return new NPCAttacker(this);
+            }
+        }
+
+        class Place {
+            constructor(name, description) {
+                this.name = name;
+                this.description = description;
+                this.interactables = [];
+                this.monsters = [];
+            }
+
+            toString() {
+                return `/${this.name.toUpperCase()}/`;
+            }
+
+            addItem(item) {
+                this.interactables.push(item);
+            }
+
+            addNpc(npc) {
+                this.interactables.push(npc);
+            }
+
+            addChest(chest) {
+                this.interactables.push(chest);
+            }
+
+            addExit(nameOrPlace, next = null) {
+                if (next === null) {
+                    this.interactables.push(new Exit("exit", nameOrPlace));
+                } else {
+                    this.interactables.push(new Exit(nameOrPlace, next));
+                }
+            }
+        }
+
+        class World {
+            constructor() {
+                this.places = [];
+            }
+
+            get places() {
+                this.compilePlaces();
+                return this._places || [];
+            }
+
+            get startingPlace() {
+                return this.places[0];
+            }
+
+            compilePlaces() {
+                this._places = [];
+                // TODO: Compiling of Towns, Locations, Areas logic here
+            }
+        }
+
+        World.dirs = ["NORTH", "SOUTH", "EAST", "WEST", "NORTHEAST", "NORTHWEST", "SOUTHEAST", "SOUTHWEST", "UP", "DOWN"];
+        World.stairActs = ["ASCEND", "DESCEND", "CLIMB"];
+
+        // ===========================
+        // Player Class
+        // ===========================
+        class Player {
+            constructor(maxHealth, strength, agility, weapon = null, armour = null, shield = null) {
+                this.level = 1;
+                this.xp = 0;
+                this.gold = 100;
+                this.maxHealth = maxHealth;
+                this.health = maxHealth;
+                this._strength = strength;
+                this._agility = agility;
+                this.name = "Hero";
+                this.reputation = 0;
+
+                this.weapon = weapon || new NullWeapon();
+                this.armour = armour || new NullArmour();
+                this.shield = shield || new NullShield();
+                this.statusEffect = new NullEffect();
+                this.inventory = [];
+            }
+
+            get isAlive() { return this.health > 0; }
+            set isAlive(value) { if (!value) this.health = 0; }
+
+            get isCritical() {
+                return (this.health < this.maxHealth / 5) || this.health < 15;
+            }
+
+            get reputationLevel() {
+                if (this.reputation < -50) return Reputation.Monster;
+                if (this.reputation < -25) return Reputation.Criminal;
+                if (this.reputation < -10) return Reputation.Untrustworthy;
+                if (this.reputation > 20) return Reputation.Hero;
+                if (this.reputation > 10) return Reputation.Cool;
+                if (this.reputation > 0) return Reputation.Honest;
+                return Reputation.Neutral;
+            }
+
+            get strength() {
+                let s = this._strength;
+                s = this.armour.reducedStrength(s);
+                return s;
+            }
+
+            set strength(value) {
+                this._strength = value;
+            }
+
+            get agility() {
+                let a = this._agility;
+                a = this.weapon.reducedAgility(this._strength, a);
+                a = this.armour.reducedAgility(this._strength, a);
+                a = this.shield.reducedAgility(this._strength, a);
+                return a;
+            }
+
+            set agility(value) {
+                this._agility = value;
+            }
+
+            get attackPower() {
+                return this._strength + this.weapon.attackPower * Math.max(Math.floor(this._strength * 0.1), 1);
+            }
+
+            get defence() {
+                return this.level + this.armour.defence + this.shield.defence;
+            }
+
+            get defending() {
+                return this.shield.up;
+            }
+
+            set defending(value) {
+                this.shield.up = value;
+            }
+
+            changeReputation(amt) {
+                this.reputation += amt;
+            }
+
+            searchItem(name, type = Item) {
+                const matches = this.inventory.filter(i => 
+                    i instanceof type && i.refersTo(name)
+                );
+
+                if (matches.length === 0) {
+                    AdventureConsole.typeLine(`${name.toUpperCase()} not found in inventory.`, 'darkgray');
+                    return null;
+                }
+
+                if (matches.length === 1) {
+                    return matches[0];
+                }
+
+                return AdventureConsole.askPlayer(matches);
+            }
+
+            getItem(item) {
+                this.inventory.push(item);
+                AdventureConsole.type("You have obtained an Item! ");
+                AdventureConsole.typeLine(item.string(), 'cyan');
+            }
+
+            async equipItem(itemName) {
+                const target = itemName.toUpperCase();
+                const item = await this.searchItem(target);
+                
+                if (!item) return;
+
+                if (!(item instanceof EquipableItem)) {
+                    AdventureConsole.typeLine(`${target} cannot be equipped.`, 'darkgray');
+                    return;
+                }
+
+                if (!item.canHold(this.strength)) {
+                    AdventureConsole.typeLine(`You are not strong enough to equip ${target}.`, 'darkgray');
+                    return;
+                }
+
+                if (item instanceof Weapon) {
+                    if (!(this.weapon instanceof NullWeapon)) {
+                        this.inventory.push(this.weapon);
+                    }
+                    this.weapon = item;
+                    this.inventory = this.inventory.filter(i => i !== item);
+                    AdventureConsole.typeLine(`Equipped weapon: ${item.shortString()}`);
+                } else if (item instanceof Shield) {
+                    if (!(this.shield instanceof NullShield)) {
+                        this.inventory.push(this.shield);
+                    }
+                    this.shield = item;
+                    this.inventory = this.inventory.filter(i => i !== item);
+                    AdventureConsole.typeLine(`Equipped shield: ${item.shortString()}`);
+                } else if (item instanceof Armour) {
+                    if (!(this.armour instanceof NullArmour)) {
+                        this.inventory.push(this.armour);
+                    }
+                    this.armour = item;
+                    this.inventory = this.inventory.filter(i => i !== item);
+                    AdventureConsole.typeLine(`Equipped armour: ${item.shortString()}`);
+                } else {
+                    AdventureConsole.typeLine(`${itemName} is an unknown equipable type.`, 'darkgray');
+                }
+            }
+
+            unequipItem(itemName) {
+                if (itemName.toUpperCase() === "NONE") {
+                    AdventureConsole.typeLine("You don't have anything equipped called NONE.", 'gray');
+                    return;
+                }
+
+                if (this.weapon.refersTo(itemName)) {
+                    AdventureConsole.typeLine(`Unequipped weapon: ${this.weapon}`);
+                    this.inventory.push(this.weapon);
+                    this.weapon = new NullWeapon();
+                    return;
+                }
+
+                if (this.armour.refersTo(itemName)) {
+                    AdventureConsole.typeLine(`Unequipped armour: ${this.armour}`);
+                    this.inventory.push(this.armour);
+                    this.armour = new NullArmour();
+                    return;
+                }
+
+                if (this.shield.refersTo(itemName)) {
+                    AdventureConsole.typeLine(`Unequipped shield: ${this.shield}`);
+                    this.inventory.push(this.shield);
+                    this.shield = new NullShield();
+                    return;
+                }
+
+                AdventureConsole.typeLine(`${itemName.toUpperCase()} not found in equipable slots.`, 'gray');
+            }
+
+            async useItem(itemName) {
+                const target = itemName.toUpperCase();
+                const item = await this.searchItem(target);
+                
+                if (!item) return false;
+
+                if (!(item instanceof Consumable)) {
+                    AdventureConsole.typeLine(`The ${item} cannot be used that way.`, 'darkgray');
+                    return false;
+                }
+
+                AdventureConsole.type(`You use the ${item}! `);
+
+                if (item instanceof Potion) {
+                    const potion = item;
+                    if (potion.effect.duration === 0) {
+                        if (potion.effect.heal > 0) {
+                            this.heal(potion.effect.heal);
+                        } else {
+                            this.hurt(potion.effect.poison);
+                        }
+                    } else {
+                        this.statusEffect = potion.effect;
+                        AdventureConsole.newLine();
+                    }
+                }
+
+                this.inventory = this.inventory.filter(i => i !== item);
+                return true;
+            }
+
+            async dropItem(itemName) {
+                const target = itemName.toUpperCase();
+                const item = await this.searchItem(target);
+                
+                if (!item) return null;
+
+                AdventureConsole.typeLine(`/${target}/ dropped.`);
+                this.inventory = this.inventory.filter(i => i !== item);
+                return item;
+            }
+
+            unlockLock(keyId) {
+                for (const item of this.inventory) {
+                    if (item instanceof Key && item.checkKey(keyId)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            heal(amt) {
+                AdventureConsole.typeLine(`You healed ${amt} health.`, 'darkgreen');
+                this.health += amt;
+                this.health = Math.min(this.maxHealth, this.health);
+            }
+
+            hurt(damage) {
+                if (damage === 0) return;
+                const d = Math.max(1, damage - this.defence);
+                AdventureConsole.typeLine(`You took ${d} damage.`, 'red');
+                this.health -= d;
+            }
+
+            levelUp() {
+                this.level++;
+
+                const prevHealth = this.maxHealth;
+                const prevStrength = this.strength;
+                const prevAgility = this.agility;
+                const prevAttack = this.attackPower;
+
+                let strengthGain;
+                if (this.level < 5) strengthGain = 2;
+                else if (this.level < 10) strengthGain = 3;
+                else if (this.level < 15) strengthGain = 4;
+                else strengthGain = 5;
+
+                let agilityGain;
+                if (this.level < 5) agilityGain = 1;
+                else if (this.level < 10) agilityGain = 2;
+                else if (this.level < 15) agilityGain = 2;
+                else agilityGain = 3;
+
+                this.maxHealth = Math.round(this.maxHealth * 1.12);
+                this._strength += strengthGain;
+                this._agility += agilityGain;
+
+                this.health = this.maxHealth;
+                this.statusEffect = new NullEffect();
+
+                const color = 'magenta';
+                AdventureConsole.writeLine("\n=== LEVEL UP! ===", color);
+                AdventureConsole.writeLine(`Level: ${this.level - 1} -> ${this.level}`, color);
+                AdventureConsole.writeLine(`Health: ${prevHealth} -> ${this.health}`, color);
+                AdventureConsole.writeLine(`Strength: ${prevStrength} -> ${this.strength}`, color);
+                AdventureConsole.writeLine(`Agility: ${prevAgility} -> ${this.agility}`, color);
+                AdventureConsole.writeLine(`Attack Power: ${prevAttack} -> ${this.attackPower}`, color);
+                AdventureConsole.writeLine("=================\n", color);
+            }
+
+            gainXP(amount) {
+                const half = Math.floor(amount / 2);
+                const ggain = Math.max(AdventureConsole.randomInt(half - 3, half + 9), 3);
+                this.gold += ggain;
+
+                this.xp += amount;
+                let xpNeeded = this.xpNeededForLevel(this.level);
+
+                AdventureConsole.typeLine(`You get ${ggain} GOLD!`, 'cyan');
+                AdventureConsole.typeLine(`You gain ${amount} XP!`, 'cyan');
+
+                while (this.xp >= xpNeeded) {
+                    this.xp -= xpNeeded;
+                    this.levelUp();
+                    xpNeeded = this.xpNeededForLevel(this.level);
+                }
+            }
+
+            xpNeededForLevel(currentLevel) {
+                const baseXP = 20;
+                const growthRate = 1.3;
+                return Math.round(baseXP * Math.pow(growthRate, currentLevel - 1));
+            }
+
+            displayInventory() {
+                const color = 'green';
+                AdventureConsole.writeLine("\n=== Inventory ===", color);
+                AdventureConsole.writeLine(`GOLD: ${this.gold}`, color);
+
+                const grouped = {};
+                this.inventory.forEach(item => {
+                    if (!grouped[item.name]) {
+                        grouped[item.name] = 0;
+                    }
+                    grouped[item.name]++;
+                });
+
+                if (Object.keys(grouped).length === 0) {
+                    AdventureConsole.writeLine("(empty)", color);
+                } else {
+                    for (const [name, count] of Object.entries(grouped)) {
+                        AdventureConsole.writeLine(`${name.toUpperCase()} x${count}`, color);
+                    }
+                }
+
+                AdventureConsole.writeLine("=================\n", color);
+            }
+
+            displayStatus() {
+                const color = this.isCritical ? 'red' : 'green';
+                AdventureConsole.writeLine(`\n=== ${this.name}'s Status ===`, color);
+                AdventureConsole.writeLine(`Level: ${this.level}`, color);
+                AdventureConsole.writeLine(`XP: ${this.xp} / ${this.xpNeededForLevel(this.level)}`, color);
+                AdventureConsole.writeLine(`Health: ${this.health} / ${this.maxHealth}`, color);
+                AdventureConsole.writeLine(`Strength: ${this.strength}`, color);
+                AdventureConsole.writeLine(`Agility: ${this.agility}`, color);
+                AdventureConsole.writeLine(`Attack Power: ${this.attackPower}`, color);
+                AdventureConsole.writeLine(`Defence: ${this.defence} (${this.shield.baseDefence})`, color);
+                AdventureConsole.writeLine(`Weapon: ${this.weapon.name}`, color);
+                AdventureConsole.writeLine(`Shield: ${this.shield.name}`, color);
+                AdventureConsole.writeLine(`Armour: ${this.armour.name}`, color);
+                AdventureConsole.writeLine(`Status Effect: ${this.statusEffect.shortString()}`, color);
+                AdventureConsole.writeLine("=================\n", color);
+            }
+        }
+
+        // ===========================
+        // Combat Class
+        // ===========================
+        class Combat {
+            constructor(player, monsters) {
+                this.player = player;
+                this.monsters = [...monsters];
+            }
+
+            async start() {
+                AdventureConsole.typeLine("\n=== Combat begins! ===", 'yellow');
+
+                while (this.player.health > 0 && this.monsters.length > 0) {
+                    this.player.defending = false;
+
+                    // Show status
+                    const healthColor = this.player.isCritical ? 'red' : 'green';
+                    AdventureConsole.typeLine(`\nYour HP: ${this.player.health} / ${this.player.maxHealth}`, healthColor);
+                    AdventureConsole.typeLine("Enemies:");
+                    
+                    for (let i = 0; i < this.monsters.length; i++) {
+                        let hp = this.monsters[i].health.toString();
+                        if (this.monsters[i] instanceof Boss && this.monsters[i].phase2) {
+                            hp = "???";
+                        }
+                        AdventureConsole.typeLine(`[/${i + 1}/] ${this.monsters[i].name} (HP: ${hp})`);
+                    }
+
+                    // Player action
+                    AdventureConsole.type("Choose an enemy to attack (number) or give a command: ");
+                    const input = await AdventureConsole.readLine();
+
+                    const parts = input.split(' ');
+                    const command = parts[0].toLowerCase();
+                    const argument = parts.slice(1).join(" ");
+                    let usedCommand = true;
+
+                    switch (command) {
+                        case "use":
+                        case "drink":
+                        case "eat":
+                            if (!(await this.player.useItem(argument))) {
+                                this.player.displayInventory();
+                            }
+                            break;
+                        case "block":
+                        case "defend":
+                            this.player.defending = true;
+                            break;
+                        case "s":
+                        case "stat":
+                        case "status":
+                            this.player.displayStatus();
+                            continue;
+                        case "i":
+                        case "inv":
+                        case "inventory":
+                            this.player.displayInventory();
+                            continue;
+                        case "run":
+                            if (await this.tryEscapeCombat(AdventureConsole.gameRef)) {
+                                return;
+                            }
+                            break;
+                        case "help":
+                            AdventureConsole.typeLine("Commands: use, block (defend), status, inventory, run");
+                            continue;
+                        default:
+                            usedCommand = false;
+                            break;
+                    }
+
+                    const choice = parseInt(input);
+                    if ((!isNaN(choice) && choice >= 1 && choice <= this.monsters.length) || usedCommand) {
+                        if (!usedCommand) {
+                            const target = this.monsters[choice - 1];
+
+                            if (target instanceof NPCAttacker) {
+                                this.player.changeReputation(-target.popularity);
+                            }
+
+                            // Player attacks
+                            const playerHitChance1 = this.clamp(80 + (this.player.agility - target.agility) * 2, 20, 95);
+                            const playerHitChance2 = this.clamp(80 + (this.player.agility - target.agility) * 2, 40, 100);
+                            const playerHitChance = Math.max(playerHitChance1, playerHitChance2);
+
+                            if (AdventureConsole.randomInt(0, 100) < playerHitChance) {
+                                let damage = Math.max(AdventureConsole.randomInt(this.player.attackPower - 5, this.player.attackPower + 7), 1);
+
+                                AdventureConsole.typeLine(`You attack ${target.name}.`);
+                                if (AdventureConsole.randomInt(0, 100) > 89) {
+                                    damage = Math.floor(damage * 2.2);
+                                    AdventureConsole.typeLine("CRITICAL HIT!", 'yellow');
+                                }
+                                
+                                AdventureConsole.typeLine(`${target.name} takes ${damage} damage!`, 'cyan');
+                                target.hurt(damage);
+
+                                if (!target.isAlive) {
+                                    AdventureConsole.typeLine(`${target.name} is defeated!`);
+                                    
+                                    if (target instanceof NPCAttacker) {
+                                        this.player.changeReputation(Math.floor(target.popularity * -1.5));
+                                    } else if (target instanceof Boss) {
+                                        this.player.changeReputation(5);
+                                    } else {
+                                        this.player.changeReputation(1);
+                                    }
+
+                                    this.player.gainXP(target.xpReward);
+                                    this.monsters = this.monsters.filter(m => m !== target);
+                                }
+                            } else {
+                                AdventureConsole.typeLine(`You missed ${target.name}!`, 'darkgray');
+                            }
+                        }
+
+                        // Monster attacks back
+                        for (const monster of this.monsters) {
+                            const baseHitChance1 = this.clamp(80 + Math.floor((monster.agility - this.player.agility) * 2.5), 20, 95);
+                            const baseHitChance2 = (monster instanceof Boss) ? 
+                                this.clamp(80 + Math.floor((monster.agility - this.player.agility) * 2.5), 40, 100) : 0;
+                            const baseHitChance = Math.max(baseHitChance1, baseHitChance2);
+
+                            if (AdventureConsole.randomInt(0, 100) < baseHitChance) {
+                                const turn = monster.takeTurn();
+                                AdventureConsole.typeLine(turn.message);
+                                
+                                if (turn.power !== 0) {
+                                    let damage = AdventureConsole.randomInt(Math.max(turn.power - 5, 1), turn.power + 6);
+                                    this.player.hurt(damage);
+                                }
+                            } else {
+                                AdventureConsole.typeLine(`${monster.name} misses!`, 'darkgray');
+                            }
+
+                            if (!this.player.isAlive) {
+                                AdventureConsole.typeLine("You have been defeated...", 'darkred');
+                                await AdventureConsole.sleep(3000);
+                                return;
+                            }
+                        }
+                    } else {
+                        AdventureConsole.typeLine("Invalid choice. Enter a number or give a command. Use 'help' to see commands.", 'darkgray');
+                    }
+                }
+
+                await AdventureConsole.sleep(2000);
+                AdventureConsole.typeLine("\n=== Combat ended! ===\n", 'yellow');
+            }
+
+            async tryEscapeCombat(game) {
+                if (this.monsters.some(m => m instanceof Boss)) {
+                    AdventureConsole.typeLine("You cannot escape this fight!", 'red');
+                    return false;
+                }
+
+                const highestMonsterAgility = Math.max(...this.monsters.map(m => m.agility));
+                const escapeChance = this.clamp(40 + (this.player.agility - highestMonsterAgility) * 3, 10, 95);
+
+                if (AdventureConsole.randomInt(0, 100) >= escapeChance) {
+                    AdventureConsole.typeLine("You tried to escape but they cut you off!", 'red');
+                    return false;
+                }
+
+                await game.tryEscapeCombat();
+                return true;
+            }
+
+            clamp(value, min, max) {
+                if (value < min) return min;
+                if (value > max) return max;
+                return value;
+            }
+        }
+
+        // ===========================
+        // Game Class
+        // ===========================
+        class Game {
+            constructor(player, places, startingPlace) {
+                this.player = player;
+                this.currentPlace = startingPlace;
+                this.openingMessage = "Welcome to the adventure!";
+                this.title = "New Text Adventure!";
+                this.justVisited = false;
+                this.commands = [
+                    "take (get)", "use (eat, drink)", "drop", "equip", "unequip",
+                    "talk (speak)", "move (go, travel)", "ascend", "descend",
+                    "exit (leave)", "open", "attack (fight)", "status (s, stat)",
+                    "inventory (i, inv)", "look (examine)", "quit"
+                ];
+            }
+
+            async run() {
+                document.title = this.title;
+                AdventureConsole.gameRef = this;
+
+                const titleBanner = "*".repeat(this.title.length);
+
+                AdventureConsole.newLine();
+                AdventureConsole.writeLine(titleBanner);
+                AdventureConsole.writeLine(this.title, 'yellow');
+                AdventureConsole.writeLine(titleBanner);
+                AdventureConsole.newLine();
+                AdventureConsole.typeLine(this.openingMessage, 'yellow');
+
+                while (this.player.isAlive) {
+                    if (!this.justVisited) {
+                        AdventureConsole.typeLine(`\nYou are at ${this.currentPlace.name}: ${this.currentPlace.description}`, 'yellow');
+
+                        if (this.currentPlace.interactables.length > 0) {
+                            const chests = this.currentPlace.interactables.filter(i => i instanceof Chest);
+                            chests.forEach(chest => {
+                                AdventureConsole.typeLine(`There is a ${chest} here.`);
+                            });
+
+                            const items = this.currentPlace.interactables.filter(i => i instanceof Item);
+                            if (items.length > 0) {
+                                AdventureConsole.type("Items here: ");
+                                items.forEach(item => {
+                                    AdventureConsole.type(`${item}, `);
+                                });
+                                AdventureConsole.newLine();
+                            }
+
+                            const npcs = this.currentPlace.interactables.filter(i => i instanceof NPC);
+                            if (npcs.length > 0) {
+                                AdventureConsole.type("People here: ");
+                                npcs.forEach(npc => {
+                                    AdventureConsole.type(`${npc}, `);
+                                });
+                                AdventureConsole.newLine();
+                            }
+                        }
+
+                        this.justVisited = true;
+                    }
+
+                    AdventureConsole.type("Enter command: ");
+                    const input = await AdventureConsole.readLine();
+                    const parts = input.split(' ');
+                    const command = parts[0].toLowerCase();
+                    const argument = parts.slice(1).join(" ");
+
+                    switch (command) {
+                        case "get":
+                        case "take":
+                            await this.handleGet(argument);
+                            break;
+                        case "use":
+                        case "eat":
+                        case "drink":
+                            await this.player.useItem(argument);
+                            break;
+                        case "drop":
+                            const droppedItem = await this.player.dropItem(argument);
+                            if (droppedItem) {
+                                this.currentPlace.addItem(droppedItem);
+                            }
+                            break;
+                        case "equip":
+                            await this.player.equipItem(argument);
+                            break;
+                        case "unequip":
+                            this.player.unequipItem(argument);
+                            break;
+                        case "speak":
+                        case "talk":
+                            await this.handleTalk(argument);
+                            break;
+                        case "move":
+                        case "go":
+                        case "enter":
+                        case "ascend":
+                        case "descend":
+                        case "travel":
+                        case "exit":
+                        case "leave":
+                            await this.handleMove(command, argument || "exit");
+                            break;
+                        case "open":
+                            await this.handleOpen(argument);
+                            break;
+                        case "attack":
+                        case "fight":
+                            await this.handleAttack(argument);
+                            break;
+                        case "s":
+                        case "stat":
+                        case "status":
+                            this.player.displayStatus();
+                            break;
+                        case "i":
+                        case "inv":
+                        case "inventory":
+                            this.player.displayInventory();
+                            break;
+                        case "look":
+                        case "examine":
+                            await this.handleLook(argument);
+                            break;
+                        case "quit":
+                            this.player.isAlive = false;
+                            AdventureConsole.typeLine("Thanks for playing!");
+                            break;
+                        case "help":
+                            AdventureConsole.type("There are many commands. They most often are followed by a noun. Try: ", 'yellow');
+                            this.commands.forEach(cmd => {
+                                AdventureConsole.type(cmd + ", ", 'yellow');
+                            });
+                            AdventureConsole.newLine();
+                            break;
+                        default:
+                            if (!(await this.handleCustomCommand(command, argument))) {
+                                AdventureConsole.typeLine("Unknown command. Try: help, take, use, equip, talk, move, open, attack, status, inventory, quit", 'darkgray');
+                            }
+                            break;
+                    }
+                }
+            }
+
+            async getInteractable(name, type = Interactable, searchInv = false, message = true) {
+                const placeMatches = this.currentPlace.interactables.filter(i => 
+                    i instanceof type && i.refersTo(name)
+                );
+
+                let inventoryMatches = [];
+                if (searchInv) {
+                    inventoryMatches = this.player.inventory.filter(i => 
+                        i instanceof type && i.refersTo(name)
+                    );
+                }
+
+                const matches = [...placeMatches, ...inventoryMatches];
+
+                if (matches.length === 0) {
+                    if (message) {
+                        if (type === NPC) {
+                            AdventureConsole.typeLine(`There is nobody named ${name.toUpperCase()} here.`, 'darkgray');
+                        } else if (type === Item && this.currentPlace.interactables.some(i => i.refersTo(name))) {
+                            AdventureConsole.typeLine(`You cannot pick up ${name.toUpperCase()}`, 'darkgray');
+                        } else if (World.dirs.includes(name.toUpperCase())) {
+                            AdventureConsole.typeLine(`You cannot go ${name.toUpperCase()} from here.`, 'darkgray');
+                        } else if (type === Exit) {
+                            AdventureConsole.typeLine("You cannot do that. Type 'help' for command list.", 'darkgray');
+                        } else {
+                            AdventureConsole.typeLine(`There is no ${name.toUpperCase()} here.`, 'darkgray');
+                        }
+                    }
+                    return null;
+                }
+
+                if (matches.length === 1) {
+                    return matches[0];
+                }
+
+                return await AdventureConsole.askPlayer(matches);
+            }
+
+            async handleCustomCommand(cmd, arg) {
+                const interact = await this.getInteractable(arg, Interactable, true, false);
+                if (!interact) return false;
+                return interact.doCommand(cmd);
+            }
+
+            async handleAttack(name) {
+                if (!name || name.trim() === '') {
+                    AdventureConsole.typeLine("Specify something to attack.", 'darkgray');
+                    return;
+                }
+
+                const npc = await this.getInteractable(name, NPC);
+                if (!npc) return;
+
+                if (npc.dead) {
+                    AdventureConsole.typeLine("They are already dead...", 'darkred');
+                    return;
+                }
+
+                const npcs = this.currentPlace.interactables.filter(i => 
+                    i instanceof NPC && !i.dead
+                );
+
+                const multiple = npcs.length > 1 ? " (The nearby people join in the fight)" : "";
+                AdventureConsole.typeLine(`You catch ${npc} off guard and attack them!${multiple}`, 'yellow');
+
+                const enemyPairs = npcs.map(n => ({ npc: n, monster: n.enemyStats }));
+                const enemies = enemyPairs.map(p => p.monster);
+
+                const combat = new Combat(this.player, enemies);
+                await combat.start();
+
+                enemyPairs.forEach(pair => {
+                    if (pair.monster.health <= 0) {
+                        pair.npc.dead = true;
+                    }
+                });
+            }
+
+            async handleLook(name) {
+                if (!name || name.trim() === '') {
+                    this.justVisited = false;
+                    return;
+                }
+
+                const interact = await this.getInteractable(name);
+                if (!interact) return;
+
+                interact.lookAt();
+            }
+
+            async handleGet(itemName) {
+                if (!itemName || itemName.trim() === '') {
+                    AdventureConsole.typeLine("Specify an item to get.", 'darkgray');
+                    return;
+                }
+
+                if (itemName !== "all" && itemName !== "everything") {
+                    const collectable = await this.getInteractable(itemName, Item);
+                    if (!collectable) return;
+
+                    AdventureConsole.typeLine(`You pick up the ${collectable.name}.`, 'green');
+                    this.player.getItem(collectable);
+                    this.currentPlace.interactables = this.currentPlace.interactables.filter(i => i !== collectable);
+                } else {
+                    const all = this.currentPlace.interactables.filter(i => i instanceof Item);
+
+                    if (all.length === 0) {
+                        AdventureConsole.typeLine("There is nothing here to pick up.", 'darkgray');
+                        return;
+                    }
+
+                    AdventureConsole.typeLine("You pick up everything!", 'green');
+                    all.forEach(collectable => {
+                        this.player.getItem(collectable);
+                        this.currentPlace.interactables = this.currentPlace.interactables.filter(i => i !== collectable);
+                    });
+                }
+            }
+
+            async handleOpen(arg) {
+                if (!arg || arg.trim() === '') {
+                    AdventureConsole.typeLine("What do you want to open?", 'darkgray');
+                    return;
+                }
+
+                const interact = await this.getInteractable(arg);
+                if (!interact) return;
+
+                if (interact instanceof Chest) {
+                    await this.handleChest(interact);
+                } else if (interact instanceof Exit) {
+                    await this.handleMove("open", arg);
+                } else {
+                    AdventureConsole.typeLine("You cannot open that.", 'darkgray');
+                }
+            }
+
+            async handleChest(chest) {
+                if (chest.open) {
+                    AdventureConsole.typeLine(`The /${chest}/ is empty.`);
+                    return;
+                }
+
+                chest.open = true;
+                AdventureConsole.typeLine(`You open the ${chest} to find a ${chest.item.shortString()}!`);
+                this.player.getItem(chest.item);
+            }
+
+            async handleMove(command, direction = "exit") {
+                if (direction === "out" || command === "leave" || command === "exit") {
+                    direction = "exit";
+                }
+
+                if (!direction || direction.trim() === '') {
+                    AdventureConsole.typeLine("Specify a direction to move: NORTH, SOUTH, EAST, WEST.", 'darkgray');
+                    return;
+                }
+
+                const exit = await this.getInteractable(direction, Exit);
+                if (!exit) return;
+
+                this.currentPlace = exit.next;
+                
+                if (World.dirs.includes(direction.toUpperCase())) {
+                    AdventureConsole.typeLine(`You move ${direction.toUpperCase()} to ${this.currentPlace.name}.`);
+                } else if (World.stairActs.includes(command.toUpperCase())) {
+                    AdventureConsole.typeLine(`You ${command.toUpperCase()} the ${direction.toUpperCase()} to ${this.currentPlace.name}`);
+                } else {
+                    AdventureConsole.typeLine(`You ENTER the ${this.currentPlace.name}.`);
+                }
+
+                if (this.currentPlace.monsters.length > 0) {
+                    AdventureConsole.typeLine("You are stopped by monsters and are sucked into combat!", 'yellow');
+                    const combat = new Combat(this.player, this.currentPlace.monsters);
+                    await combat.start();
+                    this.currentPlace.monsters = this.currentPlace.monsters.filter(m => m.health > 0);
+                }
+
+                this.justVisited = false;
+            }
+
+            async handleTalk(npcName) {
+                if (!npcName || npcName.trim() === '') {
+                    AdventureConsole.typeLine("Specify an NPC to talk to.", 'darkgray');
+                    return;
+                }
+
+                const npc = await this.getInteractable(npcName, NPC);
+                if (!npc) return;
+
+                await npc.talk(this.player.reputationLevel);
+            }
+
+            async tryEscapeCombat() {
+                const exits = this.currentPlace.interactables.filter(i => i instanceof Exit);
+
+                if (exits.length === 0) {
+                    AdventureConsole.typeLine("You try to run but there is nowhere to go!", 'darkgray');
+                    return false;
+                }
+
+                const chosen = exits[AdventureConsole.randomInt(0, exits.length)];
+                const direction = chosen.name.toUpperCase();
+                const to = chosen.isDirection ? "" : "to ";
+
+                AdventureConsole.typeLine(`You escape and flee ${to}${direction}!`, 'green');
+                await this.handleMove("move", direction);
+
+                return true;
+            }
+        }
+    </script>
+    <script>
+        // ===========================
+        // CUSTOM ITEM DEFINITIONS
+        // ===========================
+        class BasicWeapon extends Weapon {
+            constructor() {
+                super("Rusty Sword", "An old blade. Not very sharp, but better than nothing.");
+                this.attackPower = 4;
+                this.weight = 6;
+            }
+        }
+
+        class Stick extends Weapon {
+            constructor() {
+                super("Stick", "A simple stick. It will not do much damage, but it is better than nothing.");
+                this.attackPower = 2;
+                this.weight = 1;
+            }
+        }
+
+        class IronSword extends Weapon {
+            constructor() {
+                super("Iron Sword", "A simple sword made of iron.");
+                this.attackPower = 12;
+                this.weight = 7;
+            }
+        }
+
+        class LightningBlade extends Weapon {
+            constructor() {
+                super("Lightning Blade", "A blade humming with electricity. Faster and stronger than normal weapons.");
+                this.attackPower = 22;
+                this.weight = 10;
+            }
+        }
+
+        class CoolWeapon extends Weapon {
+            constructor() {
+                super("Starforged Blade", "A shimmering sword forged from star metal. Swift and deadly.");
+                this.attackPower = 25;
+                this.weight = 12;
+            }
+        }
+
+        class BasicArmour extends Armour {
+            constructor() {
+                super("Chainmail", "Some basic armour protection.");
+                this.defence = 5;
+                this.weight = 9;
+            }
+        }
+
+        class CoolArmour extends Armour {
+            constructor() {
+                super("Crystal Armour", "Shining plates of crystal that offer excellent protection.");
+                this.defence = 12;
+                this.weight = 15;
+            }
+        }
+
+        class WoodenShield extends Shield {
+            constructor() {
+                super("Wooden Shield", "A lightweight, simple shield.");
+                this.defence = 6;
+                this.weight = 4;
+            }
+        }
+
+        // ===========================
+        // CUSTOM EFFECT DEFINITIONS
+        // ===========================
+        class HealEffect extends Effect {
+            constructor(amount) {
+                super("Healing");
+                this.heal = amount;
+                this.duration = 0; // Instant
+            }
+        }
+
+        class StrengthBoostEffect extends Effect {
+            constructor(amount, turns) {
+                super("Strength Boost");
+                this.augmentStrength = amount;
+                this.duration = turns;
+            }
+        }
+
+        class AgilityBoostEffect extends Effect {
+            constructor(amount, turns) {
+                super("Agility Boost");
+                this.augmentAgility = amount;
+                this.duration = turns;
+            }
+        }
+
+        class AttackBoostEffect extends Effect {
+            constructor(amount, turns) {
+                super("Attack Boost");
+                this.augmentAttackPower = amount;
+                this.duration = turns;
+            }
+        }
+
+        // ===========================
+        // CUSTOM CONSUMABLE DEFINITIONS
+        // ===========================
+        class Bread extends Potion {
+            constructor() {
+                super("Bread", new HealEffect(25));
+            }
+        }
+
+        class Herb extends Potion {
+            constructor() {
+                super("Herb", new HealEffect(20));
+            }
+        }
+
+        class HealingPotion extends Potion {
+            constructor() {
+                super("Healing Potion", new HealEffect(30));
+            }
+        }
+
+        class Tonic extends Potion {
+            constructor() {
+                super("Tonic", new HealEffect(50));
+            }
+        }
+
+        class SuperTonic extends Potion {
+            constructor() {
+                super("Super Tonic", new HealEffect(80));
+            }
+        }
+
+        // ===========================
+        // CUSTOM MONSTER DEFINITIONS
+        // ===========================
+        class Pickpocket extends Monster {
+            constructor() {
+                super("Pickpocket", 15, 8, 5, 12);
+            }
+            attack(turn) {
+                return new Attack(this.strength, `${this.name} attacked!`);
+            }
+        }
+
+        class Slime extends Monster {
+            constructor() {
+                super("Slime", 20, 5, 5, 2);
+            }
+            attack(turn) {
+                return new Attack(this.strength, `${this.name} attacked!`);
+            }
+        }
+
+        class Wolf extends Monster {
+            constructor() {
+                super("Wolf", 35, 12, 10, 8);
+            }
+            attack(turn) {
+                if (turn % 4 === 0) {
+                    return new Attack(this.strength + 5, `${this.name} lunged!`);
+                }
+                return new Attack(this.strength, `${this.name} scratched you!`);
+            }
+        }
+
+        class Goblin extends Monster {
+            constructor() {
+                super("Goblin", 32, 15, 9, 8);
+            }
+            attack(turn) {
+                if (turn % 2 === 0) {
+                    return new Attack(this.strength + 7, `${this.name} swung a heavy club!`);
+                }
+                return new Attack(this.strength, `${this.name} did a quick stab.`);
+            }
+        }
+
+        class GoblinScout extends Monster {
+            constructor() {
+                super("Goblin Scout", 28, 10, 8, 10);
+            }
+            attack(turn) {
+                if (turn % 3 === 0) {
+                    return new Attack(this.strength + 6, `${this.name} swung a heavy club!`);
+                }
+                return new Attack(this.strength, `${this.name} did a quick stab.`);
+            }
+        }
+
+        class Shade extends Monster {
+            constructor() {
+                super("Shade", 30, 15, 7, 12);
+            }
+            attack(turn) {
+                if (turn % 5 === 0) {
+                    return new Attack(this.strength * 2, `${this.name} used shadow strike!`);
+                }
+                return new Attack(this.strength, `${this.name} touched your soul.`);
+            }
+        }
+
+        class Ghost extends Monster {
+            constructor() {
+                super("Ghost", 40, 25, 6, 7);
+            }
+            attack(turn) {
+                if (turn % 5 === 0) {
+                    return new Attack(this.strength * 2, `${this.name} used shadow strike!`);
+                }
+                return new Attack(this.strength, `${this.name} touched your soul.`);
+            }
+        }
+
+        class Skeleton extends Monster {
+            constructor() {
+                super("Skeleton", 40, 14, 10, 4);
+            }
+            attack(turn) {
+                return new Attack(this.strength, `${this.name} attacked!`);
+            }
+        }
+
+        class Golem extends Monster {
+            constructor() {
+                super("Golem", 60, 25, 14, 4);
+            }
+            attack(turn) {
+                if (turn % 6 === 0) {
+                    return new Attack(this.strength * 2, `${this.name} smashed his fists to the ground!`);
+                }
+                return new Attack(this.strength, `${this.name} punched you.`);
+            }
+        }
+
+        class CrystalGolem extends Monster {
+            constructor() {
+                super("Crystal Golem", 80, 30, 18, 3);
+            }
+            attack(turn) {
+                if (turn % 6 === 0) {
+                    return new Attack(this.strength * 2, `${this.name} smashed his fists to the ground!`);
+                }
+                return new Attack(this.strength, `${this.name} punched you.`);
+            }
+        }
+
+        class ForestSprite extends Monster {
+            constructor() { super("Forest Sprite", 25, 10, 6, 12); }
+            attack(turn) { return new Attack(this.strength, `${this.name} attacked!`); }
+        }
+
+        class WaterSerpent extends Monster {
+            constructor() { super("Water Serpent", 40, 15, 12, 10); }
+            attack(turn) { return new Attack(this.strength, `${this.name} attacked!`); }
+        }
+
+        class BatSwarm extends Monster {
+            constructor() { super("Bat Swarm", 30, 12, 5, 15); }
+            attack(turn) { return new Attack(this.strength, `${this.name} swarmed around you!`); }
+        }
+
+        class AshBeast extends Monster {
+            constructor() { super("Ash Beast", 50, 25, 20, 4); }
+            attack(turn) { return new Attack(this.strength, `${this.name} attacked!`); }
+        }
+
+        class ThunderHawk extends Monster {
+            constructor() { super("Thunder Hawk", 60, 30, 15, 18); }
+            attack(turn) { return new Attack(this.strength + 5, `${this.name} attacked!`); }
+        }
+
+        class ArcaneWisp extends Monster {
+            constructor() { super("Arcane Wisp", 35, 15, 5, 12); }
+            attack(turn) { return new Attack(this.strength, `${this.name} attacked!`); }
+        }
+
+        class AnimatedTome extends Monster {
+            constructor() { super("Animated Tome", 25, 12, 6, 4); }
+            attack(turn) { return new Attack(this.strength, `${this.name} attacked!`); }
+        }
+
+        class PhantomKnight extends Monster {
+            constructor() { super("Phantom Knight", 80, 50, 22, 12); }
+            attack(turn) { return new Attack(this.strength + 5, `${this.name} attacked!`); }
+        }
+
+        class MagmaGolem extends Monster {
+            constructor() {
+                super("Magma Golem", 100, 45, 25, 2);
+            }
+            attack(turn) {
+                return new Attack((turn % 3 === 0 ? this.strength * 2 : this.strength), `${this.name} attacked!`);
+            }
+        }
+
+        class FallenKing extends Boss {
+            constructor() {
+                super("Fallen King", 220, 140, 148, 34, 22);
+            }
+            attack(turn) {
+                if (!this.phase2) {
+                    if (turn % 4 === 0) return new Attack(this.strength + 10, `${this.name} cast fireball.`);
+                    return new Attack(this.strength, `${this.name} struck you!`);
+                } else {
+                    if (turn % 3 === 0) return new Attack(this.strength + 18, `${this.name} used thunderbolt!`);
+                    if (turn % 4 === 0) return new Attack(this.strength + 12, `${this.name} cast fireball.`);
+                    if (turn % 7 === 0) return new Attack(this.strength + 24, `${this.name} called upon the power of the moon!`);
+                    return new Attack(this.strength + 5, `${this.name} struck you!`);
+                }
+            }
+        }
+
+        // ===========================
+        // MAIN GAME SETUP
+        // ===========================
+        async function createWillowsRest() {
+            // Get player name
+            AdventureConsole.type("Press enter to begin...");
+            await AdventureConsole.readLine();
+            AdventureConsole.type("Enter your name, adventurer: ");
+            const playerName = await AdventureConsole.readLine();
+
+            const player = new Player(40, 12, 15);
+            player.name = playerName;
+
+            // === PLACES ===
+            const town = new Place(
+                "Willow's Rest",
+                "A small town sheltered by willows and warm hearths. A stone fountain stands in the square. " +
+                "To the /east/ lies the bustling Market Square, to the /south/ is the Willowbrook river, " +
+                "to the /north/ stretch the Village Outskirts, and the /blacksmith's shop/ sits just off the main road."
+            );
+
+            const market = new Place(
+                "Market Square",
+                "Stalls and vendors fill the square with noise and color. A noticeboard stands in the center. " +
+                "You can return /west/ to Willow's Rest, head /north/ toward the Old Mill, or descend /down/ into a hidden basement beneath the stalls."
+            );
+
+            const blacksmithShop = new Place(
+                "Blacksmith's Shop",
+                "The blacksmith's hammer rings against iron. Weapons and tools line the walls. " +
+                "The only exit is /out/ back into the town square."
+            );
+
+            const outskirts = new Place(
+                "Village Outskirts",
+                "Thatched cottages fade into open fields. A dirt road runs /north/ toward the Wildwood and Old Mill, " +
+                "while the path leads /south/ back to Willow's Rest."
+            );
+
+            const oldMill = new Place(
+                "Old Mill",
+                "An abandoned mill with broken paddles and a creaking wheel. Children whisper of lights here at night. " +
+                "The road runs /south/ to the Market Square, while a forest path continues /north/ into the Wildwood."
+            );
+
+            const wildwood = new Place(
+                "Wildwood",
+                "A deep, ancient forest full of twisting paths. Moss blankets fallen logs. " +
+                "A route leads /south/ to the village outskirts, /east/ to the Ancient Ruins, further /north/ deeper in the woods, and /west/ to the cliffside."
+            );
+
+            const deepwood = new Place(
+                "Deepwood",
+                "Further in the forest is a clearing, there are bones scattered about. Sitting on top is a strange yellow-colored box. " +
+                "A route leads /south/ to the wildwood."
+            );
+
+            const ruins = new Place(
+                "Ancient Ruins",
+                "Crumbling pillars and carved stones rise from tangled roots. A strange energy lingers here. " +
+                "You can go /west/ back into the Wildwood, descend /down/ into the Echoing Cavern, " +
+                "or travel /center/ toward a mysterious platform where the Fallen Star supposedly fell."
+            );
+
+            const cave = new Place(
+                "Echoing Cavern",
+                "A cold, damp cavern glittering with mineral veins. Echoes dance along the walls. " +
+                "You can climb /up/ to the Ancient Ruins or head /deeper/ into the Forbidden Crypt."
+            );
+
+            const crypt = new Place(
+                "Forbidden Crypt",
+                "Ancient coffins and bone dust fill the shadowed chamber. A lone chest rests on a pedestal. " +
+                "The only way out is /up/ into the Echoing Cavern or /out/ into the Ruins above."
+            );
+
+            const river = new Place(
+                "Willowbrook",
+                "A gently flowing river with a wooden bridge. Fishermen cast lines into shimmering water. " +
+                "You can follow the bank /north/ to the town cross the bridge /east/ to the secluded woods, or head /west/ toward the seaside cliffs."
+            );
+
+            const woods = new Place(
+                "Secluded Woods",
+                "These woods are dark, and lonely. There isn't much here but a simple box. " +
+                "You can go /west/ to willowbrook "
+            );
+
+            const cliffs = new Place(
+                "Seacliff Overlook",
+                "Windswept cliffs tower over a stormy sea. Old initials are carved into a wooden post. " +
+                "A steep path leads /up/ to the Silent Lighthouse, while trails head /east/ toward the Wildwood."
+            );
+
+            const lighthouse = new Place(
+                "Silent Lighthouse",
+                "A tall brick tower overlooking the coast. The lamproom above is dark. " +
+                "A rope coil sits beside a locked trapdoor. You can go /down/ the cliff path to return to the Seacliff Overlook."
+            );
+
+            const blackMarketBasement = new Place(
+                "Black Market Basement",
+                "A dim, torchlit chamber hidden beneath the Market. Crates marked with strange symbols line the floor. " +
+                "The only route is /up/ back into the Market Square."
+            );
+
+            const bossRoom = new Place(
+                "Hall of the Fallen Star",
+                "A vast chamber centered around a black stone dais. A glowing chest rests atop it. " +
+                "The sky overhead feels thin and unreal. Your only exit is /out/ to the ruins."
+            );
+
+            // === EXITS ===
+            town.addExit("east", market);
+            town.addExit("south", river);
+            town.addExit("north", outskirts);
+            town.addExit("blacksmith shop", blacksmithShop);
+
+            market.addExit("west", town);
+            market.addExit("down", blackMarketBasement);
+            market.addExit("north", oldMill);
+
+            blacksmithShop.addExit(town);
+
+            outskirts.addExit("south", town);
+            outskirts.addExit("north", wildwood);
+
+            oldMill.addExit("south", market);
+            oldMill.addExit("north", wildwood);
+
+            wildwood.addExit("south", outskirts);
+            wildwood.addExit("east", ruins);
+            wildwood.addExit("west", cliffs);
+            wildwood.addExit("north", deepwood);
+
+            deepwood.addExit("south", wildwood);
+
+            ruins.addExit("west", wildwood);
+            ruins.addExit("down", cave);
+            ruins.addExit("center", bossRoom);
+
+            cave.addExit("up", ruins);
+            cave.addExit("deeper", crypt);
+
+            crypt.addExit("up", cave);
+            crypt.addExit(ruins);
+
+            river.addExit("north", town);
+            river.addExit("west", cliffs);
+            river.addExit("east", woods);
+
+            woods.addExit("west", river);
+
+            cliffs.addExit("up", lighthouse);
+            cliffs.addExit("east", wildwood);
+
+            lighthouse.addExit("down", cliffs);
+
+            blackMarketBasement.addExit("up", market);
+
+            bossRoom.addExit(ruins);
+
+            // === NPCs ===
+            town.addNpc(new NPC("Elder Mara",
+                "Welcome, traveler. If you're here to help, please— the market is short of bread, and the mill creaks with something unnatural. Rumours: a stranger with a broken star wanders the ruins."));
+
+            market.addNpc(new NPC("Scribe Leto",
+                "I sell maps and tales. If you bring me a shard from the Fallen Star, I'll draw you a safe path through the ruins."));
+
+            blacksmithShop.addNpc(new NPC("Blacksmith",
+                "Strengthened blades and steadier shields — if you bring me iron ore from the cave, I can root your weapon in the old ways."));
+
+            blacksmithShop.addNpc(new NPC("Apprentice",
+                "I keep the bellows going. If only someone would find the smith's missing hammer... it was last seen near the mill."));
+
+            oldMill.addNpc(new NPC("Mill-ghost",
+                "The wheel remembers. It remembers a light that crossed the floor at midnight. Take this warning: the ruins do not like visitors."));
+
+            wildwood.addNpc(new NPC("Hermit",
+                "The forest chooses who hears it. Bring me a herb from the cavern and I'll show you a hidden path to the ruins."));
+
+            ruins.addNpc(new NPC("Wandering Scholar",
+                "These stones were built to hold something the sky could not keep. Do not pry where the iron key sleeps."));
+
+            river.addNpc(new NPC("Fisherman",
+                "The fish are odd lately — bitter taste, but heavy in gold. I lost my net near the old stones across the bridge."));
+
+            lighthouse.addNpc(new NPC("Keeper's Journal",
+                "The log is quiet, but the last entry mentions a 'light that swallowed the dawn.' There's a key tucked into the rope coil if you know how to look."));
+
+            blackMarketBasement.addNpc(new NPC("Shady Trader",
+                "Shh. You there. For the right coin or favor, I have a map to a secret entrance under the lighthouse."));
+
+            // === ITEMS ===
+            town.addItem(new Bread());
+            town.addItem(new HealingPotion());
+            
+            const ancientScroll = new Book(
+                "Ancient Scroll",
+                "In the elder days, when Willow's Rest was but a ring of timber huts around a singing spring, a stranger came walking from the northern ridge. His cloak was scorched at the hem, and his shadow burned brighter than the morning sun.\n\n" +
+                "The folk hid in their doorways, for fire was a feared omen then—too wild, too hungry, too fond of taking what it was not given. But the stranger only bowed his head and asked for water.\n\n" +
+                "Old Maren, the healer, stepped forward first. She cupped the spring water in her hands and offered it. When he drank, the water steamed, though he winced as if the heat pained him more than them.\n\n" +
+                "'I carry the Ember,'' he said. 'And it grows restless.'\n\n" +
+                "That night, under the Great Willow, he told them a tale:\n" +
+                "That deep in the mountains slept a Fallen Star that nourished itself on fear and silence. If left to wake, it would breathe out storms of ash until even memory turned gray. The Ember he carried was a spark taken from that Star—stolen long ago to weaken it—but now it called out to be returned.\n\n" +
+                "'If I fall,' he warned, 'the Star will call its spark home, and all paths will burn.'\n\n" +
+                "The people of the village, though few, formed a circle around him. Hunters, singers, shepherd children—none brave enough alone, but together enough to matter. They vowed to guide him through the forest's secret paths, where the Star's servants would not follow.\n\n" +
+                "For seven nights they traveled until they reached the ridge again. Legend says that at dawn, when the Ember Guest stepped forward to face the mountain, each villager felt a soft glow rise in their own chest—as if a tiny ember had been entrusted to them too.\n\n" +
+                "None know what became of the stranger.\n" +
+                "Some say he returned the Ember and vanished with it.\n" +
+                "Others claim the mountain swallowed him whole.\n" +
+                "But Willow's Rest has never feared fire since, for fire remembers the village that showed mercy to a burning man.\n\n" +
+                "And so long as the Great Willow stands, its roots warm even in winter, as if a forgotten ember still sleeps beneath.",
+                "It is an old piece of parchment, weathered over many years hidden under the cobblestones."
+            );
+            town.addChest(new Chest(ancientScroll, "loose tile"));
+
+            market.addItem(new Herb());
+            market.addItem(new Bread());
+            market.addItem(new WoodenShield());
+
+            oldMill.addItem(new Stick());
+            oldMill.addItem(new HealingPotion());
+            oldMill.addChest(new Chest(new BasicArmour()));
+
+            wildwood.addItem(new Herb());
+            wildwood.addItem(new HealingPotion());
+            wildwood.addChest(new Chest(new BasicWeapon()));
+
+            deepwood.addChest(new Chest(new LightningBlade(), "yellow box"));
+
+            woods.addChest(new Chest(new SuperTonic(), "box"));
+
+            cave.addItem(new Herb());
+            cave.addChest(new Chest(new IronSword()));
+
+            crypt.addItem(new HealingPotion());
+            crypt.addChest(new Chest(new CoolArmour()));
+
+            bossRoom.addItem(new LightningBlade());
+            bossRoom.addChest(new Chest(new CoolWeapon()));
+
+            blackMarketBasement.addItem(new Bread());
+            blackMarketBasement.addChest(new Chest(new Tonic()));
+
+            river.addItem(new Herb());
+
+            // === MONSTERS ===
+            market.monsters.push(new Pickpocket());
+            market.monsters.push(new Pickpocket());
+
+            outskirts.monsters.push(new Slime());
+            outskirts.monsters.push(new Slime());
+            outskirts.monsters.push(new GoblinScout());
+
+            oldMill.monsters.push(new Skeleton());
+
+            wildwood.monsters.push(new Wolf());
+            wildwood.monsters.push(new ForestSprite());
+            wildwood.monsters.push(new Shade());
+
+            deepwood.monsters.push(new Goblin());
+            deepwood.monsters.push(new Troll());
+
+            woods.monsters.push(new Goblin());
+            woods.monsters.push(new WaterSerpent());
+            woods.monsters.push(new Slime());
+            woods.monsters.push(new Slime());
+
+            ruins.monsters.push(new Shade());
+            ruins.monsters.push(new ArcaneWisp());
+            ruins.monsters.push(new PhantomKnight());
+
+            cave.monsters.push(new Golem());
+            cave.monsters.push(new BatSwarm());
+            cave.monsters.push(new AshBeast());
+
+            crypt.monsters.push(new Ghost());
+            crypt.monsters.push(new CrystalGolem());
+            crypt.monsters.push(new PhantomKnight());
+            crypt.monsters.push(new ArcaneWisp());
+
+            river.monsters.push(new WaterSerpent());
+            river.monsters.push(new Goblin());
+            river.monsters.push(new Slime());
+
+            cliffs.monsters.push(new ThunderHawk());
+            cliffs.monsters.push(new Ghost());
+
+            lighthouse.monsters.push(new AnimatedTome());
+            lighthouse.monsters.push(new Shade());
+
+            blackMarketBasement.monsters.push(new Pickpocket());
+            blackMarketBasement.monsters.push(new ArcaneWisp());
+
+            bossRoom.monsters.push(new MagmaGolem());
+            bossRoom.monsters.push(new FallenKing());
+
+            // === CREATE GAME ===
+            const places = [
+                town, market, blacksmithShop, outskirts, oldMill, wildwood,
+                deepwood, ruins, cave, crypt, river, woods, cliffs, lighthouse,
+                blackMarketBasement, bossRoom
+            ];
+
+            const game = new Game(player, places, town);
+            game.title = "The Tale of Willow's Rest";
+            game.openingMessage =
+                `Welcome to Willow's Rest, ${player.name}.\n\n` +
+                "The town has grown uneasy: strange lights in the ruins, a broken wheel in the mill and whispers of a Fallen Star. " +
+                "People need bread and the blacksmith's apprentice has lost a hammer. Solve small problems, learn who to trust, and maybe recover the Fallen Star's secrets. " +
+                "Explore the market, trade with the shady corners below it, brave the Echoing Cavern, and unearth what the crypt keeps hidden.\n\n" +
+                "Hints: talk to NPCs, check chests, and follow repeated clues. Some NPCs will reward you for items; other places hide stronger monsters and better gear.";
+
+            await game.run();
+        }
+
+        // Start the game
+        window.addEventListener('DOMContentLoaded', () => {
+            createWillowsRest();
+        });
+    </script>
+</body>
+</html>
