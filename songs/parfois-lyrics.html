@@ -3,174 +3,371 @@
 	<title>Hiruevan Studio | «Parfois»</title>
 	<link rel="shortcut icon" type="image/x-icon" href="https://uploads.scratch.mit.edu/get_image/user/23198813_60x60.png">
 	<link rel="stylesheet" type="text/css" href="../styles.css">
-	<style>
+    <style>
 		body, p {
 			font-family: sans-serif;
 		}
+        div.top-bar {
+            height: 50px;
+        }
+        h1 {
+            font-size: 40px;
+        }
+        h1.page-title {
+            top: 0;
+        }
+        h2 {
+            font-size: 30px;
+        }
+        button {
+            margin: 0 20px;
+            padding: 8px 18px;
+
+            background: white;
+            color: black;
+
+            font-family: 'Impact', 'Haettenschweiler',
+                        'Arial Narrow Bold', sans-serif;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+
+            border: 3px solid black;
+            border-radius: 0;
+            box-shadow: 5px 5px 0 black;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease,
+                background-color 0.15s ease,
+                color 0.15s ease;
+        }
+
+        button:hover {
+            background: black;
+            color: white;
+
+            transform: translate(3px, 3px);
+            box-shadow: 2px 2px 0 black;
+        }
+
+        button:active {
+            transform: translate(5px, 5px);
+            box-shadow: none;
+        }
+
+        button:focus-visible {
+            outline: 3px dashed black;
+            outline-offset: 6px;
+        }
 	</style>
 </head>
 <body>
-	<div class="top-bar">
-		<h1 class="page-title">«Parfois» par Evan Hill</h1>
-	</div>
 	<div class="content">
-		<div class="container">
-			<section id="verset-1">
-            <h2>Verset 1</h2>
-            <p>
-                Je pense à ça parfois,<br>
-                Est-ce que tu m’aimes, toi ?<br>
-                Je veux être avec toi,<br>
-                S’il te plaît, reste avec moi…
-            </p>
-            <p>
-                J’ai besoin d’aide,<br>
-                Pour parler avec toi.<br>
-                S’il te plaît, aide-moi,<br>
-                J’suis amoureux de toi…
-            </p>
-            <p>
-                Je pense que je suis bavard,<br>
-                Mais avec toi, je parle pas.<br>
-                Si seulement je pouvais<br>
-                Être moi-même, je saurais…
-            </p>
-            <p>
-                Parler avec toi.<br>
-                Si seulement je parlais,<br>
-                Je pourrais être avec toi —<br>
-                Je pense à ça parfois.
-            </p>
-        </section>
+        <div class="top-bar">
+            <h1 class="page-title">
+                <span id="title">«Parfois» par Evan Hill</span>
+                <button id="lang-button" onclick="changeLanguages();">English</button>
+            </h1>
+        </div>
+		<div class="container" id="french">
+			<section>
+                <h2>Verset 1</h2>
+                <p>
+                    Je pense à ça parfois,<br>
+                    Est-ce que tu m’aimes, toi ?<br>
+                    Je veux être avec toi,<br>
+                    S’il te plaît, reste avec moi.
+                </p>
+                <p>
+                    J’ai besoin d’aide,<br>
+                    Pour parler avec toi.<br>
+                    S’il te plaît, aide-moi,<br>
+                    J’suis amoureux de toi.
+                </p>
+                <p>
+                    Je pense que je suis bavard,<br>
+                    Mais avec toi, je parle pas.<br>
+                    Si seulement je pouvais<br>
+                    Être moi-même, je saurais…
+                </p>
+                <p>
+                    Parler avec toi.<br>
+                    Si seulement je parlais,<br>
+                    Je pourrais être avec toi,<br>
+                    Je pense à ça parfois.
+                </p>
+            </section>
 
-        <section id="choeur-1">
-            <h2>Chœur</h2>
-            <p><em>
-                J’aime tant ton sourire,<br>
-                Avec toi, j’suis heureux.<br>
-                J’aime entendre ton rire,<br>
-                Car j’suis amoureux.
-            </em></p>
-            <p><em>
-                J’aime ta façon d’être<br>
-                Ton air curieux.<br>
-                Quand t’es près de moi,<br>
-                Je deviens nerveux.
-            </em></p>
-            <p><em>
-                J’aime tant ton sourire,<br>
-                Avec toi, j’suis heureux.<br>
-                J’aime entendre ton rire,<br>
-                Car j’suis amoureux.
-            </em></p>
-            <p><em>
-                J’aime comment tu parles,<br>
-                J’aime ta voix, tout ça<br>
-                J’aime comment tu marches,<br>
-                Quand j’suis avec toi.
-            </em></p>
-        </section>
+            <section>
+                <h2>Chœur</h2>
+                <p><em>
+                    J’aime tant ton sourire,<br>
+                    Avec toi, j’suis heureux.<br>
+                    J’aime entendre ton rire,<br>
+                    Car j’suis amoureux.
+                </em></p>
+                <p><em>
+                    J’aime ta façon d’être<br>
+                    Ton air curieux.<br>
+                    Quand t’es près de moi,<br>
+                    Je deviens nerveux.
+                </em></p>
+                <p><em>
+                    J’aime tant ton sourire,<br>
+                    Avec toi, j’suis heureux.<br>
+                    J’aime entendre ton rire,<br>
+                    Car j’suis amoureux.
+                </em></p>
+                <p><em>
+                    J’aime comment tu parles,<br>
+                    J’aime ta voix, tout ça<br>
+                    J’aime comment tu marches,<br>
+                    Quand j’suis avec toi.
+                </em></p>
+            </section>
 
-        <section id="verset-2">
-            <h2>Verset 2</h2>
-            <p>
-                Je pense à toi parfois,<br>
-                Je veux que tu penses à moi.<br>
-                Quand tu m’as écrit le soir,<br>
-                Je me sens bien, parfois…
-            </p>
-            <p>
-                Mais je sais pas si tu m’aimes,<br>
-                Et ça me fait peur quand même.<br>
-                J’ai besoin de courage<br>
-                Pour te parler en face !
-            </p>
-            <p>
-                Parfois je veux te parler,<br>
-                Mais les mots veulent pas sortir.<br>
-                Je pense trop, je le vois —<br>
-                Et je reste là, sans rien dire.
-            </p>
-            <p>
-                Et parfois, je pense que tu penses,<br>
-                Quand la nuit tombe en silence :<br>
-                « Je me demande… est-ce qu’il m’aime ?<br>
-                Et si je l’aime, qu’est-ce que je fais ? »
-            </p>
-        </section>
+            <section>
+                <h2>Verset 2</h2>
+                <p>
+                    Je pense à toi parfois,<br>
+                    Je veux que tu penses à moi.<br>
+                    Quand tu m’as écrit le soir,<br>
+                    Je me sens bien, parfois.
+                </p>
+                <p>
+                    Mais je sais pas si tu m’aimes,<br>
+                    Et ça me fait peur quand même.<br>
+                    J’ai besoin de courage<br>
+                    Pour te parler en face !
+                </p>
+                <p>
+                    Parfois je veux te parler,<br>
+                    Mais les mots veulent pas sortir.<br>
+                    Je pense trop, je le vois,<br>
+                    Et je reste là, sans rien dire.
+                </p>
+                <p>
+                    Et parfois, je pense que tu penses,<br>
+                    Quand la nuit tombe en silence :<br>
+                    « Je me demande… est-ce qu’il m’aime ?<br>
+                    Et si je l’aime, qu’est-ce que je fais ? »
+                </p>
+            </section>
 
-        <section id="pont">
-            <h2>Pont</h2>
-            <p><em>
-                Maintenant, je sais pas vraiment comment je me sens.<br>
-                Maintenant, je sais pas si tu m'aimes.
-            </em></p>
-            <p><em>
-                Est-ce que tu m’aimes ?<br>
-                Je sais pas si tu m’aimes.<br>
-                Est-ce que je t’aime ?<br>
-                Je sais pas si tu m’aimes.
-            </em></p>
-            <p><em>
-                Je sais pas ce que je pense.<br>
-                Mais…
-            </em></p>
-        </section>
+            <section>
+                <h2>Chœur</h2>
+                <p><em>
+                    J’aime tant ton sourire,<br>
+                    Avec toi, j’suis heureux.<br>
+                    J’aime entendre ton rire,<br>
+                    Car j’suis amoureux.
+                </em></p>
+                <p><em>
+                    J’aime ta façon d’être<br>
+                    Ton air curieux.<br>
+                    Quand t’es près de moi,<br>
+                    Je deviens nerveux.
+                </em></p>
+                <p><em>
+                    J’aime tant ton sourire,<br>
+                    Avec toi, j’suis heureux.<br>
+                    J’aime entendre ton rire,<br>
+                    Car j’suis amoureux.
+                </em></p>
+                <p><em>
+                    J’aime comment tu parles,<br>
+                    J’aime ta voix, tout ça,<br>
+                    J’aime comment tu marches,<br>
+                    Quand j’suis avec toi.
+                </em></p>
+            </section>
 
-        <section id="choeur-2">
-            <h2>Chœur</h2>
-            <p><em>
-                J’aime tant ton sourire,<br>
-                Avec toi, j’suis heureux.<br>
-                J’aime entendre ton rire,<br>
-                Car j’suis amoureux.
-            </em></p>
-            <p><em>
-                J’aime ta façon d’être<br>
-                Ton air curieux.<br>
-                Quand t’es près de moi,<br>
-                Je deviens nerveux.
-            </em></p>
-            <p><em>
-                J’aime tant ton sourire,<br>
-                Avec toi, j’suis heureux.<br>
-                J’aime entendre ton rire,<br>
-                Car j’suis amoureux.
-            </em></p>
-            <p><em>
-                J’aime comment tu parles,<br>
-                J’aime ta voix, tout ça,<br>
-                J’aime comment tu marches,<br>
-                Quand j’suis avec toi.
-            </em></p>
-        </section>
+            <section>
+                <h2>Finale</h2>
+                <p>
+                    Je pense parfois :<br>
+                    Si tu m’aimes moi,<br>
+                    Je veux être avec toi !<br>
+                    S’il te plaît, sois avec moi !
+                </p>
+                <p><em>
+                    J’aime tant ton sourire,<br>
+                    Avec toi, j’suis heureux.<br>
+                    J’aime entendre ton rire,<br>
+                    Car j’suis amoureux.
+                </em></p>
+                <p><em>
+                    J’aime comment tu parles,<br>
+                    J’aime ta voix, tout ça<br>
+                    J’aime comment tu marches,<br>
+                    Quand j’suis avec toi.
+                </em></p>
+                <p>Je pense, parfois…</p>
+            </section>
+		</div>
 
-        <section id="outroduction">
-            <h2>Outroduction</h2>
-            <p>
-                Je pense parfois :<br>
-                Si tu m’aimes moi,<br>
-                Je veux être avec toi !<br>
-                S’il te plaît, sois avec moi !
-            </p>
-            <p><em>
-                J’aime tant ton sourire,<br>
-                Avec toi, j’suis heureux.<br>
-                J’aime entendre ton rire,<br>
-                Car j’suis amoureux.
-            </em></p>
-            <p><em>
-                J’aime comment tu parles,<br>
-                J’aime ta voix, tout ça<br>
-                J’aime comment tu marches,<br>
-                Quand j’suis avec toi.
-            </em></p>
-            <p>Je pense, parfois…</p>
-        </section>
+        <div class="container" id="english" style="display: none;">
+			<section>
+                <h2>Verse 1</h2>
+                <p>
+                    I think about this sometimes,<br>
+                    Do you love me too?<br>
+                    I want to be with you,<br>
+                    Please stay with me?
+                </p>
+                <p>
+                    I need help,<br>
+                    In order to talk to you.<br>
+                    Could you please, help me<br>
+                    I am in love with you.
+                </p>
+                <p>
+                    I think I can talk,<br>
+                    But with you, I can't.<br>
+                    If only I could<br>
+                    Be myself, then I could…
+                </p>
+                <p>
+                    Talk to you.<br>
+                    If only I could talk,<br>
+                    I could be with you.<br>
+                    I think this sometimes.
+                </p>
+            </section>
+
+            <section>
+                <h2>Chorus</h2>
+                <p><em>
+                    I love your smile so much,<br>
+                    With you I'm happy.<br>
+                    I love to listen to your laugh,<br>
+                    Because I'm in love.
+                </em></p>
+                <p><em>
+                    I love you just as you are,<br>
+                    And your curiosity.<br>
+                    When you are close to me,<br>
+                    I get nervous.
+                </em></p>
+                 <p><em>
+                    I love your smile so much,<br>
+                    With you I'm happy.<br>
+                    I love to listen to your laugh,<br>
+                    Because I'm in love.
+                </em></p>
+                <p><em>
+                    I love how you speak,<br>
+                    I love your voice, all this<br>
+                    I love how you walk,<br>
+                    When I am with you.
+                </em></p>
+            </section>
+
+            <section>
+                <h2>Verse 2</h2>
+                <p>
+                    I think of you sometimes,<br>
+                    I want you to think of me.<br>
+                    When you text me in the evening,<br>
+                    Sometimes I feel good.
+                </p>
+                <p>
+                    But I don't know if you love me,<br>
+                    And that scares me.<br>
+                    I need the courage,<br>
+                    To tell you face-to-face!
+                </p>
+                <p>
+                    Sometimes I want to talk to you,<br>
+                    But the words won't come out.<br>
+                    I think to much, I see it,<br>
+                    And I stay there, saying nothing.
+                </p>
+                <p>
+                    And sometimes, I wonder if you think,<br>
+                    When the night falls into silence:<br>
+                    "I wonder… does he love me?<br>
+                    And if I love him, what should I do?"
+                </p>
+            </section>
+
+            <section>
+                <h2>Chorus</h2>
+                <p><em>
+                    I love your smile so much,<br>
+                    With you I'm happy.<br>
+                    I love to listen to your laugh,<br>
+                    Because I'm in love.
+                </em></p>
+                <p><em>
+                    I love you how you are,<br>
+                    Your curiosity.<br>
+                    When you are next to me,<br>
+                    I become nervous.
+                </em></p>
+                <p><em>
+                    I love your smile so much,<br>
+                    With you I'm happy.<br>
+                    I love to listen to your laugh,<br>
+                    Because I'm in love.
+                </em></p>
+                <p><em>
+                    I love how you speak,<br>
+                    I love your voice, all this<br>
+                    I love how you walk,<br>
+                    When I am with you.
+                </em></p>
+            </section>
+
+            <section>
+                <h2>Outro</h2>
+                <p>
+                    Sometimes I wonder:<br>
+                    If you love me,<br>
+                    I want to be with you!<br>
+                    Please, be with me!
+                </p>
+                <p><em>
+                    I love your smile so much,<br>
+                    With you I'm happy.<br>
+                    I love to listen to your laugh,<br>
+                    Because I'm in love.
+                </em></p>
+                <p><em>
+                    I love how you speak,<br>
+                    I love your voice, all this<br>
+                    I love how you walk,<br>
+                    When I am with you.
+                </em></p>
+                <p>I think, sometimes…</p>
+            </section>
 		</div>
 	</div>
+
+    <script>
+        function changeLanguages() {
+            const button = document.getElementById("lang-button");
+            const french = document.getElementById("french");
+            const english = document.getElementById("english");
+            const title = document.getElementById("title");
+
+            if (button.textContent == "English") {
+                // Change to english
+                button.textContent = "Français";
+                french.style.display = "none";
+                english.style.display = "block";
+                title.textContent = '"Sometimes" by Evan Hill';
+            } else {
+                // Change to french
+                button.textContent = "English";
+                french.style.display = "block";
+                english.style.display = "none";
+                title.textContent = "«Parfois» par Evan Hill";
+            }
+        }
+    </script>
 	
-
-
-
 </body></html>
