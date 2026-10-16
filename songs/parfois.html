@@ -62,6 +62,45 @@
             outline: 3px dashed black;
             outline-offset: 6px;
         }
+		
+        .song-player {
+            max-width: 800px;
+            margin: 35px auto;
+            padding: 20px;
+            text-align: center;
+            border: 3px solid black;
+            box-shadow: 8px 8px 0 black;
+            background: white;
+        }
+
+        .song-player h2 {
+            margin-top: 0;
+        }
+
+        .song-player video {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 450px;
+            margin: 20px auto 0;
+            background: black;
+        }
+
+        .song-player p {
+            margin-bottom: 0;
+            font-size: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .song-player {
+                margin: 25px 10px;
+                padding: 14px;
+            }
+
+            .song-player h2 {
+                font-size: 25px;
+            }
+        }
 	</style>
 </head>
 <body>
@@ -72,6 +111,17 @@
                 <button id="lang-button" onclick="changeLanguages();">English</button>
             </h1>
         </div>
+		
+        <section class="song-player">
+            <h2 id="player-title">Écouter la chanson</h2>
+            <p id="player-description">«Parfois» — Evan Hill</p>
+
+            <video controls preload="metadata" playsinline>
+                <source src="./parfois.mp4" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
+        </section>
+
 		<div class="container" id="french">
 			<section>
                 <h2>Verset 1</h2>
@@ -353,6 +403,8 @@
             const french = document.getElementById("french");
             const english = document.getElementById("english");
             const title = document.getElementById("title");
+			const playerTitle = document.getElementById("player-title");
+			const playerDescription = document.getElementById("player-description");
 
             if (button.textContent == "English") {
                 // Change to english
@@ -360,12 +412,16 @@
                 french.style.display = "none";
                 english.style.display = "block";
                 title.textContent = '"Sometimes" by Evan Hill';
+				playerTitle.textContent = "Listen to the song";
+				playerDescription.textContent = '"Sometimes" — Evan Hill';
             } else {
                 // Change to french
                 button.textContent = "English";
                 french.style.display = "block";
                 english.style.display = "none";
                 title.textContent = "«Parfois» par Evan Hill";
+				playerTitle.textContent = "Écouter la chanson";
+				playerDescription.textContent = "«Parfois» — Evan Hill";
             }
         }
     </script>
